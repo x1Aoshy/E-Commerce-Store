@@ -1,0 +1,409 @@
+/* global.css */
+
+/* Variables */
+:root {
+  --font-family: 'Roboto', Arial, sans-serif;
+  --background-color: #f0f2f5;
+  --primary-color: #007bff;
+  --primary-color-hover: #0056b3;
+  --secondary-color: #495057;
+  --danger-color: #dc3545;
+  --danger-color-hover: #c82333;
+  --warning-color: #ffc107;
+  --warning-color-hover: #e0a800;
+  --dark-background: #343a40;
+  --dark-secondary-background: #6c757d;
+  --dark-text: #ffffff;
+  --light-background: #ffffff;
+  --input-background: #e9ecef;
+  --input-border-color: #ced4da;
+}
+
+/* General Styles */
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  padding: 20px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--dark-background);
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  transition: all 0.3s;
+  z-index: 1000;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 20px 0;
+}
+
+.sidebar ul li a {
+  color: var(--dark-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  background-color: var(--secondary-color);
+  border-radius: 5px;
+}
+
+.sidebar ul li a svg {
+  margin-right: 10px;
+}
+
+.admin-content {
+  margin-left: 250px;
+  padding: 20px;
+  width: calc(100% - 250px);
+  transition: margin-left 0.3s, width 0.3s;
+}
+
+/* Login Page Styles */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.login-form {
+  background: var(--light-background);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  transition: background-color 0.3s, color 0.3s;
+  text-align: center;
+}
+
+body.dark-mode .login-form {
+  background: var(--secondary-color);
+  color: var(--dark-text);
+}
+
+.login-form h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.input-group-text {
+  display: flex;
+  align-items: center;
+  background: var(--input-background);
+  border: none;
+  padding: 0 10px;
+}
+
+body.dark-mode .input-group-text {
+  background: var(--dark-secondary-background);
+}
+
+.form-control {
+  border: 1px solid var(--input-border-color);
+  padding: 10px;
+  border-radius: 0 4px 4px 0;
+  width: calc(100% - 40px);
+  margin-left: -5px;
+}
+
+body.dark-mode .form-control {
+  background: var(--secondary-color);
+  color: var(--dark-text);
+  border-color: var(--dark-secondary-background);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Button Styles */
+.button-primary, .btn-primary {
+  background-color: var(--primary-color);
+  color: var(--dark-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.button-primary:hover, .btn-primary:hover {
+  background-color: var(--primary-color-hover);
+  transform: scale(1.05);
+}
+
+.button-warning, .btn-warning {
+  background-color: var(--warning-color);
+  color: var(--dark-background);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.button-warning:hover, .btn-warning:hover {
+  background-color: var(--warning-color-hover);
+  transform: scale(1.05);
+}
+
+.button-danger, .btn-danger {
+  background-color: var(--danger-color);
+  color: var(--dark-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.button-danger:hover, .btn-danger:hover {
+  background-color: var(--danger-color-hover);
+  transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal-content {
+  background-color: var(--light-background);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-header, .modal-footer {
+  border: none;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Search Input Styles */
+.search-input {
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+}
+
+.search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: -100vh;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: top 0.3s;
+  }
+
+  .sidebar.open {
+    top: 0;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .sidebar ul li {
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  .sidebar ul li a {
+    justify-content: center;
+  }
+
+  .admin-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .login-form {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+/* Hide sidebar toggle button on desktop */
+@media (min-width: 769px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}
+
+/* Product Management Styles */
+.product-management {
+  background: var(--light-background);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.product-management .table th,
+.product-management .table td {
+  vertical-align: middle;
+}
+
+.product-management .btn {
+  margin-right: 5px;
+}
+
+.product-management .btn:last-child {
+  margin-right: 0;
+}
+
+.product-management .btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.product-management .btn-primary:hover {
+  background-color: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
+}
+
+.product-management .btn-warning {
+  background-color: var(--warning-color);
+  border-color: var(--warning-color);
+  color: var(--dark-background);
+}
+
+.product-management .btn-warning:hover {
+  background-color: var(--warning-color-hover);
+  border-color: var(--warning-color-hover);
+  color: var(--dark-background);
+}
+
+.product-management .btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.product-management .btn-danger:hover {
+  background-color: var(--danger-color-hover);
+  border-color: var(--danger-color-hover);
+}
+
+/* Logout Button Styles */
+.logout-button {
+  background-color: var(--danger-color);
+  color: var(--dark-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: var(--danger-color-hover);
+  transform: scale(1.05);
+}
+
+.logout-button svg {
+  margin-right: 5px;
+}
+
