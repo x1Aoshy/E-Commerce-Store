@@ -9,9 +9,14 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const body = await req.json();
-  const product = updateProduct(params.id, body);
-  if (!product) {
-    return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
+  try {
+    const product = await updateProduct(params.id, body);
+    if (!product) {
+      return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
+    }
+    return NextResponse.json({ product });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudo actualizar el producto." }, { status: 500 });
   }
-  return NextResponse.json({ product });
 }

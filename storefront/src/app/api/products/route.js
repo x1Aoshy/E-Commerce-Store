@@ -5,7 +5,12 @@ import { checkAdmin } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  return NextResponse.json({ products: getProducts() });
+  try {
+    return NextResponse.json({ products: await getProducts() });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudieron leer los productos." }, { status: 500 });
+  }
 }
 
 export async function POST(req) {
@@ -16,6 +21,11 @@ export async function POST(req) {
   if (!body.name || !String(body.name).trim()) {
     return NextResponse.json({ error: "El nombre es obligatorio." }, { status: 400 });
   }
-  const product = createProduct(body);
-  return NextResponse.json({ product }, { status: 201 });
+  try {
+    const product = await createProduct(body);
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudo crear el producto." }, { status: 500 });
+  }
 }

@@ -9,9 +9,14 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const body = await req.json();
-  const order = updateOrder(params.id, body);
-  if (!order) {
-    return NextResponse.json({ error: "Orden no encontrada" }, { status: 404 });
+  try {
+    const order = await updateOrder(params.id, body);
+    if (!order) {
+      return NextResponse.json({ error: "Orden no encontrada" }, { status: 404 });
+    }
+    return NextResponse.json({ order });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudo actualizar la orden." }, { status: 500 });
   }
-  return NextResponse.json({ order });
 }

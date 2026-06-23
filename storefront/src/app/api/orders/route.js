@@ -9,12 +9,24 @@ export async function GET() {
   if (!checkAdmin()) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  return NextResponse.json({ orders: getOrders() });
+  try {
+    return NextResponse.json({ orders: await getOrders() });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudieron leer las órdenes." }, { status: 500 });
+  }
 }
 
 export async function POST(req) {
   const body = await req.json();
-  const result = createOrder({ items: body.items, customer: body.customer });
+
+  let result;
+  try {
+    result = await createOrder({ items: body.items, customer: body.customer });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "No se pudo procesar el pedido." }, { status: 500 });
+  }
 
   if (result.error) {
     return NextResponse.json(
