@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 
@@ -10,6 +10,20 @@ export default function ProductGrid({ products }) {
     [products]
   );
   const [active, setActive] = useState("Todos");
+
+  // Sincroniza el filtro con la barra de categorías del header: escucha el
+  // evento "titan:category" y, al cargar, lee ?categoria= de la URL.
+  useEffect(() => {
+    const valid = (cat) =>
+      cat === "Todos" || products.some((p) => p.category === cat);
+    const apply = (cat) => {
+      if (cat && valid(cat)) setActive(cat);
+    };
+    apply(new URLSearchParams(window.location.search).get("categoria"));
+    const onCat = (e) => apply(e.detail);
+    window.addEventListener("titan:category", onCat);
+    return () => window.removeEventListener("titan:category", onCat);
+  }, [products]);
 
   const filtered =
     active === "Todos" ? products : products.filter((p) => p.category === active);

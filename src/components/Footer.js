@@ -1,4 +1,6 @@
-const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
+import Logo from "@/components/Logo";
+
+const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
 export default function Footer() {
@@ -16,16 +18,7 @@ export default function Footer() {
       <div className="container-content py-14">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5">
-              <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#1b2125" />
-                <path
-                  d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-                  fill="#2bd673"
-                />
-              </svg>
-              <span className="text-[15px] font-semibold">{STORE}</span>
-            </div>
+            <Logo />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-muted">
               Suplementos de alta pureza, seleccionados para acompañar tu
               entrenamiento, tu recuperación y tu salud.

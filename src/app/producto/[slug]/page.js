@@ -13,7 +13,7 @@ import { getProductBySlug, getProducts } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
+const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
 export async function generateMetadata({ params }) {
   try {
@@ -46,9 +46,11 @@ export default async function ProductPage({ params }) {
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
 
+  const categories = Array.from(new Set(all.map((p) => p.category)));
+
   return (
     <>
-      <Header />
+      <Header categories={categories} />
       <main className="container-content py-8 sm:py-12">
         <nav className="text-sm text-ink-muted">
           <Link href="/" className="transition hover:text-ink">

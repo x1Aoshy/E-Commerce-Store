@@ -8,7 +8,7 @@ function money(n) {
   return `${CURRENCY}${(Number(n) || 0).toLocaleString("es-AR")}`;
 }
 
-export function buildOrderMessage(order, storeName = "Aosh Suplementos") {
+export function buildOrderMessage(order, storeName = "Titan Supplements") {
   const lines = [];
   lines.push(`*Nuevo pedido — ${storeName}*`);
   lines.push(`Código: ${order.code}`);

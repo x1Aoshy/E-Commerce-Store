@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
-
-const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
+import Logo from "@/components/Logo";
 
 export default function AdminPage() {
   const [status, setStatus] = useState("loading"); // loading | login | authed
@@ -56,16 +55,7 @@ export default function AdminPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-5">
       <div className="card w-full max-w-sm p-8 shadow-card">
-        <div className="flex items-center gap-2.5">
-          <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="8" fill="#1b2125" />
-            <path
-              d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-              fill="#2bd673"
-            />
-          </svg>
-          <span className="font-semibold text-ink">{STORE}</span>
-        </div>
+        <Logo />
         <h1 className="mt-6 text-lg font-semibold text-ink">
           Panel de administración
         </h1>

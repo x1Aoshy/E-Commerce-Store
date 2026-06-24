@@ -2,21 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { useCart } from "@/context/CartContext";
-
-const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
-
-function LogoMark() {
-  return (
-    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#1b2125" />
-      <path
-        d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-        fill="#2bd673"
-      />
-    </svg>
-  );
-}
 
 function CartIcon() {
   return (
@@ -38,7 +25,20 @@ function CartIcon() {
   );
 }
 
-export default function Header() {
+// Lleva al usuario a una categoría: si ya está en la home, filtra al instante
+// (vía evento) y baja a los productos; si está en otra página, navega a la home
+// con la categoría en la URL.
+function goCategory(cat) {
+  if (typeof window === "undefined") return;
+  if (window.location.pathname === "/") {
+    window.dispatchEvent(new CustomEvent("titan:category", { detail: cat }));
+    document.getElementById("productos")?.scrollIntoView({ behavior: "smooth" });
+  } else {
+    window.location.href = `/?categoria=${encodeURIComponent(cat)}#productos`;
+  }
+}
+
+export default function Header({ categories = [] }) {
   const { count, openCart, hydrated } = useCart();
   const [scrolled, setScrolled] = useState(false);
 
@@ -49,33 +49,20 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const navCats = ["Todos", ...categories];
+
   return (
     <header
       className={`sticky top-0 z-40 border-b backdrop-blur-md transition-all duration-300 ${
         scrolled
           ? "border-white/10 bg-night/85 shadow-soft"
-          : "border-transparent bg-night/60"
+          : "border-white/[0.06] bg-night/70"
       }`}
     >
-      <div className="container-content flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 transition active:scale-95">
-          <LogoMark />
-          <span className="text-[15px] font-semibold tracking-tight text-ink">
-            {STORE}
-          </span>
+      <div className="container-content flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="transition active:scale-95">
+          <Logo />
         </Link>
-
-        <nav className="hidden items-center gap-8 text-sm text-ink-soft md:flex">
-          <Link href="/#productos" className="transition hover:text-ink">
-            Productos
-          </Link>
-          <Link href="/#beneficios" className="transition hover:text-ink">
-            Beneficios
-          </Link>
-          <Link href="/#contacto" className="transition hover:text-ink">
-            Contacto
-          </Link>
-        </nav>
 
         <button
           onClick={openCart}
@@ -94,6 +81,24 @@ export default function Header() {
           )}
         </button>
       </div>
+
+      {categories.length > 0 && (
+        <div className="border-t border-white/[0.06]">
+          <div className="container-content">
+            <div className="no-scrollbar -mx-5 flex items-center gap-0.5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+              {navCats.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => goCategory(c)}
+                  className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2.5 text-[13px] font-medium text-ink-soft transition hover:text-accent-300"
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

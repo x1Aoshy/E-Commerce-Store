@@ -1,5 +1,7 @@
 "use client";
 
+import { LogoMark } from "@/components/Logo";
+
 // Barra lateral fija (no desplegable). Es un rail de íconos: al hacer hover
 // sobre un ítem aparece su nombre a la derecha con una transición suave
 // (fade + slide). En mobile se convierte en una barra inferior fija para no
@@ -113,13 +115,7 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
     >
       {/* Logo de la tienda (sólo en desktop, arriba del rail). */}
       <div className="hidden md:mb-3 md:flex md:h-10 md:w-10 md:items-center md:justify-center">
-        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="8" fill="#1b2125" />
-          <path
-            d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-            fill="#2bd673"
-          />
-        </svg>
+        <LogoMark size={30} />
       </div>
 
       {NAV_ITEMS.map(({ key, label, Icon }) => {

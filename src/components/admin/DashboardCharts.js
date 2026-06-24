@@ -11,12 +11,12 @@ import { formatPrice } from "@/lib/format";
 // Paleta consistente con el tema oscuro (accent vibrante + amber + gris).
 const STATUS_META = {
   pendiente: { label: "Pendientes", color: "#fbbf24" }, // amber-400
-  confirmada: { label: "Confirmadas", color: "#2bd673" }, // accent-400
+  confirmada: { label: "Confirmadas", color: "#3fae7a" }, // verde (confirmado)
   cancelada: { label: "Canceladas", color: "#6b7378" }, // gris atenuado
 };
 
 // Tonos de accent para las barras de categorías (se ciclan si hay muchas).
-const BAR_COLORS = ["#2bd673", "#54e58f", "#17bd60", "#8ff0b6", "#119d50", "#c4f8d9"];
+const BAR_COLORS = ["#d4a82f", "#e7c454", "#c99a2b", "#a87e22", "#efd886", "#86631d"];
 
 // Construye el atributo `d` de un segmento de dona (arco entre dos ángulos).
 function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {

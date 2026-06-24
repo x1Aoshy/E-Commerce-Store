@@ -35,7 +35,7 @@ export async function POST(req) {
     );
   }
 
-  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
+  const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
   const whatsappUrl = buildWhatsAppUrl({ phone, order: result.order, storeName });
 

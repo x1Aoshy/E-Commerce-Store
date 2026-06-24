@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import Logo from "@/components/Logo";
 import AdminSidebar from "./AdminSidebar";
 import DashboardCharts from "./DashboardCharts";
 import InventoryRow from "./InventoryRow";
 import NewProductForm from "./NewProductForm";
 import OrderCard from "./OrderCard";
-
-const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
 
 const VIEW_TITLES = {
   resumen: "Resumen",
@@ -82,20 +81,11 @@ export default function AdminDashboard({ onLogout }) {
       <div className="pb-20 md:pb-0 md:pl-16">
         <header className="border-b border-white/10 bg-surface/40">
           <div className="container-content flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#1b2125" />
-                <path
-                  d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-                  fill="#2bd673"
-                />
-              </svg>
-              <div>
-                <div className="text-sm font-semibold text-ink">{STORE}</div>
-                <div className="text-xs text-ink-muted">
-                  Administración · {VIEW_TITLES[activeView]}
-                </div>
-              </div>
+            <div className="flex items-center gap-3">
+              <Logo />
+              <span className="hidden text-xs text-ink-muted sm:inline">
+                · {VIEW_TITLES[activeView]}
+              </span>
             </div>
           </div>
         </header>

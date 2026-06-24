@@ -16,8 +16,8 @@
     @apply bg-night text-ink antialiased;
   }
   ::selection {
-    background: #2bd673;
-    color: #07120c;
+    background: #e7c454;
+    color: #1a1306;
   }
   h1,
   h2,

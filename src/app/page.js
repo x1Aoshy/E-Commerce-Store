@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import Recommended from "@/components/Recommended";
 import ProductGrid from "@/components/ProductGrid";
 import Benefits from "@/components/Benefits";
 import Footer from "@/components/Footer";
@@ -19,11 +20,14 @@ export default async function HomePage() {
     console.error("No se pudieron cargar los productos:", err);
   }
 
+  const categories = Array.from(new Set(products.map((p) => p.category)));
+
   return (
     <>
-      <Header />
+      <Header categories={categories} />
       <main>
         <Hero />
+        <Recommended products={products} />
         <ProductGrid products={products} />
         <Benefits />
       </main>
