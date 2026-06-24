@@ -122,6 +122,20 @@ export async function updateProduct(id, patch) {
   return data || null;
 }
 
+// Borra un producto por id. Usamos .select() para saber si efectivamente se
+// borró una fila: devuelve true si existía y se eliminó, false si no había
+// ningún producto con ese id. Ante un error de Supabase, lanza Error.
+export async function deleteProduct(id) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) throw new Error(`No se pudo eliminar el producto: ${error.message}`);
+  return Array.isArray(data) && data.length > 0;
+}
+
 /* -------------------------------- Órdenes -------------------------------- */
 
 export async function getOrders() {
@@ -134,9 +148,20 @@ export async function getOrders() {
   return (data || []).map(mapOrder);
 }
 
-// Crea una orden validando y descontando stock. Devuelve { order } en éxito,
-// o { error, conflicts } si no hay stock suficiente.
-export async function createOrder({ items, customer }) {
+// Estados de orden válidos al CREAR (público o manual).
+const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
+
+// Lógica compartida por createOrder (checkout público) y createManualOrder
+// (alta manual desde el admin): valida items, arma los lineItems, chequea y
+// DESCUENTA stock, e inserta la orden. Devuelve { order } (mapeada) en éxito,
+// o { error, conflicts } si el carrito está vacío o falta stock.
+//
+// Parámetros:
+//   items    -> [{ id, quantity }]
+//   customer -> { name, note }
+//   status   -> estado inicial de la orden (default "pendiente")
+//   code     -> código de la orden (default "AOSH-" + 4 dígitos)
+async function buildOrderWithStock({ items, customer, status, code }) {
   const supabase = getSupabase();
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -201,10 +226,10 @@ export async function createOrder({ items, customer }) {
   const total = lineItems.reduce((sum, li) => sum + li.subtotal, 0);
   const order = {
     id: "o" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-    code: "AOSH-" + Math.floor(1000 + Math.random() * 9000),
+    code: code || "AOSH-" + Math.floor(1000 + Math.random() * 9000),
     items: lineItems,
     total,
-    status: "pendiente",
+    status: ORDER_STATUSES.includes(status) ? status : "pendiente",
     customer: {
       name: (customer && customer.name) || "",
       note: (customer && customer.note) || "",
@@ -219,6 +244,24 @@ export async function createOrder({ items, customer }) {
   if (insErr) throw new Error(`No se pudo guardar la orden: ${insErr.message}`);
 
   return { order: mapOrder(inserted) };
+}
+
+// Crea una orden validando y descontando stock. Devuelve { order } en éxito,
+// o { error, conflicts } si no hay stock suficiente.
+export async function createOrder({ items, customer }) {
+  return buildOrderWithStock({ items, customer, status: "pendiente" });
+}
+
+// Registra una orden MANUAL (ventas hechas antes/offline) desde el admin.
+// Reutiliza la misma validación y descuento de stock que createOrder, pero el
+// estado inicial lo define el parámetro `status` (default "confirmada"; sólo se
+// aceptan "confirmada" o "pendiente", cualquier otro valor cae a "confirmada").
+// El código lleva prefijo "AOSH-M" para distinguir las altas manuales.
+// Devuelve { order } (mapeada) o { error, conflicts }.
+export async function createManualOrder({ items, customer, status }) {
+  const wanted = status === "pendiente" ? "pendiente" : "confirmada";
+  const code = "AOSH-M" + Math.floor(1000 + Math.random() * 9000);
+  return buildOrderWithStock({ items, customer, status: wanted, code });
 }
 
 // Devuelve al stock las cantidades de cada item de la orden (read-then-write,

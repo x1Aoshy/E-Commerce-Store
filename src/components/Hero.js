@@ -1,10 +1,6 @@
 export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-32 -top-24 h-80 w-80 rounded-full bg-accent-500/10 blur-3xl"
-      />
       <div className="container-content relative pb-16 pt-14 sm:pb-24 sm:pt-20">
         <span
           className="chip animate-fade-in bg-accent-500/10 text-accent-300 ring-1 ring-accent-500/30"

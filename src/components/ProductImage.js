@@ -44,7 +44,6 @@ export default function ProductImage({ product, className = "" }) {
     <div
       className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-surface-soft to-surface ${className}`}
     >
-      <div className="absolute h-28 w-28 rounded-full bg-accent-500/10 blur-2xl" />
       <svg
         viewBox="0 0 64 64"
         className="relative h-20 w-20 text-ink/55"

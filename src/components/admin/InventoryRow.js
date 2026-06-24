@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 
-export default function InventoryRow({ product, onUpdated }) {
+export default function InventoryRow({ product, onUpdated, onDeleted }) {
   const [price, setPrice] = useState(String(product.price));
   const [stock, setStock] = useState(Number(product.stock));
   const [featured, setFeatured] = useState(Boolean(product.featured));
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState(null);
 
   const dirty =
     Number(price) !== Number(product.price) ||
@@ -15,6 +18,7 @@ export default function InventoryRow({ product, onUpdated }) {
 
   async function save() {
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/products/${product.id}`, {
         method: "PATCH",
@@ -25,10 +29,31 @@ export default function InventoryRow({ product, onUpdated }) {
           featured,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) onUpdated(data.product);
+      else setError(data.error || "No se pudo guardar.");
+    } catch {
+      setError("Error de conexión.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function remove() {
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/products/${product.id}`, { method: "DELETE" });
+      if (res.ok) {
+        onDeleted?.(product.id);
+        return; // la fila se desmonta
+      }
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "No se pudo eliminar.");
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -37,6 +62,7 @@ export default function InventoryRow({ product, onUpdated }) {
       <td className="px-4 py-3">
         <div className="font-medium text-ink">{product.name}</div>
         <div className="text-xs text-ink-muted">{product.short}</div>
+        {error && <div className="mt-1 text-[11px] text-red-300">{error}</div>}
       </td>
       <td className="px-4 py-3 text-ink-soft">{product.category}</td>
       <td className="px-4 py-3">
@@ -90,13 +116,44 @@ export default function InventoryRow({ product, onUpdated }) {
         </button>
       </td>
       <td className="px-4 py-3 text-right">
-        <button
-          onClick={save}
-          disabled={!dirty || saving}
-          className="btn-primary px-3.5 py-1.5 text-[12px]"
-        >
-          {saving ? "…" : "Guardar"}
-        </button>
+        {confirming ? (
+          <span className="inline-flex items-center gap-2 whitespace-nowrap">
+            <span className="text-xs text-ink-muted">¿Eliminar?</span>
+            <button
+              onClick={remove}
+              disabled={deleting}
+              className="rounded-full bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
+            >
+              {deleting ? "…" : "Sí, eliminar"}
+            </button>
+            <button
+              onClick={() => setConfirming(false)}
+              className="px-1 text-[12px] text-ink-muted transition hover:text-ink"
+            >
+              No
+            </button>
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5">
+            <button
+              onClick={save}
+              disabled={!dirty || saving}
+              className="btn-primary px-3.5 py-1.5 text-[12px]"
+            >
+              {saving ? "…" : "Guardar"}
+            </button>
+            <button
+              onClick={() => setConfirming(true)}
+              aria-label="Eliminar producto"
+              title="Eliminar producto"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-red-300 hover:ring-red-500/40"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+              </svg>
+            </button>
+          </span>
+        )}
       </td>
     </tr>
   );
