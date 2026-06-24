@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { formatPrice } from "@/lib/format";
+import { printInvoice } from "@/lib/invoice";
+
+const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
+const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
+const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
 function formatDate(iso) {
   try {
@@ -42,6 +47,7 @@ function StatusChip({ status }) {
 export default function OrderCard({ order, onUpdated }) {
   // saving guarda qué acción está en curso para deshabilitar sólo lo justo.
   const [saving, setSaving] = useState(null); // null | 'toggle' | 'cancel' | 'reactivate'
+  const [err, setErr] = useState(null);
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
 
@@ -49,14 +55,18 @@ export default function OrderCard({ order, onUpdated }) {
   // El backend se encarga de devolver/reservar stock al cancelar/reactivar.
   async function setStatus(next, action) {
     setSaving(action);
+    setErr(null);
     try {
       const res = await fetch(`/api/orders/${order.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: next }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) onUpdated(data.order);
+      else setErr(data.error || "No se pudo actualizar el pedido.");
+    } catch {
+      setErr("Error de conexión.");
     } finally {
       setSaving(null);
     }
@@ -84,7 +94,7 @@ export default function OrderCard({ order, onUpdated }) {
             {order.customer?.name ? ` · ${order.customer.name}` : ""}
           </div>
         </div>
-        <div className="text-right">
+        <div className="flex flex-col items-end gap-1.5">
           <div
             className={`text-base font-semibold ${
               cancelled ? "text-ink-muted line-through" : "text-ink"
@@ -92,6 +102,21 @@ export default function OrderCard({ order, onUpdated }) {
           >
             {formatPrice(order.total)}
           </div>
+          <button
+            onClick={() =>
+              printInvoice({ order, storeName: STORE, currency: CURRENCY, phone: PHONE })
+            }
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
+            aria-label="Imprimir factura"
+            title="Imprimir factura"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9V3h12v6" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2" />
+              <path d="M6 14h12v7H6z" />
+            </svg>
+            Factura
+          </button>
         </div>
       </div>
 
@@ -111,6 +136,8 @@ export default function OrderCard({ order, onUpdated }) {
           {order.customer.note}
         </p>
       )}
+
+      {err && <p className="mt-3 text-xs text-red-300">{err}</p>}
 
       {cancelled ? (
         // Orden cancelada: el stock ya se liberó. Sólo se puede reactivar

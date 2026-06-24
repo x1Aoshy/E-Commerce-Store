@@ -21,7 +21,7 @@ export default function MobileCartBar() {
       <button
         onClick={openCart}
         tabIndex={show ? 0 : -1}
-        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-surface/95 p-2 pl-4 text-left text-ink shadow-card backdrop-blur transition active:scale-[0.98]"
+        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-surface p-2 pl-4 text-left text-ink shadow-card transition active:scale-[0.98]"
       >
         <span className="flex h-6 w-6 items-center justify-center text-accent-300">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">

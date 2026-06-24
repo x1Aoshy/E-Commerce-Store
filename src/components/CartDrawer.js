@@ -105,7 +105,7 @@ export default function CartDrawer() {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className={`absolute inset-0 bg-night/70 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
           visible ? "opacity-100" : "opacity-0"
         }`}
         onClick={closeCart}

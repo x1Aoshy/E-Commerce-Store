@@ -2,7 +2,7 @@
 // pedido pre-cargado. No requiere credenciales ni API: abre el chat del
 // vendedor con el mensaje listo para enviar.
 
-const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "$";
+const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
 
 function money(n) {
   return `${CURRENCY}${(Number(n) || 0).toLocaleString("es-AR")}`;

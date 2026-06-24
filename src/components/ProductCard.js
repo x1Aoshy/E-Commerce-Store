@@ -30,7 +30,7 @@ export default function ProductCard({ product }) {
           product={product}
           className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        <span className="chip absolute left-3 top-3 bg-night/70 text-ink-soft ring-1 ring-white/10 backdrop-blur">
+        <span className="chip absolute left-3 top-3 bg-night/90 text-ink-soft ring-1 ring-white/10">
           {product.category}
         </span>
       </Link>

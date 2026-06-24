@@ -53,10 +53,10 @@ export default function Header({ categories = [] }) {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b backdrop-blur-md transition-all duration-300 ${
+      className={`sticky top-0 z-40 border-b transition-all duration-300 ${
         scrolled
-          ? "border-white/10 bg-night/85 shadow-soft"
-          : "border-white/[0.06] bg-night/70"
+          ? "border-white/10 bg-night shadow-soft"
+          : "border-white/[0.06] bg-night"
       }`}
     >
       <div className="container-content flex h-16 items-center justify-between gap-4">
