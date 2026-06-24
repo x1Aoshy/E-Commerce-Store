@@ -305,7 +305,7 @@ async function buildOrder({
   const total = lineItems.reduce((sum, li) => sum + li.subtotal, 0);
   const order = {
     id: "o" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-    code: code || "AOSH-" + Math.floor(1000 + Math.random() * 9000),
+    code: code || "TS-" + Math.floor(1000 + Math.random() * 9000),
     items: lineItems,
     total,
     status: ORDER_STATUSES.includes(status) ? status : "pendiente",
@@ -344,7 +344,7 @@ export async function createManualOrder({
   extraLabel,
 }) {
   const wanted = status === "pendiente" ? "pendiente" : "confirmada";
-  const code = "AOSH-M" + Math.floor(1000 + Math.random() * 9000);
+  const code = "TS-M" + Math.floor(1000 + Math.random() * 9000);
   return buildOrder({
     items,
     customer,
