@@ -49,10 +49,21 @@ module.exports = {
           from: { transform: "translateX(100%)" },
           to: { transform: "translateX(0)" },
         },
+        pop: {
+          "0%": { transform: "scale(0.5)", opacity: "0.4" },
+          "60%": { transform: "scale(1.18)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "scale-in": {
+          from: { opacity: "0", transform: "scale(0.96)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.5s ease forwards",
         "slide-in": "slide-in 0.28s cubic-bezier(0.22,1,0.36,1) forwards",
+        pop: "pop 0.32s cubic-bezier(0.22,1,0.36,1)",
+        "scale-in": "scale-in 0.24s ease forwards",
       },
     },
   },

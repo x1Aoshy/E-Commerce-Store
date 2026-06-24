@@ -3,26 +3,38 @@ export default function Hero() {
     <section id="top" className="relative overflow-hidden">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-32 -top-24 h-80 w-80 rounded-full bg-accent-100/50 blur-3xl"
+        className="pointer-events-none absolute -right-32 -top-24 h-80 w-80 rounded-full bg-accent-100/40 blur-3xl"
       />
       <div className="container-content relative pb-16 pt-14 sm:pb-24 sm:pt-20">
-        <span className="chip bg-accent-50 text-accent-700 ring-1 ring-accent-200">
+        <span
+          className="chip animate-fade-in bg-accent-50 text-accent-700 ring-1 ring-accent-200"
+          style={{ animationFillMode: "both" }}
+        >
           Suplementos premium · Calidad certificada
         </span>
 
-        <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl md:text-6xl">
+        <h1
+          className="mt-5 max-w-3xl animate-fade-in text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl md:text-6xl"
+          style={{ animationDelay: "80ms", animationFillMode: "both" }}
+        >
           Rendimiento real,
           <br />
           fórmulas honestas.
         </h1>
 
-        <p className="mt-5 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
+        <p
+          className="mt-5 max-w-xl animate-fade-in text-base leading-relaxed text-ink-soft sm:text-lg"
+          style={{ animationDelay: "160ms", animationFillMode: "both" }}
+        >
           Una selección sobria de suplementos de alta pureza para entrenar,
           recuperarte y cuidar tu salud. Sin relleno, sin promesas vacías. Hacé
           tu pedido en segundos por WhatsApp.
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div
+          className="mt-8 flex flex-wrap items-center gap-3 animate-fade-in"
+          style={{ animationDelay: "240ms", animationFillMode: "both" }}
+        >
           <a href="#productos" className="btn-accent px-6 py-3 text-[15px]">
             Ver productos
           </a>
@@ -31,7 +43,10 @@ export default function Hero() {
           </a>
         </div>
 
-        <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-6 border-t border-ink/[0.07] pt-8">
+        <dl
+          className="mt-14 grid max-w-2xl grid-cols-3 gap-6 border-t border-ink/[0.07] pt-8 animate-fade-in"
+          style={{ animationDelay: "320ms", animationFillMode: "both" }}
+        >
           <div>
             <dt className="text-2xl font-semibold text-ink sm:text-3xl">100%</dt>
             <dd className="mt-1 text-sm text-ink-muted">Pureza certificada</dd>

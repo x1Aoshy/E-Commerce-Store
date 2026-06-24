@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
@@ -38,11 +39,25 @@ function CartIcon() {
 
 export default function Header() {
   const { count, openCart, hydrated } = useCart();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/[0.06] bg-white/80 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-40 border-b backdrop-blur-md transition-all duration-300 ${
+        scrolled
+          ? "border-ink/[0.08] bg-white/90 shadow-soft"
+          : "border-transparent bg-white/80"
+      }`}
+    >
       <div className="container-content flex h-16 items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5">
+        <a href="#top" className="flex items-center gap-2.5 transition active:scale-95">
           <LogoMark />
           <span className="text-[15px] font-semibold tracking-tight text-ink">
             {STORE}
@@ -63,13 +78,16 @@ export default function Header() {
 
         <button
           onClick={openCart}
-          className="relative inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-ink/40"
+          className="relative inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-ink/40 active:scale-95"
           aria-label="Abrir carrito"
         >
           <CartIcon />
           <span className="hidden sm:inline">Carrito</span>
           {hydrated && count > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-white">
+            <span
+              key={count}
+              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] animate-pop items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-white"
+            >
               {count}
             </span>
           )}

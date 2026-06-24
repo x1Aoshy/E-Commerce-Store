@@ -61,7 +61,6 @@ export function CartProvider({ children }) {
         },
       ];
     });
-    setIsOpen(true);
   }, []);
 
   const updateQty = useCallback((id, qty) => {

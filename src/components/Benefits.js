@@ -1,3 +1,5 @@
+import Reveal from "./Reveal";
+
 const BENEFITS = [
   {
     title: "Calidad certificada",
@@ -46,7 +48,7 @@ export default function Benefits() {
   return (
     <section id="beneficios" className="border-t border-ink/[0.06] bg-accent-50/30">
       <div className="container-content py-16 sm:py-20">
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
             Suplementación seria, sin vueltas
           </h2>
@@ -54,29 +56,31 @@ export default function Benefits() {
             Una experiencia simple y transparente, desde que elegís tu producto
             hasta que llega a tu puerta.
           </p>
-        </div>
+        </Reveal>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {BENEFITS.map((b) => (
-            <div key={b.title} className="card p-6 shadow-soft">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-white">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {b.icon}
-                </svg>
+          {BENEFITS.map((b, i) => (
+            <Reveal key={b.title} delay={i * 80}>
+              <div className="card h-full p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-card">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-white">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {b.icon}
+                  </svg>
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-ink">{b.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                  {b.text}
+                </p>
               </div>
-              <h3 className="mt-4 text-base font-semibold text-ink">{b.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                {b.text}
-              </p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
+import Reveal from "./Reveal";
 
 export default function ProductGrid({ products }) {
   const categories = useMemo(
@@ -17,7 +18,7 @@ export default function ProductGrid({ products }) {
 
   return (
     <section id="productos" className="container-content py-16 sm:py-20">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
             Nuestros productos
@@ -27,12 +28,12 @@ export default function ProductGrid({ products }) {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           {categories.map((c) => (
             <button
               key={c}
               onClick={() => setActive(c)}
-              className={`chip px-3.5 py-1.5 transition ${
+              className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
                 active === c
                   ? "bg-ink text-white"
                   : "bg-white text-ink-soft ring-1 ring-ink/10 hover:ring-ink/30"
@@ -42,11 +43,13 @@ export default function ProductGrid({ products }) {
             </button>
           ))}
         </div>
-      </div>
+      </Reveal>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((p) => (
-          <ProductCard key={p.id} product={p} onView={setSelected} />
+        {filtered.map((p, i) => (
+          <Reveal key={p.id} delay={Math.min(i * 60, 360)}>
+            <ProductCard product={p} onView={setSelected} />
+          </Reveal>
         ))}
       </div>
 
