@@ -221,6 +221,103 @@ export async function createOrder({ items, customer }) {
   return { order: mapOrder(inserted) };
 }
 
+// Devuelve al stock las cantidades de cada item de la orden (read-then-write,
+// al estilo de createOrder). Se usa al CANCELAR un pedido para reponer lo que
+// se había descontado en el checkout. Si un producto ya no existe, se ignora
+// sin romper. No lleva guard porque sumar stock nunca lo deja negativo.
+async function restoreStock(items) {
+  const supabase = getSupabase();
+  const list = Array.isArray(items) ? items : [];
+  for (const item of list) {
+    const qty = Math.max(0, Number(item.quantity) || 0);
+    if (!item.id || qty === 0) continue;
+    const { data: product, error: readErr } = await supabase
+      .from("products")
+      .select("stock")
+      .eq("id", item.id)
+      .maybeSingle();
+    if (readErr) throw new Error(`No se pudo leer el stock: ${readErr.message}`);
+    if (!product) continue; // El producto ya no existe: lo ignoramos.
+    const { error: updErr } = await supabase
+      .from("products")
+      .update({ stock: product.stock + qty })
+      .eq("id", item.id);
+    if (updErr) throw new Error(`No se pudo reponer el stock: ${updErr.message}`);
+  }
+}
+
+// Vuelve a descontar el stock de cada item de la orden. Se usa al REACTIVAR un
+// pedido que estaba cancelado (cancelada -> pendiente/confirmada), para no
+// quedar con stock inflado. El update es condicional (stock >= qty) igual que
+// en createOrder, así nunca dejamos stock negativo. Si un producto ya no existe
+// se ignora.
+async function consumeStock(items) {
+  const supabase = getSupabase();
+  const list = Array.isArray(items) ? items : [];
+  for (const item of list) {
+    const qty = Math.max(0, Number(item.quantity) || 0);
+    if (!item.id || qty === 0) continue;
+    const { data: product, error: readErr } = await supabase
+      .from("products")
+      .select("stock")
+      .eq("id", item.id)
+      .maybeSingle();
+    if (readErr) throw new Error(`No se pudo leer el stock: ${readErr.message}`);
+    if (!product) continue; // El producto ya no existe: lo ignoramos.
+    const { error: updErr } = await supabase
+      .from("products")
+      .update({ stock: Math.max(0, product.stock - qty) })
+      .eq("id", item.id)
+      .gte("stock", qty);
+    if (updErr) throw new Error(`No se pudo actualizar el stock: ${updErr.message}`);
+  }
+}
+
+// Cambia el estado de una orden ajustando el stock según la transición:
+//   - hacia 'cancelada' (desde un estado no cancelado): repone el stock UNA vez.
+//   - desde 'cancelada' hacia 'pendiente'/'confirmada' (reactivación): vuelve a
+//     descontar el stock (con guard para no dejar negativo).
+//   - cualquier otra transición (pendiente <-> confirmada, o re-setear el mismo
+//     estado): sólo actualiza el status, sin tocar stock.
+// Es idempotente: leemos el estado actual antes de mover stock, así cancelar
+// una orden ya cancelada (o reactivar una ya activa) no duplica el ajuste.
+// Devuelve la orden mapeada, o null si no existe.
+export async function setOrderStatus(id, status) {
+  const supabase = getSupabase();
+
+  // Leemos la orden actual para conocer su estado e items.
+  const { data: current, error: readErr } = await supabase
+    .from("orders")
+    .select(ORDER_COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+  if (readErr) throw new Error(`No se pudo leer la orden: ${readErr.message}`);
+  if (!current) return null;
+
+  const wasCancelled = current.status === "cancelada";
+  const willCancel = status === "cancelada";
+
+  // Ajustamos stock ANTES de marcar el nuevo estado. Si el update de status
+  // fallara, el stock podría quedar desincronizado; para garantías fuertes esto
+  // debería ser una RPC transaccional, igual que el descuento en createOrder.
+  if (willCancel && !wasCancelled) {
+    // Cancelación: devolvemos al inventario lo que se había descontado.
+    await restoreStock(current.items);
+  } else if (!willCancel && wasCancelled) {
+    // Reactivación: volvemos a descontar el inventario.
+    await consumeStock(current.items);
+  }
+
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", id)
+    .select(ORDER_COLUMNS)
+    .maybeSingle();
+  if (error) throw new Error(`No se pudo actualizar la orden: ${error.message}`);
+  return mapOrder(data);
+}
+
 export async function updateOrder(id, patch) {
   const supabase = getSupabase();
   if (patch.status === undefined) {
@@ -232,12 +329,8 @@ export async function updateOrder(id, patch) {
     return mapOrder(data);
   }
 
-  const { data, error } = await supabase
-    .from("orders")
-    .update({ status: patch.status })
-    .eq("id", id)
-    .select(ORDER_COLUMNS)
-    .maybeSingle();
-  if (error) throw new Error(`No se pudo actualizar la orden: ${error.message}`);
-  return mapOrder(data);
+  // Delegamos en setOrderStatus para que el cambio de estado ajuste el stock
+  // cuando corresponde (cancelar/reactivar). Para 'pendiente' <-> 'confirmada'
+  // el stock no se toca.
+  return setOrderStatus(id, patch.status);
 }

@@ -2,11 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import AdminSidebar from "./AdminSidebar";
+import DashboardCharts from "./DashboardCharts";
 import InventoryRow from "./InventoryRow";
 import NewProductForm from "./NewProductForm";
 import OrderCard from "./OrderCard";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
+
+const VIEW_TITLES = {
+  resumen: "Resumen",
+  inventario: "Inventario",
+  ordenes: "Órdenes",
+};
 
 function Stat({ label, value }) {
   return (
@@ -22,7 +30,7 @@ function Stat({ label, value }) {
 export default function AdminDashboard({ onLogout }) {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [tab, setTab] = useState("inventario");
+  const [activeView, setActiveView] = useState("resumen");
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
 
@@ -63,153 +71,166 @@ export default function AdminDashboard({ onLogout }) {
 
   return (
     <div className="min-h-screen bg-accent-50/20">
-      <header className="border-b border-ink/[0.07] bg-white">
-        <div className="container-content flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-              <rect width="32" height="32" rx="8" fill="#15191c" />
-              <path
-                d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-                fill="#2f9d77"
-              />
-            </svg>
-            <div>
-              <div className="text-sm font-semibold text-ink">{STORE}</div>
-              <div className="text-xs text-ink-muted">Administración</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <a href="/" className="btn-ghost px-4 py-2 text-[13px]">
-              Ver tienda
-            </a>
-            <button onClick={logout} className="btn-ghost px-4 py-2 text-[13px]">
-              Salir
-            </button>
-          </div>
-        </div>
-      </header>
+      <AdminSidebar
+        active={activeView}
+        onChange={setActiveView}
+        onLogout={logout}
+        pending={stats.pending}
+      />
 
-      <main className="container-content py-8">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Productos" value={stats.count} />
-          <Stat label="Valor inventario" value={formatPrice(stats.inventoryValue)} />
-          <Stat label="Unidades en stock" value={stats.units} />
-          <Stat label="Órdenes pendientes" value={stats.pending} />
-        </div>
-
-        <div className="mt-8 flex items-center gap-2">
-          <button
-            onClick={() => setTab("inventario")}
-            className={`chip px-4 py-2 transition ${
-              tab === "inventario"
-                ? "bg-ink text-white"
-                : "bg-white text-ink-soft ring-1 ring-ink/10 hover:ring-ink/30"
-            }`}
-          >
-            Inventario
-          </button>
-          <button
-            onClick={() => setTab("ordenes")}
-            className={`chip gap-2 px-4 py-2 transition ${
-              tab === "ordenes"
-                ? "bg-ink text-white"
-                : "bg-white text-ink-soft ring-1 ring-ink/10 hover:ring-ink/30"
-            }`}
-          >
-            Órdenes
-            {stats.pending > 0 && (
-              <span className="rounded-full bg-accent-500 px-1.5 text-[10px] font-semibold text-white">
-                {stats.pending}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {loading ? (
-          <p className="mt-8 text-sm text-ink-muted">Cargando…</p>
-        ) : tab === "inventario" ? (
-          <section className="mt-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-ink">
-                Inventario ({products.length})
-              </h2>
-              <button
-                onClick={() => setShowNew((v) => !v)}
-                className="btn-primary px-4 py-2 text-[13px]"
-              >
-                {showNew ? "Cerrar" : "+ Agregar producto"}
-              </button>
-            </div>
-
-            {showNew && (
-              <div className="mb-5">
-                <NewProductForm
-                  categories={categories}
-                  onCreated={(created) => {
-                    setProducts((prev) => [created, ...prev]);
-                    setShowNew(false);
-                  }}
-                  onCancel={() => setShowNew(false)}
+      {/* Offset por el sidebar: a la izquierda en desktop, abajo en mobile. */}
+      <div className="pb-20 md:pb-0 md:pl-16">
+        <header className="border-b border-ink/[0.07] bg-white">
+          <div className="container-content flex h-16 items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
+                <rect width="32" height="32" rx="8" fill="#15191c" />
+                <path
+                  d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
+                  fill="#2f9d77"
                 />
+              </svg>
+              <div>
+                <div className="text-sm font-semibold text-ink">{STORE}</div>
+                <div className="text-xs text-ink-muted">
+                  Administración · {VIEW_TITLES[activeView]}
+                </div>
               </div>
-            )}
-
-            <div className="card overflow-x-auto shadow-soft">
-              <table className="w-full min-w-[680px] text-sm">
-                <thead>
-                  <tr className="border-b border-ink/[0.07] text-left text-xs uppercase tracking-wide text-ink-muted">
-                    <th className="px-4 py-3 font-medium">Producto</th>
-                    <th className="px-4 py-3 font-medium">Categoría</th>
-                    <th className="px-4 py-3 font-medium">Precio</th>
-                    <th className="px-4 py-3 font-medium">Stock</th>
-                    <th className="px-4 py-3 font-medium">Destacado</th>
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((p) => (
-                    <InventoryRow
-                      key={p.id}
-                      product={p}
-                      onUpdated={(updated) =>
-                        setProducts((prev) =>
-                          prev.map((x) => (x.id === updated.id ? updated : x))
-                        )
-                      }
-                    />
-                  ))}
-                </tbody>
-              </table>
             </div>
-          </section>
-        ) : (
-          <section className="mt-5">
-            <h2 className="mb-4 text-base font-semibold text-ink">
-              Órdenes ({orders.length})
-            </h2>
-            {orders.length === 0 ? (
-              <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
-                Todavía no hay órdenes. Las que se generen desde la tienda
-                aparecerán acá.
-              </div>
-            ) : (
-              <div className="grid gap-3 lg:grid-cols-2">
-                {orders.map((o) => (
-                  <OrderCard
-                    key={o.id}
-                    order={o}
-                    onUpdated={(updated) =>
-                      setOrders((prev) =>
-                        prev.map((x) => (x.id === updated.id ? updated : x))
-                      )
-                    }
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-      </main>
+          </div>
+        </header>
+
+        <main className="container-content py-8">
+          {loading ? (
+            <p className="text-sm text-ink-muted">Cargando…</p>
+          ) : activeView === "resumen" ? (
+            <ResumenView stats={stats} products={products} orders={orders} />
+          ) : activeView === "inventario" ? (
+            <InventarioView
+              products={products}
+              categories={categories}
+              showNew={showNew}
+              setShowNew={setShowNew}
+              setProducts={setProducts}
+            />
+          ) : (
+            <OrdenesView orders={orders} setOrders={setOrders} />
+          )}
+        </main>
+      </div>
     </div>
+  );
+}
+
+function ResumenView({ stats, products, orders }) {
+  return (
+    <div className="animate-fade-in">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="Productos" value={stats.count} />
+        <Stat label="Valor inventario" value={formatPrice(stats.inventoryValue)} />
+        <Stat label="Unidades en stock" value={stats.units} />
+        <Stat label="Órdenes pendientes" value={stats.pending} />
+      </div>
+
+      <h2 className="mb-4 mt-8 text-base font-semibold text-ink">
+        Métricas del negocio
+      </h2>
+      <DashboardCharts products={products} orders={orders} />
+    </div>
+  );
+}
+
+function InventarioView({
+  products,
+  categories,
+  showNew,
+  setShowNew,
+  setProducts,
+}) {
+  return (
+    <section className="animate-fade-in">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-ink">
+          Inventario ({products.length})
+        </h2>
+        <button
+          onClick={() => setShowNew((v) => !v)}
+          className="btn-primary px-4 py-2 text-[13px]"
+        >
+          {showNew ? "Cerrar" : "+ Agregar producto"}
+        </button>
+      </div>
+
+      {showNew && (
+        <div className="mb-5">
+          <NewProductForm
+            categories={categories}
+            onCreated={(created) => {
+              setProducts((prev) => [created, ...prev]);
+              setShowNew(false);
+            }}
+            onCancel={() => setShowNew(false)}
+          />
+        </div>
+      )}
+
+      <div className="card overflow-x-auto shadow-soft">
+        <table className="w-full min-w-[680px] text-sm">
+          <thead>
+            <tr className="border-b border-ink/[0.07] text-left text-xs uppercase tracking-wide text-ink-muted">
+              <th className="px-4 py-3 font-medium">Producto</th>
+              <th className="px-4 py-3 font-medium">Categoría</th>
+              <th className="px-4 py-3 font-medium">Precio</th>
+              <th className="px-4 py-3 font-medium">Stock</th>
+              <th className="px-4 py-3 font-medium">Destacado</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <InventoryRow
+                key={p.id}
+                product={p}
+                onUpdated={(updated) =>
+                  setProducts((prev) =>
+                    prev.map((x) => (x.id === updated.id ? updated : x))
+                  )
+                }
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function OrdenesView({ orders, setOrders }) {
+  return (
+    <section className="animate-fade-in">
+      <h2 className="mb-4 text-base font-semibold text-ink">
+        Órdenes ({orders.length})
+      </h2>
+      {orders.length === 0 ? (
+        <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+          Todavía no hay órdenes. Las que se generen desde la tienda aparecerán
+          acá.
+        </div>
+      ) : (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {orders.map((o) => (
+            <OrderCard
+              key={o.id}
+              order={o}
+              onUpdated={(updated) =>
+                setOrders((prev) =>
+                  prev.map((x) => (x.id === updated.id ? updated : x))
+                )
+              }
+            />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

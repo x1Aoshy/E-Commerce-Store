@@ -1,5 +1,6 @@
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import Background from "@/components/Background";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body>
+        <Background />
         <CartProvider>{children}</CartProvider>
       </body>
     </html>

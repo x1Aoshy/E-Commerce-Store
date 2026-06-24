@@ -12,7 +12,8 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply bg-white text-ink antialiased;
+    /* Transparente para que se vea el fondo con textura (<Background/>). */
+    @apply bg-transparent text-ink antialiased;
   }
   ::selection {
     background: #bce6d4;
@@ -22,6 +23,38 @@
   h2,
   h3 {
     @apply tracking-tight;
+  }
+}
+
+/* Scrollbar personalizada, sobria y fina, a tono con la paleta ink.
+   Track transparente para que se integre con el fondo con textura. */
+@layer base {
+  /* Firefox */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(21, 25, 28, 0.35) transparent;
+  }
+
+  /* WebKit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(21, 25, 28, 0.35);
+    border-radius: 9999px;
+    /* Borde transparente para que el pulgar quede "flotando" y más fino. */
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(21, 25, 28, 0.55);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 
