@@ -143,8 +143,8 @@ export default function CartDrawer() {
             </h3>
             <p className="mt-2 text-sm text-ink-soft">
               Tu pedido <span className="font-medium text-ink">{success.code}</span>{" "}
-              quedó reservado y el stock fue actualizado. Se abrió WhatsApp para
-              que lo confirmes con nosotros.
+              quedó registrado. Se abrió WhatsApp para que lo confirmes con
+              nosotros y coordinemos el pago y la entrega.
             </p>
             <a
               href={success.whatsappUrl}

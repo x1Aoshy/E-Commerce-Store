@@ -24,11 +24,17 @@ export async function PATCH(req, { params }) {
   }
 
   try {
-    const order = await updateOrder(params.id, body);
-    if (!order) {
+    const result = await updateOrder(params.id, body);
+    if (result === null) {
       return NextResponse.json({ error: "Orden no encontrada" }, { status: 404 });
     }
-    return NextResponse.json({ order });
+    if (result.error) {
+      return NextResponse.json(
+        { error: result.error, conflicts: result.conflicts || [] },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json({ order: result.order });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
