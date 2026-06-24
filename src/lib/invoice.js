@@ -16,13 +16,20 @@ const STATUS_LABEL = {
   cancelada: "Cancelada",
 };
 
+const PAYMENT_LABEL = {
+  efectivo: "Efectivo",
+  transferencia: "Transferencia",
+};
+
 export function buildInvoiceHtml({
   order,
   storeName = "Titan Supplements",
   currency = "C$",
   phone = "",
 }) {
-  const money = (n) => `${currency}${(Number(n) || 0).toLocaleString("es-AR")}`;
+  // Miles con coma (ej. C$2,500), enteros sin decimales.
+  const money = (n) =>
+    `${currency}${Math.round(Number(n) || 0).toLocaleString("en-US")}`;
 
   let fecha = "";
   try {
@@ -48,12 +55,25 @@ export function buildInvoiceHtml({
     )
     .join("");
 
+  const extra = Math.max(0, Number(order.extra) || 0);
+  const grand = (Number(order.total) || 0) + extra;
+  const payment = PAYMENT_LABEL[order.paymentMethod] || null;
+
   const cliente =
     order.customer && order.customer.name
       ? `<div class="row"><span>Cliente</span><span>${esc(
           order.customer.name
         )}</span></div>`
       : "";
+  const extraRow =
+    extra > 0
+      ? `<div class="srow"><span>${esc(
+          order.extraLabel || "Cargo extra"
+        )}</span><span>${money(extra)}</span></div>`
+      : "";
+  const pagoRow = payment
+    ? `<div class="estado">Pago: ${esc(payment)}</div>`
+    : "";
   const nota =
     order.customer && order.customer.note
       ? `<div class="nota">${esc(order.customer.note)}</div>`
@@ -83,7 +103,8 @@ export function buildInvoiceHtml({
   td { padding: 2px 0; vertical-align: top; }
   td.q { width: 28px; }
   td.p { text-align: right; white-space: nowrap; padding-left: 6px; }
-  .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-top: 4px; }
+  .srow { display: flex; justify-content: space-between; font-size: 11px; color: #2b2e30; margin-top: 2px; }
+  .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-top: 6px; }
   .estado { text-align: center; margin-top: 8px; font-size: 11px; color: #2b2e30; }
   .nota { margin-top: 8px; font-size: 11px; background: #f3f4f5; padding: 6px 8px; border-radius: 4px; }
   .tel { text-align: center; margin-top: 6px; font-size: 10px; color: #6b7378; }
@@ -116,7 +137,9 @@ export function buildInvoiceHtml({
     <table>${rows}</table>
     <hr/>
 
-    <div class="total"><span>TOTAL</span><span>${money(order.total)}</span></div>
+    ${extraRow ? `<div class="srow"><span>Subtotal</span><span>${money(order.total)}</span></div>${extraRow}` : ""}
+    <div class="total"><span>TOTAL</span><span>${money(grand)}</span></div>
+    ${pagoRow}
     <div class="estado">Estado: ${esc(STATUS_LABEL[order.status] || order.status || "")}</div>
     ${nota}
     ${tel}
@@ -137,7 +160,6 @@ export function printInvoice(args) {
   win.document.write(html);
   win.document.close();
   win.focus();
-  // Pequeño delay para asegurar el render antes de imprimir.
   setTimeout(() => {
     try {
       win.print();

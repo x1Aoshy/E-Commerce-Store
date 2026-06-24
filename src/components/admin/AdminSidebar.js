@@ -88,10 +88,21 @@ function LogoutIcon() {
   );
 }
 
+function FinanzasIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M4 19V5" />
+      <path d="M4 19h16" />
+      <path d="M8 16v-4M12 16V8M16 16v-6" />
+    </svg>
+  );
+}
+
 const NAV_ITEMS = [
   { key: "resumen", label: "Resumen", Icon: ResumenIcon },
   { key: "inventario", label: "Inventario", Icon: InventarioIcon },
   { key: "ordenes", label: "Órdenes", Icon: OrdenesIcon },
+  { key: "finanzas", label: "Finanzas", Icon: FinanzasIcon },
 ];
 
 // Etiqueta que aparece a la derecha del ícono al hacer hover/focus.

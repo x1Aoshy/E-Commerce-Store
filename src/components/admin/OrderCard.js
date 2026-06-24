@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { printInvoice } from "@/lib/invoice";
+import Modal from "@/components/Modal";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
@@ -10,7 +11,7 @@ const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, 
 
 function formatDate(iso) {
   try {
-    return new Date(iso).toLocaleString("es-AR", {
+    return new Date(iso).toLocaleString("es-NI", {
       day: "2-digit",
       month: "short",
       hour: "2-digit",
@@ -21,11 +22,10 @@ function formatDate(iso) {
   }
 }
 
-// Chip de estado según la orden.
 function StatusChip({ status }) {
   if (status === "confirmada") {
     return (
-      <span className="chip bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
+      <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
         Confirmada
       </span>
     );
@@ -44,27 +44,131 @@ function StatusChip({ status }) {
   );
 }
 
-export default function OrderCard({ order, onUpdated }) {
-  // saving guarda qué acción está en curso para deshabilitar sólo lo justo.
-  const [saving, setSaving] = useState(null); // null | 'toggle' | 'cancel' | 'reactivate'
+function PaymentChip({ method }) {
+  if (method === "efectivo")
+    return (
+      <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
+        Efectivo
+      </span>
+    );
+  if (method === "transferencia")
+    return (
+      <span className="chip bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
+        Transferencia
+      </span>
+    );
+  return null;
+}
+
+function PaymentForm({ order, onSave, saving }) {
+  const [method, setMethod] = useState(order.paymentMethod || "efectivo");
+  const [extra, setExtra] = useState(order.extra ? String(order.extra) : "");
+  const [label, setLabel] = useState(order.extraLabel || "Delivery");
+
+  return (
+    <div>
+      <label className="label">Método de pago</label>
+      <div className="flex gap-2">
+        {[
+          ["efectivo", "Efectivo"],
+          ["transferencia", "Transferencia"],
+        ].map(([m, l]) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMethod(m)}
+            className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
+              method === m
+                ? "border-accent-500 bg-accent-500/10 text-accent-300"
+                : "border-white/15 text-ink-soft hover:border-white/30"
+            }`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <div>
+          <label className="label">Cargo extra</label>
+          <input
+            className="input"
+            inputMode="numeric"
+            value={extra}
+            onChange={(e) => setExtra(e.target.value.replace(/[^\d]/g, ""))}
+            placeholder="0"
+          />
+        </div>
+        <div>
+          <label className="label">Concepto</label>
+          <input
+            className="input"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="Delivery"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={() =>
+          onSave({ paymentMethod: method, extra: Number(extra) || 0, extraLabel: label })
+        }
+        disabled={saving}
+        className="btn-accent mt-5 w-full py-3"
+      >
+        {saving ? "Guardando…" : "Guardar"}
+      </button>
+    </div>
+  );
+}
+
+export default function OrderCard({ order, onUpdated, onDeleted }) {
+  const [saving, setSaving] = useState(null);
   const [err, setErr] = useState(null);
+  const [showPay, setShowPay] = useState(false);
+  const [confirmDel, setConfirmDel] = useState(false);
+
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
+  const extra = Number(order.extra) || 0;
+  const grand = (Number(order.total) || 0) + extra;
 
-  // Cambia el estado de la orden vía PATCH y propaga la orden actualizada.
-  // El backend se encarga de devolver/reservar stock al cancelar/reactivar.
-  async function setStatus(next, action) {
+  async function patch(body, action) {
     setSaving(action);
     setErr(null);
     try {
       const res = await fetch(`/api/orders/${order.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: next }),
+        body: JSON.stringify(body),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) onUpdated(data.order);
-      else setErr(data.error || "No se pudo actualizar el pedido.");
+      if (res.ok) {
+        onUpdated(data.order);
+        return true;
+      }
+      setErr(data.error || "No se pudo actualizar el pedido.");
+      return false;
+    } catch {
+      setErr("Error de conexión.");
+      return false;
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function del() {
+    setSaving("delete");
+    setErr(null);
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, { method: "DELETE" });
+      if (res.ok) {
+        onDeleted?.(order.id);
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      setErr(data.error || "No se pudo eliminar la orden.");
     } catch {
       setErr("Error de conexión.");
     } finally {
@@ -72,22 +176,16 @@ export default function OrderCard({ order, onUpdated }) {
     }
   }
 
-  const toggle = () =>
-    setStatus(confirmed ? "pendiente" : "confirmada", "toggle");
-  const cancel = () => setStatus("cancelada", "cancel");
-  const reactivate = () => setStatus("pendiente", "reactivate");
+  const busy = saving !== null;
 
   return (
-    <div
-      className={`card p-4 shadow-soft transition ${
-        cancelled ? "opacity-60" : ""
-      }`}
-    >
+    <div className={`card p-4 shadow-soft ${cancelled ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-semibold text-ink">{order.code}</span>
             <StatusChip status={order.status} />
+            <PaymentChip method={order.paymentMethod} />
           </div>
           <div className="mt-0.5 text-xs text-ink-muted">
             {formatDate(order.createdAt)}
@@ -100,7 +198,7 @@ export default function OrderCard({ order, onUpdated }) {
               cancelled ? "text-ink-muted line-through" : "text-ink"
             }`}
           >
-            {formatPrice(order.total)}
+            {formatPrice(grand)}
           </div>
           <button
             onClick={() =>
@@ -129,6 +227,12 @@ export default function OrderCard({ order, onUpdated }) {
             <span className="text-ink-muted">{formatPrice(it.subtotal)}</span>
           </li>
         ))}
+        {extra > 0 && (
+          <li className="flex justify-between gap-3 text-ink-muted">
+            <span>{order.extraLabel || "Cargo extra"}</span>
+            <span>{formatPrice(extra)}</span>
+          </li>
+        )}
       </ul>
 
       {order.customer?.note && (
@@ -139,22 +243,52 @@ export default function OrderCard({ order, onUpdated }) {
 
       {err && <p className="mt-3 text-xs text-red-300">{err}</p>}
 
-      {cancelled ? (
-        // Orden cancelada: el stock ya se liberó. Sólo se puede reactivar
-        // (vuelve a pendiente y el backend reserva stock de nuevo).
-        <button
-          onClick={reactivate}
-          disabled={saving !== null}
-          className="mt-3 w-full rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:pointer-events-none disabled:opacity-40"
-        >
-          {saving === "reactivate" ? "…" : "Reactivar pedido"}
-        </button>
-      ) : (
+      {confirmDel ? (
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2">
+          <span className="text-xs text-ink-soft">
+            ¿Eliminar del sistema? Devuelve stock si no estaba cancelada.
+          </span>
+          <span className="flex shrink-0 items-center gap-2">
+            <button
+              onClick={del}
+              disabled={busy}
+              className="rounded-full bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
+            >
+              {saving === "delete" ? "…" : "Sí, eliminar"}
+            </button>
+            <button
+              onClick={() => setConfirmDel(false)}
+              className="px-1 text-[12px] text-ink-muted transition hover:text-ink"
+            >
+              No
+            </button>
+          </span>
+        </div>
+      ) : cancelled ? (
         <div className="mt-3 flex items-stretch gap-2">
           <button
-            onClick={toggle}
-            disabled={saving !== null}
-            className={`flex-1 rounded-full py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
+            onClick={() => patch({ status: "pendiente" }, "reactivate")}
+            disabled={busy}
+            className="flex-1 rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:pointer-events-none disabled:opacity-40"
+          >
+            {saving === "reactivate" ? "…" : "Reactivar pedido"}
+          </button>
+          <button
+            onClick={() => setConfirmDel(true)}
+            disabled={busy}
+            className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
+          >
+            Eliminar
+          </button>
+        </div>
+      ) : (
+        <>
+          <button
+            onClick={() =>
+              patch({ status: confirmed ? "pendiente" : "confirmada" }, "toggle")
+            }
+            disabled={busy}
+            className={`mt-3 w-full rounded-full py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
               confirmed
                 ? "border border-white/15 text-ink-soft hover:border-white/35"
                 : "bg-accent-500 text-night hover:bg-accent-400"
@@ -166,17 +300,44 @@ export default function OrderCard({ order, onUpdated }) {
               ? "Marcar como pendiente"
               : "Marcar como confirmada"}
           </button>
-          <button
-            onClick={cancel}
-            disabled={saving !== null}
-            aria-label="Cancelar pedido y liberar stock"
-            title="Cancela el pedido y libera el stock reservado"
-            className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:pointer-events-none disabled:opacity-40"
-          >
-            {saving === "cancel" ? "…" : "Cancelar"}
-          </button>
-        </div>
+          <div className="mt-2 flex items-stretch gap-2">
+            <button
+              onClick={() => setShowPay(true)}
+              disabled={busy}
+              className="flex-1 rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:opacity-40"
+            >
+              Pago / Extra
+            </button>
+            <button
+              onClick={() => patch({ status: "cancelada" }, "cancel")}
+              disabled={busy}
+              title="Cancela el pedido y libera el stock reservado"
+              className="rounded-full border border-amber-400/30 px-4 py-2 text-[13px] font-medium text-amber-300 transition hover:border-amber-400/50 hover:bg-amber-400/10 disabled:opacity-40"
+            >
+              {saving === "cancel" ? "…" : "Cancelar"}
+            </button>
+            <button
+              onClick={() => setConfirmDel(true)}
+              disabled={busy}
+              aria-label="Eliminar pedido"
+              className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
+            >
+              Eliminar
+            </button>
+          </div>
+        </>
       )}
+
+      <Modal open={showPay} onClose={() => setShowPay(false)} title="Pago y cargo extra" maxW="max-w-sm">
+        <PaymentForm
+          order={order}
+          saving={saving === "pay"}
+          onSave={async (body) => {
+            const ok = await patch(body, "pay");
+            if (ok) setShowPay(false);
+          }}
+        />
+      </Modal>
     </div>
   );
 }

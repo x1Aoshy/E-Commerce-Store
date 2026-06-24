@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function InventoryRow({ product, onUpdated, onDeleted }) {
+export default function InventoryRow({ product, onUpdated, onDeleted, onRestock }) {
   const [price, setPrice] = useState(String(product.price));
   const [stock, setStock] = useState(Number(product.stock));
   const [featured, setFeatured] = useState(Boolean(product.featured));
@@ -135,6 +135,17 @@ export default function InventoryRow({ product, onUpdated, onDeleted }) {
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5">
+            <button
+              onClick={() => onRestock?.(product)}
+              aria-label="Restock"
+              title="Sumar stock"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v8M8 12h8" />
+              </svg>
+            </button>
             <button
               onClick={save}
               disabled={!dirty || saving}

@@ -5,16 +5,15 @@
 // por lo que estas funciones deben importarse únicamente desde Server
 // Components o Route Handlers, nunca desde código cliente.
 //
-// Todas las funciones son asíncronas (devuelven Promesas): acordate de usar
-// `await` en quien las llame.
-//
-// El esquema SQL de las tablas está en storefront/supabase/schema.sql.
+// El esquema SQL de las tablas (y la migración para método de pago / cargo
+// extra) está en supabase/schema.sql.
 
 import { getSupabase } from "./supabase";
 
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description";
-const ORDER_COLUMNS = "id, code, items, total, status, customer, created_at";
+const ORDER_COLUMNS =
+  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label";
 
 function slugify(text) {
   return String(text || "producto")
@@ -25,8 +24,8 @@ function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
-// Normaliza una fila de `orders` (created_at) al shape que usa la app
-// (createdAt), conservando items/customer como objetos.
+// Normaliza una fila de `orders` al shape que usa la app (created_at ->
+// createdAt, payment_method -> paymentMethod, extra_label -> extraLabel).
 function mapOrder(row) {
   if (!row) return null;
   return {
@@ -37,6 +36,9 @@ function mapOrder(row) {
     status: row.status,
     customer: row.customer || { name: "", note: "" },
     createdAt: row.created_at,
+    paymentMethod: row.payment_method || null, // 'efectivo' | 'transferencia' | null
+    extra: Number(row.extra) || 0, // cargo extra (ej. delivery)
+    extraLabel: row.extra_label || "",
   };
 }
 
@@ -122,9 +124,7 @@ export async function updateProduct(id, patch) {
   return data || null;
 }
 
-// Borra un producto por id. Usamos .select() para saber si efectivamente se
-// borró una fila: devuelve true si existía y se eliminó, false si no había
-// ningún producto con ese id. Ante un error de Supabase, lanza Error.
+// Borra un producto por id. Devuelve true si existía y se eliminó, false si no.
 export async function deleteProduct(id) {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -148,27 +148,27 @@ export async function getOrders() {
   return (data || []).map(mapOrder);
 }
 
-// Estados de orden válidos al CREAR (público o manual).
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
+const PAYMENT_METHODS = ["efectivo", "transferencia"];
 
-// Lógica compartida por createOrder (checkout público) y createManualOrder
-// (alta manual desde el admin): valida items, arma los lineItems, chequea y
-// DESCUENTA stock, e inserta la orden. Devuelve { order } (mapeada) en éxito,
-// o { error, conflicts } si el carrito está vacío o falta stock.
-//
-// Parámetros:
-//   items    -> [{ id, quantity }]
-//   customer -> { name, note }
-//   status   -> estado inicial de la orden (default "pendiente")
-//   code     -> código de la orden (default "AOSH-" + 4 dígitos)
-async function buildOrderWithStock({ items, customer, status, code }) {
+// Lógica compartida por createOrder (checkout público) y createManualOrder.
+// Valida items, arma lineItems, chequea y DESCUENTA stock e inserta la orden.
+// Devuelve { order } o { error, conflicts }.
+async function buildOrderWithStock({
+  items,
+  customer,
+  status,
+  code,
+  extra,
+  extraLabel,
+  paymentMethod,
+}) {
   const supabase = getSupabase();
 
   if (!Array.isArray(items) || items.length === 0) {
     return { error: "El carrito está vacío." };
   }
 
-  // Traemos en una sola consulta los productos involucrados.
   const ids = items.map((it) => it.id);
   const { data: rows, error: readErr } = await supabase
     .from("products")
@@ -210,9 +210,6 @@ async function buildOrderWithStock({ items, customer, status, code }) {
     return { error: "Stock insuficiente para algunos productos.", conflicts };
   }
 
-  // Descontamos inventario. El update es condicional (stock >= qty) para no
-  // dejar stock negativo si dos pedidos entran casi a la vez. Para un volumen
-  // alto de concurrencia conviene mover esto a una función RPC transaccional.
   for (const li of lineItems) {
     const product = byId.get(li.id);
     const { error: updErr } = await supabase
@@ -234,6 +231,9 @@ async function buildOrderWithStock({ items, customer, status, code }) {
       name: (customer && customer.name) || "",
       note: (customer && customer.note) || "",
     },
+    extra: Math.max(0, Number(extra) || 0),
+    extra_label: extraLabel || "",
+    payment_method: PAYMENT_METHODS.includes(paymentMethod) ? paymentMethod : null,
   };
 
   const { data: inserted, error: insErr } = await supabase
@@ -246,28 +246,36 @@ async function buildOrderWithStock({ items, customer, status, code }) {
   return { order: mapOrder(inserted) };
 }
 
-// Crea una orden validando y descontando stock. Devuelve { order } en éxito,
-// o { error, conflicts } si no hay stock suficiente.
+// Crea una orden desde el checkout público (estado 'pendiente', sin extra/pago).
 export async function createOrder({ items, customer }) {
   return buildOrderWithStock({ items, customer, status: "pendiente" });
 }
 
 // Registra una orden MANUAL (ventas hechas antes/offline) desde el admin.
-// Reutiliza la misma validación y descuento de stock que createOrder, pero el
-// estado inicial lo define el parámetro `status` (default "confirmada"; sólo se
-// aceptan "confirmada" o "pendiente", cualquier otro valor cae a "confirmada").
-// El código lleva prefijo "AOSH-M" para distinguir las altas manuales.
-// Devuelve { order } (mapeada) o { error, conflicts }.
-export async function createManualOrder({ items, customer, status }) {
+// Acepta estado, método de pago y cargo extra (delivery). Código con prefijo
+// "AOSH-M". Devuelve { order } o { error, conflicts }.
+export async function createManualOrder({
+  items,
+  customer,
+  status,
+  paymentMethod,
+  extra,
+  extraLabel,
+}) {
   const wanted = status === "pendiente" ? "pendiente" : "confirmada";
   const code = "AOSH-M" + Math.floor(1000 + Math.random() * 9000);
-  return buildOrderWithStock({ items, customer, status: wanted, code });
+  return buildOrderWithStock({
+    items,
+    customer,
+    status: wanted,
+    code,
+    extra,
+    extraLabel,
+    paymentMethod,
+  });
 }
 
-// Devuelve al stock las cantidades de cada item de la orden (read-then-write,
-// al estilo de createOrder). Se usa al CANCELAR un pedido para reponer lo que
-// se había descontado en el checkout. Si un producto ya no existe, se ignora
-// sin romper. No lleva guard porque sumar stock nunca lo deja negativo.
+// Repone stock (al cancelar/eliminar una orden no cancelada).
 async function restoreStock(items) {
   const supabase = getSupabase();
   const list = Array.isArray(items) ? items : [];
@@ -280,7 +288,7 @@ async function restoreStock(items) {
       .eq("id", item.id)
       .maybeSingle();
     if (readErr) throw new Error(`No se pudo leer el stock: ${readErr.message}`);
-    if (!product) continue; // El producto ya no existe: lo ignoramos.
+    if (!product) continue;
     const { error: updErr } = await supabase
       .from("products")
       .update({ stock: product.stock + qty })
@@ -289,11 +297,7 @@ async function restoreStock(items) {
   }
 }
 
-// Vuelve a descontar el stock de cada item de la orden. Se usa al REACTIVAR un
-// pedido que estaba cancelado (cancelada -> pendiente/confirmada), para no
-// quedar con stock inflado. El update es condicional (stock >= qty) igual que
-// en createOrder, así nunca dejamos stock negativo. Si un producto ya no existe
-// se ignora.
+// Vuelve a descontar stock (al reactivar una orden cancelada).
 async function consumeStock(items) {
   const supabase = getSupabase();
   const list = Array.isArray(items) ? items : [];
@@ -306,7 +310,7 @@ async function consumeStock(items) {
       .eq("id", item.id)
       .maybeSingle();
     if (readErr) throw new Error(`No se pudo leer el stock: ${readErr.message}`);
-    if (!product) continue; // El producto ya no existe: lo ignoramos.
+    if (!product) continue;
     const { error: updErr } = await supabase
       .from("products")
       .update({ stock: Math.max(0, product.stock - qty) })
@@ -316,19 +320,11 @@ async function consumeStock(items) {
   }
 }
 
-// Cambia el estado de una orden ajustando el stock según la transición:
-//   - hacia 'cancelada' (desde un estado no cancelado): repone el stock UNA vez.
-//   - desde 'cancelada' hacia 'pendiente'/'confirmada' (reactivación): vuelve a
-//     descontar el stock (con guard para no dejar negativo).
-//   - cualquier otra transición (pendiente <-> confirmada, o re-setear el mismo
-//     estado): sólo actualiza el status, sin tocar stock.
-// Es idempotente: leemos el estado actual antes de mover stock, así cancelar
-// una orden ya cancelada (o reactivar una ya activa) no duplica el ajuste.
-// Devuelve la orden mapeada, o null si no existe.
+// Cambia el estado de una orden ajustando stock según la transición
+// (cancelar repone, reactivar vuelve a descontar). Idempotente.
 export async function setOrderStatus(id, status) {
   const supabase = getSupabase();
 
-  // Leemos la orden actual para conocer su estado e items.
   const { data: current, error: readErr } = await supabase
     .from("orders")
     .select(ORDER_COLUMNS)
@@ -340,14 +336,9 @@ export async function setOrderStatus(id, status) {
   const wasCancelled = current.status === "cancelada";
   const willCancel = status === "cancelada";
 
-  // Ajustamos stock ANTES de marcar el nuevo estado. Si el update de status
-  // fallara, el stock podría quedar desincronizado; para garantías fuertes esto
-  // debería ser una RPC transaccional, igual que el descuento en createOrder.
   if (willCancel && !wasCancelled) {
-    // Cancelación: devolvemos al inventario lo que se había descontado.
     await restoreStock(current.items);
   } else if (!willCancel && wasCancelled) {
-    // Reactivación: volvemos a descontar el inventario.
     await consumeStock(current.items);
   }
 
@@ -361,19 +352,63 @@ export async function setOrderStatus(id, status) {
   return mapOrder(data);
 }
 
+// Actualiza una orden: estado (ajusta stock) y/o método de pago / cargo extra.
 export async function updateOrder(id, patch) {
   const supabase = getSupabase();
-  if (patch.status === undefined) {
-    const { data } = await supabase
+
+  // 1) Cambio de estado (ajusta stock cuando corresponde).
+  if (patch.status !== undefined) {
+    const updated = await setOrderStatus(id, patch.status);
+    if (!updated) return null;
+  }
+
+  // 2) Método de pago / cargo extra (tracking de finanzas).
+  const fields = {};
+  if (patch.paymentMethod !== undefined) {
+    fields.payment_method = PAYMENT_METHODS.includes(patch.paymentMethod)
+      ? patch.paymentMethod
+      : null;
+  }
+  if (patch.extra !== undefined) fields.extra = Math.max(0, Number(patch.extra) || 0);
+  if (patch.extraLabel !== undefined) fields.extra_label = patch.extraLabel || "";
+
+  if (Object.keys(fields).length > 0) {
+    const { data, error } = await supabase
       .from("orders")
-      .select(ORDER_COLUMNS)
+      .update(fields)
       .eq("id", id)
+      .select(ORDER_COLUMNS)
       .maybeSingle();
+    if (error) throw new Error(`No se pudo actualizar la orden: ${error.message}`);
     return mapOrder(data);
   }
 
-  // Delegamos en setOrderStatus para que el cambio de estado ajuste el stock
-  // cuando corresponde (cancelar/reactivar). Para 'pendiente' <-> 'confirmada'
-  // el stock no se toca.
-  return setOrderStatus(id, patch.status);
+  // Sin cambios extra: devolvemos la orden actual.
+  const { data } = await supabase
+    .from("orders")
+    .select(ORDER_COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+  return mapOrder(data);
+}
+
+// Elimina una orden del sistema. Si NO estaba cancelada, primero repone el
+// stock (la venta no se concretó / se da de baja). Devuelve true/false.
+export async function deleteOrder(id) {
+  const supabase = getSupabase();
+  const { data: current, error: readErr } = await supabase
+    .from("orders")
+    .select("id, status, items")
+    .eq("id", id)
+    .maybeSingle();
+  if (readErr) throw new Error(`No se pudo leer la orden: ${readErr.message}`);
+  if (!current) return false;
+
+  if (current.status !== "cancelada") {
+    await restoreStock(current.items);
+  }
+
+  const { error: delErr } = await supabase.from("orders").delete().eq("id", id);
+  if (delErr) throw new Error(`No se pudo eliminar la orden: ${delErr.message}`);
+  return true;
 }

@@ -55,9 +55,8 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
   }
 
   return (
-    <form onSubmit={submit} className="card p-5 shadow-soft">
-      <h3 className="text-sm font-semibold text-ink">Nuevo producto</h3>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+    <form onSubmit={submit}>
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label">Nombre *</label>
           <input

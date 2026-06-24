@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import Logo from "@/components/Logo";
+import Modal from "@/components/Modal";
 import AdminSidebar from "./AdminSidebar";
 import DashboardCharts from "./DashboardCharts";
 import InventoryRow from "./InventoryRow";
@@ -14,6 +15,7 @@ const VIEW_TITLES = {
   resumen: "Resumen",
   inventario: "Inventario",
   ordenes: "Órdenes",
+  finanzas: "Finanzas",
 };
 
 function Stat({ label, value }) {
@@ -33,7 +35,6 @@ export default function AdminDashboard({ onLogout }) {
   const [activeView, setActiveView] = useState("resumen");
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
-  const [showNew, setShowNew] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,7 +95,7 @@ export default function AdminDashboard({ onLogout }) {
 
       {/* Offset por el sidebar: a la izquierda en desktop, abajo en mobile. */}
       <div className="pb-20 md:pb-0 md:pl-16">
-        <header className="border-b border-white/10 bg-surface/40">
+        <header className="border-b border-white/10 bg-surface">
           <div className="container-content flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <Logo />
@@ -126,10 +127,10 @@ export default function AdminDashboard({ onLogout }) {
             <InventarioView
               products={products}
               categories={categories}
-              showNew={showNew}
-              setShowNew={setShowNew}
               setProducts={setProducts}
             />
+          ) : activeView === "finanzas" ? (
+            <FinanceView orders={orders} />
           ) : (
             <OrdenesView orders={orders} setOrders={setOrders} products={products} />
           )}
@@ -157,13 +158,70 @@ function ResumenView({ stats, products, orders }) {
   );
 }
 
-function InventarioView({
-  products,
-  categories,
-  showNew,
-  setShowNew,
-  setProducts,
-}) {
+// Formulario de restock (dentro de un modal): suma unidades al stock actual.
+function RestockForm({ product, onDone }) {
+  const [units, setUnits] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const add = Number(units) || 0;
+  const next = Number(product.stock) + add;
+
+  async function submit(e) {
+    e.preventDefault();
+    if (add <= 0) {
+      setError("Ingresá una cantidad mayor a 0.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stock: next }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) onDone(data.product);
+      else setError(data.error || "No se pudo actualizar el stock.");
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit}>
+      <p className="text-sm text-ink-soft">
+        Stock actual:{" "}
+        <span className="font-semibold text-ink">{product.stock}</span>
+      </p>
+      <label className="label mt-4">Unidades a agregar</label>
+      <input
+        className="input"
+        inputMode="numeric"
+        autoFocus
+        value={units}
+        onChange={(e) => setUnits(e.target.value.replace(/[^\d]/g, ""))}
+        placeholder="Ej: 20"
+      />
+      {add > 0 && (
+        <p className="mt-2 text-xs text-ink-muted">
+          Nuevo stock: <span className="text-accent-300">{next}</span>
+        </p>
+      )}
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      <button type="submit" disabled={saving} className="btn-accent mt-5 w-full py-3">
+        {saving ? "Guardando…" : "Agregar al stock"}
+      </button>
+    </form>
+  );
+}
+
+function InventarioView({ products, categories, setProducts }) {
+  const [addOpen, setAddOpen] = useState(false);
+  const [restock, setRestock] = useState(null); // producto a reabastecer
+
   return (
     <section className="animate-fade-in">
       <div className="mb-4 flex items-center justify-between">
@@ -171,25 +229,12 @@ function InventarioView({
           Inventario ({products.length})
         </h2>
         <button
-          onClick={() => setShowNew((v) => !v)}
+          onClick={() => setAddOpen(true)}
           className="btn-primary px-4 py-2 text-[13px]"
         >
-          {showNew ? "Cerrar" : "+ Agregar producto"}
+          + Agregar producto
         </button>
       </div>
-
-      {showNew && (
-        <div className="mb-5">
-          <NewProductForm
-            categories={categories}
-            onCreated={(created) => {
-              setProducts((prev) => [created, ...prev]);
-              setShowNew(false);
-            }}
-            onCancel={() => setShowNew(false)}
-          />
-        </div>
-      )}
 
       {products.length === 0 ? (
         <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
@@ -222,18 +267,49 @@ function InventarioView({
                   onDeleted={(id) =>
                     setProducts((prev) => prev.filter((x) => x.id !== id))
                   }
+                  onRestock={(prod) => setRestock(prod)}
                 />
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Nuevo producto">
+        <NewProductForm
+          categories={categories}
+          onCreated={(created) => {
+            setProducts((prev) => [created, ...prev]);
+            setAddOpen(false);
+          }}
+          onCancel={() => setAddOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={!!restock}
+        onClose={() => setRestock(null)}
+        title={restock ? `Restock · ${restock.name}` : "Restock"}
+        maxW="max-w-sm"
+      >
+        {restock && (
+          <RestockForm
+            product={restock}
+            onDone={(updated) => {
+              setProducts((prev) =>
+                prev.map((x) => (x.id === updated.id ? updated : x))
+              );
+              setRestock(null);
+            }}
+          />
+        )}
+      </Modal>
     </section>
   );
 }
 
 function OrdenesView({ orders, setOrders, products }) {
-  const [showManual, setShowManual] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
 
   return (
     <section className="animate-fade-in">
@@ -242,30 +318,17 @@ function OrdenesView({ orders, setOrders, products }) {
           Órdenes ({orders.length})
         </h2>
         <button
-          onClick={() => setShowManual((v) => !v)}
+          onClick={() => setManualOpen(true)}
           className="btn-primary px-4 py-2 text-[13px]"
         >
-          {showManual ? "Cerrar" : "+ Cargar pedido"}
+          + Pedido manual
         </button>
       </div>
 
-      {showManual && (
-        <div className="mb-5">
-          <ManualOrderForm
-            products={products}
-            onCreated={(order) => {
-              if (order) setOrders((prev) => [order, ...prev]);
-              setShowManual(false);
-            }}
-            onCancel={() => setShowManual(false)}
-          />
-        </div>
-      )}
-
       {orders.length === 0 ? (
         <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
-          Todavía no hay órdenes. Las que se generen desde la tienda aparecerán
-          acá, o podés cargar una manual con “+ Cargar pedido”.
+          Todavía no hay órdenes. Las de la tienda aparecen acá, o cargá una con
+          “+ Pedido manual”.
         </div>
       ) : (
         <div className="grid gap-3 lg:grid-cols-2">
@@ -278,10 +341,138 @@ function OrdenesView({ orders, setOrders, products }) {
                   prev.map((x) => (x.id === updated.id ? updated : x))
                 )
               }
+              onDeleted={(id) =>
+                setOrders((prev) => prev.filter((x) => x.id !== id))
+              }
             />
           ))}
         </div>
       )}
+
+      <Modal
+        open={manualOpen}
+        onClose={() => setManualOpen(false)}
+        title="Cargar pedido manual"
+      >
+        <ManualOrderForm
+          products={products}
+          onCreated={(order) => {
+            setOrders((prev) => [order, ...prev]);
+            setManualOpen(false);
+          }}
+          onCancel={() => setManualOpen(false)}
+        />
+      </Modal>
     </section>
+  );
+}
+
+// Tab de Finanzas: cuánto dinero se hizo, cuánto se vendió y por qué método.
+function FinanceView({ orders }) {
+  const f = useMemo(() => {
+    let confirmedTotal = 0;
+    let pendingTotal = 0;
+    let efectivo = 0;
+    let transferencia = 0;
+    let unidades = 0;
+    let confirmadas = 0;
+    for (const o of orders) {
+      const g = (Number(o.total) || 0) + (Number(o.extra) || 0);
+      if (o.status === "confirmada") {
+        confirmedTotal += g;
+        confirmadas += 1;
+        unidades += (o.items || []).reduce(
+          (s, it) => s + (Number(it.quantity) || 0),
+          0
+        );
+        if (o.paymentMethod === "efectivo") efectivo += g;
+        else if (o.paymentMethod === "transferencia") transferencia += g;
+      } else if (o.status === "pendiente") {
+        pendingTotal += g;
+      }
+    }
+    const sinAsignar = Math.max(0, confirmedTotal - efectivo - transferencia);
+    return {
+      confirmedTotal,
+      pendingTotal,
+      efectivo,
+      transferencia,
+      sinAsignar,
+      unidades,
+      confirmadas,
+    };
+  }, [orders]);
+
+  const methodRows = [
+    { label: "Efectivo", value: f.efectivo, tone: "bg-green-500" },
+    { label: "Transferencia", value: f.transferencia, tone: "bg-accent-500" },
+    { label: "Sin asignar", value: f.sinAsignar, tone: "bg-white/25" },
+  ];
+  const maxMethod = Math.max(1, ...methodRows.map((r) => r.value));
+
+  return (
+    <div className="animate-fade-in">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label="Ingresos confirmados" value={formatPrice(f.confirmedTotal)} />
+        <Stat label="Pendiente por cobrar" value={formatPrice(f.pendingTotal)} />
+        <Stat label="Unidades vendidas" value={f.unidades} />
+        <Stat label="Pedidos confirmados" value={f.confirmadas} />
+      </div>
+
+      <div className="mt-6 grid gap-3 lg:grid-cols-2">
+        <div className="card p-5 shadow-soft">
+          <h3 className="text-sm font-semibold text-ink">
+            Ingresos por método de pago
+          </h3>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            Sólo pedidos confirmados.
+          </p>
+          <div className="mt-4 space-y-3">
+            {methodRows.map((r) => (
+              <div key={r.label}>
+                <div className="mb-1 flex items-baseline justify-between text-sm">
+                  <span className="text-ink-soft">{r.label}</span>
+                  <span className="font-medium text-ink">
+                    {formatPrice(r.value)}
+                  </span>
+                </div>
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/[0.07]">
+                  <div
+                    className={`h-full rounded-full ${r.tone} transition-all duration-500`}
+                    style={{ width: `${Math.round((r.value / maxMethod) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card p-5 shadow-soft">
+          <h3 className="text-sm font-semibold text-ink">Resumen</h3>
+          <ul className="mt-4 divide-y divide-white/[0.07] text-sm">
+            <li className="flex items-center justify-between py-2.5">
+              <span className="text-ink-soft">Ingresos confirmados</span>
+              <span className="font-semibold text-green-300">
+                {formatPrice(f.confirmedTotal)}
+              </span>
+            </li>
+            <li className="flex items-center justify-between py-2.5">
+              <span className="text-ink-soft">Pendiente por cobrar</span>
+              <span className="font-semibold text-amber-300">
+                {formatPrice(f.pendingTotal)}
+              </span>
+            </li>
+            <li className="flex items-center justify-between py-2.5">
+              <span className="text-ink-soft">Unidades vendidas</span>
+              <span className="font-semibold text-ink">{f.unidades}</span>
+            </li>
+          </ul>
+          <p className="mt-3 text-xs text-ink-muted">
+            Asigná el método de pago de cada pedido (botón “Pago / Extra” en
+            Órdenes) para ver el desglose completo.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

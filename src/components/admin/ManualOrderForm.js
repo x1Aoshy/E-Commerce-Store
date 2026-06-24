@@ -3,13 +3,17 @@
 import { useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
 
-// Formulario para registrar un pedido MANUAL: ventas hechas antes o por fuera
-// de la tienda. Descuenta stock igual que un pedido normal (vía el backend).
+// Formulario (para usar dentro de un Modal) para registrar un pedido MANUAL:
+// ventas hechas antes o por fuera de la tienda. Descuenta stock como una venta
+// normal y permite fijar método de pago y un cargo extra (ej. delivery).
 export default function ManualOrderForm({ products = [], onCreated, onCancel }) {
-  const [qtys, setQtys] = useState({}); // id -> cantidad
+  const [qtys, setQtys] = useState({});
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [status, setStatus] = useState("confirmada");
+  const [paymentMethod, setPaymentMethod] = useState("efectivo");
+  const [extra, setExtra] = useState("");
+  const [extraLabel, setExtraLabel] = useState("Delivery");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [conflicts, setConflicts] = useState([]);
@@ -23,7 +27,8 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
         .map((p) => ({ ...p, quantity: qtys[p.id] })),
     [products, qtys]
   );
-  const total = items.reduce((s, it) => s + it.price * it.quantity, 0);
+  const subtotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
+  const total = subtotal + (Number(extra) || 0);
 
   async function submit(e) {
     e.preventDefault();
@@ -41,6 +46,9 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
         body: JSON.stringify({
           manual: true,
           status,
+          paymentMethod,
+          extra: Number(extra) || 0,
+          extraLabel,
           items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
           customer: { name, note },
         }),
@@ -60,9 +68,8 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
   }
 
   return (
-    <form onSubmit={submit} className="card p-5 shadow-soft">
-      <h3 className="text-sm font-semibold text-ink">Cargar pedido manual</h3>
-      <p className="mt-1 text-xs text-ink-muted">
+    <form onSubmit={submit}>
+      <p className="text-xs text-ink-muted">
         Registrá una venta hecha antes o por fuera de la tienda. Descuenta stock.
       </p>
 
@@ -71,7 +78,7 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
           No hay productos cargados todavía.
         </p>
       ) : (
-        <div className="no-scrollbar mt-4 max-h-64 space-y-1.5 overflow-y-auto">
+        <div className="no-scrollbar mt-3 max-h-56 space-y-1.5 overflow-y-auto">
           {products.map((p) => {
             const q = qtys[p.id] || 0;
             return (
@@ -123,6 +130,17 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
           />
         </div>
         <div>
+          <label className="label">Método de pago</label>
+          <select
+            className="input"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          >
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+          </select>
+        </div>
+        <div>
           <label className="label">Estado</label>
           <select
             className="input"
@@ -132,6 +150,27 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
             <option value="confirmada">Confirmada</option>
             <option value="pendiente">Pendiente</option>
           </select>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="label">Cargo extra</label>
+            <input
+              className="input"
+              inputMode="numeric"
+              value={extra}
+              onChange={(e) => setExtra(e.target.value.replace(/[^\d]/g, ""))}
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className="label">Concepto</label>
+            <input
+              className="input"
+              value={extraLabel}
+              onChange={(e) => setExtraLabel(e.target.value)}
+              placeholder="Delivery"
+            />
+          </div>
         </div>
         <div className="sm:col-span-2">
           <label className="label">Nota (opcional)</label>
