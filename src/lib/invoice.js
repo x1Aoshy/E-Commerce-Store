@@ -65,15 +65,21 @@ export function buildInvoiceHtml({
           order.customer.name
         )}</span></div>`
       : "";
-  const extraRow =
+  // Desglose de montos: si hay cargo extra mostramos Subtotal + concepto;
+  // si no, sólo el TOTAL (= order.total).
+  const desglose =
     extra > 0
-      ? `<div class="srow"><span>${esc(
+      ? `<div class="srow"><span>Subtotal</span><span>${money(
+          order.total
+        )}</span></div>
+        <div class="srow"><span>${esc(
           order.extraLabel || "Cargo extra"
         )}</span><span>${money(extra)}</span></div>`
       : "";
-  const pagoRow = payment
-    ? `<div class="estado">Pago: ${esc(payment)}</div>`
-    : "";
+  // Pago siempre visible y prolijo; si no hay método, mostramos "—".
+  const pagoRow = `<div class="pago"><span>Pago</span><span>${esc(
+    payment || "—"
+  )}</span></div>`;
   const nota =
     order.customer && order.customer.note
       ? `<div class="nota">${esc(order.customer.note)}</div>`
@@ -105,6 +111,8 @@ export function buildInvoiceHtml({
   td.p { text-align: right; white-space: nowrap; padding-left: 6px; }
   .srow { display: flex; justify-content: space-between; font-size: 11px; color: #2b2e30; margin-top: 2px; }
   .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-top: 6px; }
+  .pago { display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; margin-top: 2px; }
+  .pago span:last-child { text-transform: uppercase; letter-spacing: 1px; }
   .estado { text-align: center; margin-top: 8px; font-size: 11px; color: #2b2e30; }
   .nota { margin-top: 8px; font-size: 11px; background: #f3f4f5; padding: 6px 8px; border-radius: 4px; }
   .tel { text-align: center; margin-top: 6px; font-size: 10px; color: #6b7378; }
@@ -137,8 +145,9 @@ export function buildInvoiceHtml({
     <table>${rows}</table>
     <hr/>
 
-    ${extraRow ? `<div class="srow"><span>Subtotal</span><span>${money(order.total)}</span></div>${extraRow}` : ""}
+    ${desglose}
     <div class="total"><span>TOTAL</span><span>${money(grand)}</span></div>
+    <hr/>
     ${pagoRow}
     <div class="estado">Estado: ${esc(STATUS_LABEL[order.status] || order.status || "")}</div>
     ${nota}

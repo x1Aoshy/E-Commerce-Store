@@ -26,7 +26,7 @@ function StatusChip({ status }) {
   if (status === "confirmada") {
     return (
       <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
-        Confirmada
+        Completada
       </span>
     );
   }
@@ -179,7 +179,7 @@ export default function OrderCard({ order, onUpdated, onDeleted }) {
   const busy = saving !== null;
 
   return (
-    <div className={`card p-4 shadow-soft ${cancelled ? "opacity-60" : ""}`}>
+    <div className={`card p-4 shadow-soft ${cancelled ? "opacity-70" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -195,7 +195,7 @@ export default function OrderCard({ order, onUpdated, onDeleted }) {
         <div className="flex flex-col items-end gap-1.5">
           <div
             className={`text-base font-semibold ${
-              cancelled ? "text-ink-muted line-through" : "text-ink"
+              cancelled ? "text-ink-muted" : "text-ink"
             }`}
           >
             {formatPrice(grand)}
@@ -298,7 +298,7 @@ export default function OrderCard({ order, onUpdated, onDeleted }) {
               ? "…"
               : confirmed
               ? "Marcar como pendiente"
-              : "Marcar como confirmada"}
+              : "Marcar como completada"}
           </button>
           <div className="mt-2 flex items-stretch gap-2">
             <button

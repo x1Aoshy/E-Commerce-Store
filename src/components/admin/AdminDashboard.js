@@ -221,6 +221,16 @@ function RestockForm({ product, onDone }) {
 function InventarioView({ products, categories, setProducts }) {
   const [addOpen, setAddOpen] = useState(false);
   const [restock, setRestock] = useState(null); // producto a reabastecer
+  const [query, setQuery] = useState("");
+
+  // Filtra la tabla por nombre y categoría mientras se escribe.
+  const filtered = useMemo(() => {
+    const q = normalize(query.trim());
+    if (!q) return products;
+    return products.filter(
+      (p) => normalize(p.name).includes(q) || normalize(p.category).includes(q)
+    );
+  }, [products, query]);
 
   return (
     <section className="animate-fade-in">
@@ -242,37 +252,71 @@ function InventarioView({ products, categories, setProducts }) {
           primero.
         </div>
       ) : (
-        <div className="card overflow-x-auto shadow-soft">
-          <table className="w-full min-w-[700px] text-sm">
-            <thead>
-              <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
-                <th className="px-4 py-3 font-medium">Producto</th>
-                <th className="px-4 py-3 font-medium">Categoría</th>
-                <th className="px-4 py-3 font-medium">Precio</th>
-                <th className="px-4 py-3 font-medium">Stock</th>
-                <th className="px-4 py-3 font-medium">Destacado</th>
-                <th className="px-4 py-3 text-right font-medium">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => (
-                <InventoryRow
-                  key={p.id}
-                  product={p}
-                  onUpdated={(updated) =>
-                    setProducts((prev) =>
-                      prev.map((x) => (x.id === updated.id ? updated : x))
-                    )
-                  }
-                  onDeleted={(id) =>
-                    setProducts((prev) => prev.filter((x) => x.id !== id))
-                  }
-                  onRestock={(prod) => setRestock(prod)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="mb-4 relative max-w-xs">
+            <svg
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.2-3.2" />
+            </svg>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar por nombre o categoría…"
+              aria-label="Buscar productos"
+              className="input pl-10"
+            />
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+              No hay productos que coincidan con la búsqueda.
+            </div>
+          ) : (
+            <div className="card overflow-x-auto shadow-soft">
+              <table className="w-full min-w-[700px] text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
+                    <th className="px-4 py-3 font-medium">Producto</th>
+                    <th className="px-4 py-3 font-medium">Categoría</th>
+                    <th className="px-4 py-3 font-medium">Precio</th>
+                    <th className="px-4 py-3 font-medium">Stock</th>
+                    <th className="px-4 py-3 font-medium">Destacado</th>
+                    <th className="px-4 py-3 text-right font-medium">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((p) => (
+                    <InventoryRow
+                      key={p.id}
+                      product={p}
+                      onUpdated={(updated) =>
+                        setProducts((prev) =>
+                          prev.map((x) => (x.id === updated.id ? updated : x))
+                        )
+                      }
+                      onDeleted={(id) =>
+                        setProducts((prev) => prev.filter((x) => x.id !== id))
+                      }
+                      onRestock={(prod) => setRestock(prod)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Nuevo producto">
@@ -308,8 +352,53 @@ function InventarioView({ products, categories, setProducts }) {
   );
 }
 
+// Normaliza para buscar sin distinguir mayúsculas ni acentos.
+function normalize(str) {
+  return (str || "")
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function OrdenesView({ orders, setOrders, products }) {
   const [manualOpen, setManualOpen] = useState(false);
+  const [tab, setTab] = useState("todas"); // todas | pendiente | confirmada | cancelada
+  const [query, setQuery] = useState("");
+
+  // Conteos por estado para mostrar en cada tab.
+  const counts = useMemo(() => {
+    const c = { todas: orders.length, pendiente: 0, confirmada: 0, cancelada: 0 };
+    for (const o of orders) {
+      if (o.status === "pendiente") c.pendiente += 1;
+      else if (o.status === "confirmada") c.confirmada += 1;
+      else if (o.status === "cancelada") c.cancelada += 1;
+    }
+    return c;
+  }, [orders]);
+
+  // "Completadas" es la etiqueta para el estado 'confirmada' (no cambia el dato).
+  const tabs = [
+    { id: "todas", label: "Todas" },
+    { id: "pendiente", label: "Pendientes" },
+    { id: "confirmada", label: "Completadas" },
+    { id: "cancelada", label: "Canceladas" },
+  ];
+
+  // Filtra por tab (estado) + buscador (código, cliente y nombre de producto).
+  const filtered = useMemo(() => {
+    const q = normalize(query.trim());
+    return orders.filter((o) => {
+      if (tab !== "todas" && o.status !== tab) return false;
+      if (!q) return true;
+      const haystack = [
+        o.code,
+        o.customer?.name,
+        ...(o.items || []).map((it) => it.name),
+      ];
+      return haystack.some((campo) => normalize(campo).includes(q));
+    });
+  }, [orders, tab, query]);
 
   return (
     <section className="animate-fade-in">
@@ -331,22 +420,75 @@ function OrdenesView({ orders, setOrders, products }) {
           “+ Pedido manual”.
         </div>
       ) : (
-        <div className="grid gap-3 lg:grid-cols-2">
-          {orders.map((o) => (
-            <OrderCard
-              key={o.id}
-              order={o}
-              onUpdated={(updated) =>
-                setOrders((prev) =>
-                  prev.map((x) => (x.id === updated.id ? updated : x))
-                )
-              }
-              onDeleted={(id) =>
-                setOrders((prev) => prev.filter((x) => x.id !== id))
-              }
-            />
-          ))}
-        </div>
+        <>
+          {/* Tabs por estado con conteo + buscador. Funciona como historial. */}
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+              {tabs.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
+                    tab === t.id
+                      ? "bg-accent-500 text-night"
+                      : "bg-white/5 text-ink-soft ring-1 ring-white/10 hover:ring-white/30"
+                  }`}
+                >
+                  {t.label} ({counts[t.id]})
+                </button>
+              ))}
+            </div>
+
+            <div className="relative w-full sm:max-w-xs">
+              <svg
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.2-3.2" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar por código, cliente o producto…"
+                aria-label="Buscar órdenes"
+                className="input pl-10"
+              />
+            </div>
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+              No hay órdenes que coincidan con el filtro o la búsqueda.
+            </div>
+          ) : (
+            <div className="grid items-start gap-3 lg:grid-cols-2">
+              {filtered.map((o) => (
+                <OrderCard
+                  key={o.id}
+                  order={o}
+                  onUpdated={(updated) =>
+                    setOrders((prev) =>
+                      prev.map((x) => (x.id === updated.id ? updated : x))
+                    )
+                  }
+                  onDeleted={(id) =>
+                    setOrders((prev) => prev.filter((x) => x.id !== id))
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       <Modal

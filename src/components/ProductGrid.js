@@ -10,6 +10,7 @@ export default function ProductGrid({ products }) {
     [products]
   );
   const [active, setActive] = useState("Todos");
+  const [query, setQuery] = useState("");
 
   // Sincroniza el filtro con la barra de categorías del header: escucha el
   // evento "titan:category" y, al cargar, lee ?categoria= de la URL.
@@ -25,8 +26,17 @@ export default function ProductGrid({ products }) {
     return () => window.removeEventListener("titan:category", onCat);
   }, [products]);
 
-  const filtered =
-    active === "Todos" ? products : products.filter((p) => p.category === active);
+  // Filtra por categoría activa Y por el texto buscado (nombre, descripción
+  // corta y categoría). El texto se normaliza a minúsculas para comparar.
+  const q = query.trim().toLowerCase();
+  const filtered = products.filter((p) => {
+    const matchCat = active === "Todos" || p.category === active;
+    if (!matchCat) return false;
+    if (!q) return true;
+    return [p.name, p.short, p.category]
+      .filter(Boolean)
+      .some((campo) => campo.toLowerCase().includes(q));
+  });
 
   return (
     <section id="productos" className="container-content py-16 sm:py-20">
@@ -57,6 +67,36 @@ export default function ProductGrid({ products }) {
         </div>
       </Reveal>
 
+      {/* Buscador: filtra por nombre, descripción corta y categoría, combinado
+          con la categoría activa. */}
+      <Reveal className="mt-6">
+        <div className="relative max-w-md">
+          <svg
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.2-3.2" />
+          </svg>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar productos…"
+            aria-label="Buscar productos"
+            className="input pl-10"
+          />
+        </div>
+      </Reveal>
+
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p, i) => (
           <Reveal key={p.id} delay={Math.min(i * 60, 360)}>
@@ -67,7 +107,7 @@ export default function ProductGrid({ products }) {
 
       {filtered.length === 0 && (
         <p className="mt-12 text-center text-ink-muted">
-          No hay productos en esta categoría.
+          No hay productos que coincidan con tu búsqueda.
         </p>
       )}
     </section>

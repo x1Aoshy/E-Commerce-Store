@@ -38,12 +38,8 @@ export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="container-content relative flex min-h-[80vh] flex-col justify-center pb-14 pt-10 sm:pt-16">
-        <span className="chip w-fit animate-fade-in bg-accent-500/10 text-accent-300 ring-1 ring-accent-500/30" style={{ animationFillMode: "both" }}>
-          Titan Supplements · Calidad premium
-        </span>
-
         <h1
-          className="mt-6 max-w-4xl animate-fade-in text-4xl font-extrabold leading-[1.04] text-ink sm:text-6xl md:text-7xl"
+          className="max-w-4xl animate-fade-in text-4xl font-extrabold leading-[1.04] text-ink sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}
         >
           Tu mejor versión
