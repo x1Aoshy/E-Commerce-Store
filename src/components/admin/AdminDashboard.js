@@ -70,7 +70,7 @@ export default function AdminDashboard({ onLogout }) {
   );
 
   return (
-    <div className="min-h-screen bg-accent-50/20">
+    <div className="min-h-screen">
       <AdminSidebar
         active={activeView}
         onChange={setActiveView}
@@ -80,14 +80,14 @@ export default function AdminDashboard({ onLogout }) {
 
       {/* Offset por el sidebar: a la izquierda en desktop, abajo en mobile. */}
       <div className="pb-20 md:pb-0 md:pl-16">
-        <header className="border-b border-ink/[0.07] bg-white">
+        <header className="border-b border-white/10 bg-surface/40">
           <div className="container-content flex h-16 items-center justify-between">
             <div className="flex items-center gap-2.5">
               <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-                <rect width="32" height="32" rx="8" fill="#15191c" />
+                <rect width="32" height="32" rx="8" fill="#1b2125" />
                 <path
                   d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-                  fill="#2f9d77"
+                  fill="#2bd673"
                 />
               </svg>
               <div>
@@ -177,7 +177,7 @@ function InventarioView({
       <div className="card overflow-x-auto shadow-soft">
         <table className="w-full min-w-[680px] text-sm">
           <thead>
-            <tr className="border-b border-ink/[0.07] text-left text-xs uppercase tracking-wide text-ink-muted">
+            <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
               <th className="px-4 py-3 font-medium">Producto</th>
               <th className="px-4 py-3 font-medium">Categoría</th>
               <th className="px-4 py-3 font-medium">Precio</th>

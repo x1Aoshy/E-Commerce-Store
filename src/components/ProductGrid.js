@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
-import ProductModal from "./ProductModal";
 import Reveal from "./Reveal";
 
 export default function ProductGrid({ products }) {
@@ -11,7 +10,6 @@ export default function ProductGrid({ products }) {
     [products]
   );
   const [active, setActive] = useState("Todos");
-  const [selected, setSelected] = useState(null);
 
   const filtered =
     active === "Todos" ? products : products.filter((p) => p.category === active);
@@ -35,8 +33,8 @@ export default function ProductGrid({ products }) {
               onClick={() => setActive(c)}
               className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
                 active === c
-                  ? "bg-ink text-white"
-                  : "bg-white text-ink-soft ring-1 ring-ink/10 hover:ring-ink/30"
+                  ? "bg-accent-500 text-night"
+                  : "bg-white/5 text-ink-soft ring-1 ring-white/10 hover:ring-white/30"
               }`}
             >
               {c}
@@ -48,7 +46,7 @@ export default function ProductGrid({ products }) {
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p, i) => (
           <Reveal key={p.id} delay={Math.min(i * 60, 360)}>
-            <ProductCard product={p} onView={setSelected} />
+            <ProductCard product={p} />
           </Reveal>
         ))}
       </div>
@@ -57,10 +55,6 @@ export default function ProductGrid({ products }) {
         <p className="mt-12 text-center text-ink-muted">
           No hay productos en esta categoría.
         </p>
-      )}
-
-      {selected && (
-        <ProductModal product={selected} onClose={() => setSelected(null)} />
       )}
     </section>
   );

@@ -96,11 +96,11 @@ const NAV_ITEMS = [
 // Usa group-hover/group-focus-within para el fade + slide suave.
 function HoverLabel({ children, tone = "ink" }) {
   const base =
-    "pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12px] font-medium opacity-0 shadow-soft transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100 md:block";
+    "pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12px] font-medium opacity-0 shadow-soft ring-1 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100 md:block";
   const tones = {
-    ink: "bg-ink text-white",
-    accent: "bg-accent-600 text-white",
-    danger: "bg-red-600 text-white",
+    ink: "bg-surface-soft text-ink ring-white/10",
+    accent: "bg-accent-500 text-night ring-transparent",
+    danger: "bg-red-500 text-white ring-transparent",
   };
   return <span className={`${base} ${tones[tone] || tones.ink}`}>{children}</span>;
 }
@@ -109,15 +109,15 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
   return (
     <nav
       aria-label="Navegación del panel"
-      className="fixed inset-x-0 bottom-0 z-40 flex h-16 flex-row items-center justify-around border-t border-ink/[0.08] bg-white px-2 md:inset-y-0 md:left-0 md:right-auto md:h-screen md:w-16 md:flex-col md:justify-start md:gap-1.5 md:border-r md:border-t-0 md:py-4"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-16 flex-row items-center justify-around border-t border-white/10 bg-surface px-2 md:inset-y-0 md:left-0 md:right-auto md:h-screen md:w-16 md:flex-col md:justify-start md:gap-1.5 md:border-r md:border-t-0 md:py-4"
     >
       {/* Logo de la tienda (sólo en desktop, arriba del rail). */}
       <div className="hidden md:mb-3 md:flex md:h-10 md:w-10 md:items-center md:justify-center">
         <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="8" fill="#15191c" />
+          <rect width="32" height="32" rx="8" fill="#1b2125" />
           <path
             d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-            fill="#2f9d77"
+            fill="#2bd673"
           />
         </svg>
       </div>
@@ -133,13 +133,13 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
               aria-current={isActive ? "page" : undefined}
               className={`relative flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-200 ${
                 isActive
-                  ? "bg-ink text-white"
-                  : "text-ink-soft hover:bg-accent-50 hover:text-accent-700"
+                  ? "bg-accent-500 text-night"
+                  : "text-ink-soft hover:bg-white/5 hover:text-accent-300"
               }`}
             >
               <Icon />
               {key === "ordenes" && pending > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-500 px-1 text-[10px] font-semibold text-white ring-2 ring-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-500 px-1 text-[10px] font-semibold text-night ring-2 ring-surface">
                   {pending}
                 </span>
               )}
@@ -157,7 +157,7 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
         <a
           href="/"
           aria-label="Ver tienda"
-          className="relative flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft transition-colors duration-200 hover:bg-accent-50 hover:text-accent-700"
+          className="relative flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft transition-colors duration-200 hover:bg-white/5 hover:text-accent-300"
         >
           <StoreIcon />
         </a>
@@ -174,7 +174,7 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
           type="button"
           onClick={onLogout}
           aria-label="Salir"
-          className="relative flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
+          className="relative flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft transition-colors duration-200 hover:bg-red-500/10 hover:text-red-400"
         >
           <LogoutIcon />
         </button>

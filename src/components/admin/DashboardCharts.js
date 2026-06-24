@@ -8,15 +8,15 @@
 import { useMemo } from "react";
 import { formatPrice } from "@/lib/format";
 
-// Paleta consistente con el resto del panel (accent + ink + amber/red).
+// Paleta consistente con el tema oscuro (accent vibrante + amber + gris).
 const STATUS_META = {
-  pendiente: { label: "Pendientes", color: "#f59e0b" }, // amber-500
-  confirmada: { label: "Confirmadas", color: "#2f9d77" }, // accent-500
-  cancelada: { label: "Canceladas", color: "#9ca3af" }, // gris atenuado
+  pendiente: { label: "Pendientes", color: "#fbbf24" }, // amber-400
+  confirmada: { label: "Confirmadas", color: "#2bd673" }, // accent-400
+  cancelada: { label: "Canceladas", color: "#6b7378" }, // gris atenuado
 };
 
 // Tonos de accent para las barras de categorías (se ciclan si hay muchas).
-const BAR_COLORS = ["#2f9d77", "#57b894", "#1f7d5f", "#8fd3b8", "#1a634c", "#bce6d4"];
+const BAR_COLORS = ["#2bd673", "#54e58f", "#17bd60", "#8ff0b6", "#119d50", "#c4f8d9"];
 
 // Construye el atributo `d` de un segmento de dona (arco entre dos ángulos).
 function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {
@@ -68,7 +68,7 @@ function DonutChart({ data, total }) {
             cy={cy}
             r={(rOuter + rInner) / 2}
             fill="none"
-            stroke="#eef0f1"
+            stroke="#23282b"
             strokeWidth={rOuter - rInner}
           />
         ) : (
@@ -153,7 +153,7 @@ function BarChart({ data, formatValue }) {
                   {formatValue ? formatValue(d.value) : d.value}
                 </span>
               </div>
-              <div className="h-2.5 w-full overflow-hidden rounded-full bg-ink/[0.06]">
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/[0.07]">
                 <div
                   className="h-full rounded-full transition-all duration-500 ease-out"
                   style={{ width: `${pct}%`, backgroundColor: color }}
@@ -267,13 +267,13 @@ function OrdersSummary({ orders }) {
   }, [orders]);
 
   const rows = [
-    { label: "Confirmado", value: sums.confirmada, tone: "text-accent-700" },
-    { label: "Pendiente", value: sums.pendiente, tone: "text-amber-700" },
+    { label: "Confirmado", value: sums.confirmada, tone: "text-accent-300" },
+    { label: "Pendiente", value: sums.pendiente, tone: "text-amber-300" },
     { label: "Cancelado", value: sums.cancelada, tone: "text-ink-muted" },
   ];
 
   return (
-    <ul className="divide-y divide-ink/[0.06]">
+    <ul className="divide-y divide-white/[0.07]">
       {rows.map((r) => (
         <li key={r.label} className="flex items-center justify-between py-2.5">
           <span className="text-sm text-ink-soft">{r.label}</span>

@@ -20,20 +20,20 @@ function formatDate(iso) {
 function StatusChip({ status }) {
   if (status === "confirmada") {
     return (
-      <span className="chip bg-accent-50 text-accent-700 ring-1 ring-accent-200">
+      <span className="chip bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
         Confirmada
       </span>
     );
   }
   if (status === "cancelada") {
     return (
-      <span className="chip bg-ink/5 text-ink-muted ring-1 ring-ink/10">
+      <span className="chip bg-white/5 text-ink-muted ring-1 ring-white/10">
         Cancelada
       </span>
     );
   }
   return (
-    <span className="chip bg-amber-50 text-amber-700 ring-1 ring-amber-200">
+    <span className="chip bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30">
       Pendiente
     </span>
   );
@@ -70,7 +70,7 @@ export default function OrderCard({ order, onUpdated }) {
   return (
     <div
       className={`card p-4 shadow-soft transition ${
-        cancelled ? "opacity-70" : ""
+        cancelled ? "opacity-60" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -95,7 +95,7 @@ export default function OrderCard({ order, onUpdated }) {
         </div>
       </div>
 
-      <ul className="mt-3 space-y-1 border-t border-ink/[0.06] pt-3 text-sm text-ink-soft">
+      <ul className="mt-3 space-y-1 border-t border-white/10 pt-3 text-sm text-ink-soft">
         {order.items.map((it) => (
           <li key={it.id} className="flex justify-between gap-3">
             <span>
@@ -107,7 +107,7 @@ export default function OrderCard({ order, onUpdated }) {
       </ul>
 
       {order.customer?.note && (
-        <p className="mt-3 rounded-lg bg-ink/[0.03] px-3 py-2 text-xs text-ink-soft">
+        <p className="mt-3 rounded-lg bg-white/5 px-3 py-2 text-xs text-ink-soft">
           {order.customer.note}
         </p>
       )}
@@ -118,7 +118,7 @@ export default function OrderCard({ order, onUpdated }) {
         <button
           onClick={reactivate}
           disabled={saving !== null}
-          className="mt-3 w-full rounded-full border border-ink/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-ink/40 disabled:pointer-events-none disabled:opacity-40"
+          className="mt-3 w-full rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:pointer-events-none disabled:opacity-40"
         >
           {saving === "reactivate" ? "…" : "Reactivar pedido"}
         </button>
@@ -129,8 +129,8 @@ export default function OrderCard({ order, onUpdated }) {
             disabled={saving !== null}
             className={`flex-1 rounded-full py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
               confirmed
-                ? "border border-ink/15 text-ink-soft hover:border-ink/40"
-                : "bg-accent-500 text-white hover:bg-accent-600"
+                ? "border border-white/15 text-ink-soft hover:border-white/35"
+                : "bg-accent-500 text-night hover:bg-accent-400"
             }`}
           >
             {saving === "toggle"
@@ -144,7 +144,7 @@ export default function OrderCard({ order, onUpdated }) {
             disabled={saving !== null}
             aria-label="Cancelar pedido y liberar stock"
             title="Cancela el pedido y libera el stock reservado"
-            className="rounded-full border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition hover:border-red-400 hover:bg-red-50 disabled:pointer-events-none disabled:opacity-40"
+            className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:pointer-events-none disabled:opacity-40"
           >
             {saving === "cancel" ? "…" : "Cancelar"}
           </button>

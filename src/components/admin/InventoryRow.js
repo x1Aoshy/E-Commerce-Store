@@ -33,7 +33,7 @@ export default function InventoryRow({ product, onUpdated }) {
   }
 
   return (
-    <tr className="border-b border-ink/[0.05] last:border-0">
+    <tr className="border-b border-white/[0.06] last:border-0">
       <td className="px-4 py-3">
         <div className="font-medium text-ink">{product.name}</div>
         <div className="text-xs text-ink-muted">{product.short}</div>
@@ -44,11 +44,11 @@ export default function InventoryRow({ product, onUpdated }) {
           value={price}
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
-          className="w-24 rounded-lg border border-ink/15 px-2.5 py-1.5 text-sm outline-none focus:border-accent-500"
+          className="w-24 rounded-lg border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
         />
       </td>
       <td className="px-4 py-3">
-        <div className="inline-flex items-center rounded-lg border border-ink/15">
+        <div className="inline-flex items-center rounded-lg border border-white/15">
           <button
             onClick={() => setStock((s) => Math.max(0, Number(s) - 1))}
             className="flex h-8 w-8 items-center justify-center text-ink-soft hover:text-ink"
@@ -62,7 +62,7 @@ export default function InventoryRow({ product, onUpdated }) {
               setStock(Math.max(0, Number(e.target.value.replace(/[^\d]/g, "")) || 0))
             }
             inputMode="numeric"
-            className="w-12 border-x border-ink/15 py-1.5 text-center text-sm outline-none"
+            className="w-12 border-x border-white/15 bg-transparent py-1.5 text-center text-sm text-ink outline-none"
           />
           <button
             onClick={() => setStock((s) => Number(s) + 1)}
@@ -78,8 +78,8 @@ export default function InventoryRow({ product, onUpdated }) {
           onClick={() => setFeatured((f) => !f)}
           className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${
             featured
-              ? "bg-accent-50 text-accent-600 ring-1 ring-accent-200"
-              : "text-ink-muted ring-1 ring-ink/10 hover:ring-ink/30"
+              ? "bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30"
+              : "text-ink-muted ring-1 ring-white/10 hover:ring-white/30"
           }`}
           aria-label="Destacar"
           title={featured ? "Destacado" : "No destacado"}

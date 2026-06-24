@@ -6,9 +6,9 @@ export function stockStatus(stock) {
 }
 
 const TONES = {
-  in: "bg-accent-50 text-accent-700 ring-1 ring-accent-200",
-  low: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  out: "bg-ink/5 text-ink-muted ring-1 ring-ink/10",
+  in: "bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30",
+  low: "bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30",
+  out: "bg-white/5 text-ink-muted ring-1 ring-white/10",
 };
 
 export default function StockBadge({ stock }) {

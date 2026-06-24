@@ -54,14 +54,14 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-accent-50/30 px-5">
+    <div className="flex min-h-screen items-center justify-center px-5">
       <div className="card w-full max-w-sm p-8 shadow-card">
         <div className="flex items-center gap-2.5">
           <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="8" fill="#15191c" />
+            <rect width="32" height="32" rx="8" fill="#1b2125" />
             <path
               d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-              fill="#2f9d77"
+              fill="#2bd673"
             />
           </svg>
           <span className="font-semibold text-ink">{STORE}</span>
@@ -88,7 +88,7 @@ export default function AdminPage() {
               autoFocus
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-400">{error}</p>}
           <button
             type="submit"
             disabled={submitting}

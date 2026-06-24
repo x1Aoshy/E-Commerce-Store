@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
@@ -8,10 +9,10 @@ const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Aosh Suplementos";
 function LogoMark() {
   return (
     <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#15191c" />
+      <rect width="32" height="32" rx="8" fill="#1b2125" />
       <path
         d="M16 8c3.6 3.1 5.6 5.7 5.6 8.6A5.6 5.6 0 0 1 16 22.2a5.6 5.6 0 0 1-5.6-5.6C10.4 13.7 12.4 11.1 16 8z"
-        fill="#2f9d77"
+        fill="#2bd673"
       />
     </svg>
   );
@@ -52,33 +53,33 @@ export default function Header() {
     <header
       className={`sticky top-0 z-40 border-b backdrop-blur-md transition-all duration-300 ${
         scrolled
-          ? "border-ink/[0.08] bg-white/90 shadow-soft"
-          : "border-transparent bg-white/80"
+          ? "border-white/10 bg-night/85 shadow-soft"
+          : "border-transparent bg-night/60"
       }`}
     >
       <div className="container-content flex h-16 items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5 transition active:scale-95">
+        <Link href="/" className="flex items-center gap-2.5 transition active:scale-95">
           <LogoMark />
           <span className="text-[15px] font-semibold tracking-tight text-ink">
             {STORE}
           </span>
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 text-sm text-ink-soft md:flex">
-          <a href="#productos" className="transition hover:text-ink">
+          <Link href="/#productos" className="transition hover:text-ink">
             Productos
-          </a>
-          <a href="#beneficios" className="transition hover:text-ink">
+          </Link>
+          <Link href="/#beneficios" className="transition hover:text-ink">
             Beneficios
-          </a>
-          <a href="#contacto" className="transition hover:text-ink">
+          </Link>
+          <Link href="/#contacto" className="transition hover:text-ink">
             Contacto
-          </a>
+          </Link>
         </nav>
 
         <button
           onClick={openCart}
-          className="relative inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-ink/40 active:scale-95"
+          className="relative inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95"
           aria-label="Abrir carrito"
         >
           <CartIcon />
@@ -86,7 +87,7 @@ export default function Header() {
           {hydrated && count > 0 && (
             <span
               key={count}
-              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] animate-pop items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-white"
+              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] animate-pop items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-night"
             >
               {count}
             </span>

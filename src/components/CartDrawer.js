@@ -34,8 +34,6 @@ export default function CartDrawer() {
   const [conflicts, setConflicts] = useState([]);
   const [success, setSuccess] = useState(null);
 
-  // render = está montado (para permitir la animación de salida)
-  // visible = está en posición abierta (dispara la transición)
   const [render, setRender] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -55,7 +53,6 @@ export default function CartDrawer() {
     return () => clearTimeout(t);
   }, [isOpen]);
 
-  // Garantiza restaurar el scroll del body si el componente se desmonta abierto.
   useEffect(() => () => {
     document.body.style.overflow = "";
   }, []);
@@ -68,8 +65,6 @@ export default function CartDrawer() {
     setError(null);
     setConflicts([]);
 
-    // Reservamos la pestaña dentro del gesto del usuario para evitar el bloqueo
-    // de pop-ups, y luego la apuntamos al enlace de WhatsApp.
     const waWindow = window.open("", "_blank");
 
     try {
@@ -110,26 +105,26 @@ export default function CartDrawer() {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className={`absolute inset-0 bg-ink/40 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-night/70 backdrop-blur-sm transition-opacity duration-300 ${
           visible ? "opacity-100" : "opacity-0"
         }`}
         onClick={closeCart}
       />
 
       <aside
-        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-2xl bg-white shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none ${
+        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-2xl border-t border-white/10 bg-surface shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none md:border-l md:border-t-0 ${
           visible
             ? "translate-y-0 md:translate-x-0"
             : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
       >
-        <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-ink/15 md:hidden" />
+        <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-white/15 md:hidden" />
 
-        <div className="flex items-center justify-between border-b border-ink/[0.07] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
           <h2 className="text-base font-semibold text-ink">Tu pedido</h2>
           <button
             onClick={closeCart}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition hover:bg-ink/5 hover:text-ink active:scale-90"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition hover:bg-white/10 hover:text-ink active:scale-90"
             aria-label="Cerrar carrito"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -140,7 +135,7 @@ export default function CartDrawer() {
 
         {success ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-50 text-accent-600 ring-1 ring-accent-200">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
               <WhatsAppIcon className="h-7 w-7" />
             </div>
             <h3 className="mt-5 text-lg font-semibold text-ink">
@@ -165,7 +160,7 @@ export default function CartDrawer() {
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 py-14 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ink/5 text-ink-muted">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-ink-muted">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 4h2l2.4 12.3a1 1 0 0 0 1 .7h8.7a1 1 0 0 0 1-.8L21 8H6" />
                 <circle cx="9.5" cy="20" r="1.4" />
@@ -187,7 +182,7 @@ export default function CartDrawer() {
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="flex gap-3 rounded-xl border border-ink/[0.07] p-3"
+                    className="flex gap-3 rounded-xl border border-white/10 p-3"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
@@ -197,7 +192,7 @@ export default function CartDrawer() {
                         {formatPrice(item.price)} c/u
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded-lg border border-ink/15">
+                        <div className="flex items-center rounded-lg border border-white/15">
                           <button
                             onClick={() => updateQty(item.id, item.quantity - 1)}
                             className="flex h-9 w-9 items-center justify-center text-ink-soft transition hover:text-ink active:scale-90"
@@ -233,7 +228,7 @@ export default function CartDrawer() {
               </ul>
 
               {error && (
-                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
                   <p className="font-medium">{error}</p>
                   {conflicts.length > 0 && (
                     <ul className="mt-1 list-inside list-disc text-xs">
@@ -277,7 +272,7 @@ export default function CartDrawer() {
             </div>
 
             <div
-              className="border-t border-ink/[0.07] px-5 pt-4"
+              className="border-t border-white/10 px-5 pt-4"
               style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
             >
               <div className="flex items-center justify-between text-base">

@@ -46,7 +46,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="beneficios" className="border-t border-ink/[0.06] bg-accent-50/30">
+    <section id="beneficios" className="border-t border-white/10 bg-white/[0.015]">
       <div className="container-content py-16 sm:py-20">
         <Reveal className="max-w-2xl">
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
@@ -61,8 +61,8 @@ export default function Benefits() {
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={i * 80}>
-              <div className="card h-full p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-card">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-white">
+              <div className="card h-full p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-card">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-500 text-night">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-5 w-5"

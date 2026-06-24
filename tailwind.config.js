@@ -4,22 +4,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Tema OSCURO premium. `ink` ahora es el TEXTO (claro), así la mayoría
+        // de las clases existentes (text-ink, border-ink/x, bg-ink/5...) se
+        // invierten solas y quedan correctas sobre fondo oscuro.
         ink: {
-          DEFAULT: "#15191c",
-          soft: "#3a4145",
-          muted: "#6b7280",
+          DEFAULT: "#e9ebec",
+          soft: "#a6adb1",
+          muted: "#6f777c",
+        },
+        night: "#0a0c0d", // fondo de página (casi negro)
+        surface: {
+          DEFAULT: "#14181a", // tarjetas / paneles
+          soft: "#1b2125", // elevado / hover
         },
         accent: {
-          50: "#f0faf6",
-          100: "#dcf3e9",
-          200: "#bce6d4",
-          300: "#8fd3b8",
-          400: "#57b894",
-          500: "#2f9d77",
-          600: "#1f7d5f",
-          700: "#1a634c",
-          800: "#17503e",
-          900: "#144234",
+          50: "#e7fdef",
+          100: "#c4f8d9",
+          200: "#8ff0b6",
+          300: "#54e58f",
+          400: "#2bd673",
+          500: "#17bd60",
+          600: "#119d50",
+          700: "#0f7d41",
+          800: "#0d6035",
+          900: "#0a4a2a",
         },
       },
       fontFamily: {
@@ -37,8 +45,8 @@ module.exports = {
         content: "1180px",
       },
       boxShadow: {
-        soft: "0 1px 2px rgba(21,25,28,0.04), 0 8px 24px rgba(21,25,28,0.06)",
-        card: "0 1px 3px rgba(21,25,28,0.06), 0 12px 32px rgba(21,25,28,0.05)",
+        soft: "0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.30)",
+        card: "0 2px 6px rgba(0,0,0,0.45), 0 18px 44px rgba(0,0,0,0.40)",
       },
       keyframes: {
         "fade-in": {

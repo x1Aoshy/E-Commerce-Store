@@ -124,7 +124,7 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
         </div>
       </div>
 
-      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
 
       <div className="mt-4 flex items-center gap-2">
         <button type="submit" disabled={saving} className="btn-accent px-5 py-2.5">

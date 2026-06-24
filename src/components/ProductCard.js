@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import ProductImage from "./ProductImage";
 import StockBadge, { stockStatus } from "./StockBadge";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 
-export default function ProductCard({ product, onView }) {
+export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const s = stockStatus(product.stock);
   const [added, setAdded] = useState(false);
+  const href = `/producto/${product.slug}`;
 
   const handleAdd = () => {
     addItem(product);
@@ -18,9 +20,9 @@ export default function ProductCard({ product, onView }) {
   };
 
   return (
-    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-card">
-      <button
-        onClick={() => onView(product)}
+    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-card">
+      <Link
+        href={href}
         className="relative block aspect-[4/3] w-full overflow-hidden"
         aria-label={`Ver ${product.name}`}
       >
@@ -28,19 +30,16 @@ export default function ProductCard({ product, onView }) {
           product={product}
           className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        <span className="chip absolute left-3 top-3 bg-white/85 text-ink-soft ring-1 ring-ink/10 backdrop-blur">
+        <span className="chip absolute left-3 top-3 bg-night/70 text-ink-soft ring-1 ring-white/10 backdrop-blur">
           {product.category}
         </span>
-      </button>
+      </Link>
 
       <div className="flex flex-1 flex-col p-4">
         <h3 className="text-[15px] font-semibold leading-snug text-ink">
-          <button
-            onClick={() => onView(product)}
-            className="text-left transition-colors hover:text-accent-600"
-          >
+          <Link href={href} className="transition-colors hover:text-accent-300">
             {product.name}
-          </button>
+          </Link>
         </h3>
         <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{product.short}</p>
 
@@ -48,7 +47,7 @@ export default function ProductCard({ product, onView }) {
           <StockBadge stock={product.stock} />
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-ink/[0.06] pt-3">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <span className="text-lg font-semibold text-ink">
             {formatPrice(product.price)}
           </span>
@@ -57,7 +56,7 @@ export default function ProductCard({ product, onView }) {
             onClick={handleAdd}
             aria-live="polite"
             className={`btn-accent min-w-[104px] px-4 py-2 text-[13px] ${
-              added ? "!bg-accent-600" : ""
+              added ? "!bg-accent-400" : ""
             }`}
           >
             {!s.available ? (
