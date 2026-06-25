@@ -5,6 +5,9 @@
 @layer base {
   :root {
     color-scheme: dark;
+    /* Grano "granizado" reutilizable (mismo ruido que el fondo) para texturar
+       botones y superficies. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
   html {
     scroll-behavior: smooth;
@@ -61,14 +64,34 @@
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
+  /* Botones planos y cuadrados, con borde fino (outline oscuro) y textura de
+     granizado encima del color. Sin gradientes ni glows. */
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost {
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] disabled:pointer-events-none disabled:opacity-40;
+  }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-night transition hover:bg-white/90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40;
+    @apply border-night/80 bg-white text-night hover:bg-white/90;
   }
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent-500 px-5 py-2.5 text-sm font-semibold text-night transition hover:bg-accent-400 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40;
+    @apply border-night/80 bg-accent-500 font-semibold text-night hover:bg-accent-400;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40;
+    @apply border-white/20 text-ink hover:border-white/40 hover:bg-white/5;
+  }
+  /* El grano va detrás del texto (::before pinta antes que el contenido). */
+  .btn-primary::before,
+  .btn-accent::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--grain);
+    background-size: 150px 150px;
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
 
   .card {

@@ -6,6 +6,7 @@ import Benefits from "@/components/Benefits";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
+import AutoRefresh from "@/components/AutoRefresh";
 import { getProducts } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <AutoRefresh />
       <Header categories={categories} />
       <main>
         <Hero />

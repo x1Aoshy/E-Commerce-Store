@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 
 const WORDS = ["PROTEÍNAS", "CREATINA", "PRE-ENTRENOS", "RESULTADOS"];
+// Palabra más larga: la usamos como "molde" invisible para reservar el ancho y
+// que el título no cambie de tamaño mientras se escribe/borra.
+const LONGEST = WORDS.reduce((a, b) => (b.length > a.length ? b : a), "");
 
 // Efecto máquina de escribir: escribe una palabra, la mantiene, la borra y pasa
 // a la siguiente, en loop.
@@ -45,9 +48,19 @@ export default function Hero() {
           Tu mejor versión
           <br />
           empieza con{" "}
-          <span className="whitespace-nowrap text-accent-400">
-            {typed || " "}
-            <span className="ml-0.5 inline-block w-[3px] animate-pulse bg-accent-400 align-[-0.05em]" style={{ height: "0.95em" }} />
+          <span className="relative inline-block whitespace-nowrap text-accent-400">
+            {/* Molde invisible: fija el ancho/alto al de la palabra más larga. */}
+            <span className="invisible" aria-hidden="true">
+              {LONGEST}
+            </span>
+            {/* Texto que se escribe, superpuesto con la misma línea base. */}
+            <span className="absolute left-0 top-0 whitespace-nowrap">
+              {typed}
+              <span
+                className="ml-1 inline-block w-[3px] animate-pulse bg-accent-400 align-[-0.1em]"
+                style={{ height: "0.82em" }}
+              />
+            </span>
           </span>
         </h1>
 

@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
+import AutoRefresh from "@/components/AutoRefresh";
 import ProductImage from "@/components/ProductImage";
 import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
@@ -50,6 +51,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
+      <AutoRefresh />
       <Header categories={categories} />
       <main className="container-content py-8 sm:py-12">
         <nav className="text-sm text-ink-muted">
