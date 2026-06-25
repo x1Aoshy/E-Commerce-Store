@@ -32,27 +32,26 @@ export default function ProductCard({ product }) {
           product={product}
           className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        <span className="chip absolute left-3 top-3 bg-night/90 text-ink-soft ring-1 ring-white/10">
-          {product.category}
-        </span>
         {onSale && (
-          <span className="chip absolute right-3 top-3 bg-accent-500 font-semibold text-night">
+          <span className="absolute right-3 top-3 rounded-[3px] bg-accent-500 px-2 py-0.5 text-[11px] font-bold text-night">
             -{off}% OFF
           </span>
         )}
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
+        <div className="mb-1.5 flex items-center justify-between gap-2">
+          <span className="truncate text-[11px] font-medium uppercase tracking-wide text-ink-muted">
+            {product.category}
+          </span>
+          <StockBadge stock={product.stock} />
+        </div>
         <h3 className="text-[15px] font-semibold leading-snug text-ink">
           <Link href={href} className="transition-colors hover:text-accent-300">
             {product.name}
           </Link>
         </h3>
         <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{product.short}</p>
-
-        <div className="mt-3">
-          <StockBadge stock={product.stock} />
-        </div>
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div className="flex flex-col leading-tight">

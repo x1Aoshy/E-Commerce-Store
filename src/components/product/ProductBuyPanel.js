@@ -20,8 +20,8 @@ export default function ProductBuyPanel({ product }) {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
-        <span className="chip bg-white/5 text-ink-soft ring-1 ring-white/10">
+      <div className="flex items-center gap-3">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-ink-muted">
           {product.category}
         </span>
         <StockBadge stock={product.stock} />
@@ -36,7 +36,7 @@ export default function ProductBuyPanel({ product }) {
             <span className="text-lg text-ink-muted line-through">
               {formatPrice(product.compareAt)}
             </span>
-            <span className="chip bg-accent-500 font-semibold text-night">
+            <span className="rounded-[3px] bg-accent-500 px-2 py-0.5 text-xs font-bold text-night">
               -{off}% OFF
             </span>
           </>

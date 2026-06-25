@@ -5,13 +5,25 @@ export function stockStatus(stock) {
   return { label: "En stock", tone: "in", available: true };
 }
 
-const TONES = {
-  in: "bg-green-500/15 text-green-300 ring-1 ring-green-500/30",
-  low: "bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30",
-  out: "bg-white/5 text-ink-muted ring-1 ring-white/10",
+const DOT = {
+  in: "bg-green-400",
+  low: "bg-amber-400",
+  out: "bg-ink-muted",
+};
+const TEXT = {
+  in: "text-green-300",
+  low: "text-amber-300",
+  out: "text-ink-muted",
 };
 
+// Indicador de stock liviano: un punto de color + texto, sin píldora, para no
+// saturar de badges las tarjetas de producto.
 export default function StockBadge({ stock }) {
   const s = stockStatus(stock);
-  return <span className={`chip ${TONES[s.tone]}`}>{s.label}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${TEXT[s.tone]}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${DOT[s.tone]}`} aria-hidden="true" />
+      {s.label}
+    </span>
+  );
 }
