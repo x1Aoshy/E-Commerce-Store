@@ -88,6 +88,15 @@ function LogoutIcon() {
   );
 }
 
+function AjustesIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-1.7-1l-.3-2.6H10.6l-.3 2.6a7.5 7.5 0 0 0-1.7 1l-2.4-1-2 3.4L4.6 11a7.5 7.5 0 0 0 0 2l-2 1.5 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.3 2.6h3.8l.3-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.5z" />
+    </svg>
+  );
+}
+
 function FinanzasIcon() {
   return (
     <svg {...ICON_PROPS}>
@@ -158,6 +167,24 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
 
       {/* Separador flexible: empuja las acciones al fondo en desktop. */}
       <div className="hidden md:block md:flex-1" />
+
+      {/* Ajustes (tuerca): branding de la tienda. Usa el mismo active/onChange. */}
+      <div className="group relative">
+        <button
+          type="button"
+          onClick={() => onChange("ajustes")}
+          aria-label="Ajustes"
+          aria-current={active === "ajustes" ? "page" : undefined}
+          className={`relative flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-200 ${
+            active === "ajustes"
+              ? "bg-accent-500 text-night"
+              : "text-ink-soft hover:bg-white/5 hover:text-accent-300"
+          }`}
+        >
+          <AjustesIcon />
+        </button>
+        <HoverLabel>Ajustes</HoverLabel>
+      </div>
 
       {/* Ver tienda */}
       <div className="group relative">

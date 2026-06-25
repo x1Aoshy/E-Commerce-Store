@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import Logo from "@/components/Logo";
+import { useBranding } from "@/context/BrandingContext";
 
 export default function AdminPage() {
+  const { loginIconUrl } = useBranding();
   const [status, setStatus] = useState("loading"); // loading | login | authed
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -59,11 +61,16 @@ export default function AdminPage() {
         <div className="flex flex-col items-center text-center">
           <Logo />
           <span className="mt-6 inline-flex h-12 w-12 items-center justify-center rounded-[4px] bg-accent-500/12 text-accent-300 ring-1 ring-accent-500/25">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="4" y="10.5" width="16" height="10" rx="2" />
-              <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
-              <circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" />
-            </svg>
+            {loginIconUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={loginIconUrl} alt="" className="h-7 w-7 object-contain" />
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="10.5" width="16" height="10" rx="2" />
+                <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+                <circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
+            )}
           </span>
           <h1 className="mt-4 text-lg font-semibold text-ink">Acceso</h1>
         </div>

@@ -1,6 +1,13 @@
-// Marca Titan Supplements. Logo recreado en SVG (dorado + verde oscuro) como
-// placeholder editable. Cuando tengas el PNG/SVG real, colocalo en /public y
-// reemplazá <LogoMark/> por una <img src="/logo.png" .../>.
+"use client";
+
+// Marca de la tienda. Por defecto muestra un escudo en SVG (dorado + verde
+// oscuro) y el nombre. Si el dueño subió un logo desde Ajustes, se muestra esa
+// imagen en lugar del escudo. El nombre también sale de los Ajustes.
+//
+// SEGURIDAD: un logo SVG subido se muestra SIEMPRE vía <img src>, nunca inline
+// (sin dangerouslySetInnerHTML), así no se ejecuta ningún script embebido.
+
+import { useBranding } from "@/context/BrandingContext";
 
 export function LogoMark({ size = 32 }) {
   return (
@@ -34,16 +41,23 @@ export function LogoMark({ size = 32 }) {
 }
 
 export default function Logo({ size = 32, className = "" }) {
+  const { storeName, logoUrl } = useBranding();
+  const name = storeName || "Titan Supplements";
+
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <LogoMark size={size} />
-      <span className="flex flex-col leading-none">
-        <span className="text-[15px] font-extrabold tracking-wide text-accent-300">
-          TITAN
-        </span>
-        <span className="text-[8px] font-medium tracking-[0.35em] text-ink-soft">
-          SUPPLEMENTS
-        </span>
+      {logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={logoUrl}
+          alt={name}
+          className="h-7 w-auto object-contain"
+        />
+      ) : (
+        <LogoMark size={size} />
+      )}
+      <span className="text-[15px] font-extrabold tracking-wide text-accent-300">
+        {name}
       </span>
     </span>
   );

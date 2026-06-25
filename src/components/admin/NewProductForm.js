@@ -64,7 +64,7 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
 
   return (
     <form onSubmit={submit}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label">Nombre *</label>
           <input
@@ -89,7 +89,7 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
             ))}
           </datalist>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="label">Precio</label>
             <input
@@ -123,7 +123,7 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
         <div className="sm:col-span-2">
           <label className="label">Descripción completa</label>
           <textarea
-            className="input min-h-[80px] resize-none"
+            className="input min-h-[64px] resize-none"
             value={form.description}
             onChange={(e) => set("description", e.target.value)}
             placeholder="Detalle del producto para la ficha"
@@ -135,13 +135,13 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
         </div>
       </div>
 
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
 
       <div className="mt-4 flex items-center gap-2">
-        <button type="submit" disabled={saving} className="btn-accent px-5 py-2.5">
+        <button type="submit" disabled={saving} className="btn-accent px-5 py-2">
           {saving ? "Guardando…" : "Crear producto"}
         </button>
-        <button type="button" onClick={onCancel} className="btn-ghost px-5 py-2.5">
+        <button type="button" onClick={onCancel} className="btn-ghost px-5 py-2">
           Cancelar
         </button>
       </div>

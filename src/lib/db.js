@@ -489,3 +489,69 @@ export async function deleteOrder(id) {
   if (delErr) throw new Error(`No se pudo eliminar la orden: ${delErr.message}`);
   return true;
 }
+
+/* ------------------------------- Ajustes --------------------------------- */
+// Branding de la tienda: nombre, logo e ícono de login. Tabla de una sola fila
+// (id = 1). Ver supabase/schema.sql.
+
+// Valores por defecto cuando la tabla todavía no existe (migración sin correr)
+// o ante cualquier error. NUNCA lanza: la tienda y el admin siguen andando con
+// el logo/nombre por defecto.
+function defaultSettings() {
+  return {
+    storeName: process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements",
+    logoUrl: "",
+    loginIconUrl: "",
+  };
+}
+
+function mapSettings(row) {
+  if (!row) return defaultSettings();
+  return {
+    storeName: row.store_name || defaultSettings().storeName,
+    logoUrl: row.logo_url || "",
+    loginIconUrl: row.login_icon_url || "",
+  };
+}
+
+// Lee la única fila de ajustes. RESILIENTE: si la tabla no existe o hay
+// cualquier error, devuelve los valores por defecto sin lanzar.
+export async function getSettings() {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("settings")
+      .select("store_name, logo_url, login_icon_url")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) return defaultSettings();
+    return mapSettings(data);
+  } catch {
+    return defaultSettings();
+  }
+}
+
+// Upsert de la fila id=1 con los campos provistos en `patch`. Recorta longitudes
+// (nombre 60, URLs 1000) y siempre setea updated_at. Devuelve los ajustes
+// mapeados a camelCase.
+export async function updateSettings(patch = {}) {
+  const supabase = getSupabase();
+  const next = { id: 1, updated_at: new Date().toISOString() };
+  if (patch.storeName !== undefined) {
+    next.store_name = String(patch.storeName || "").trim().slice(0, 60);
+  }
+  if (patch.logoUrl !== undefined) {
+    next.logo_url = String(patch.logoUrl || "").trim().slice(0, 1000);
+  }
+  if (patch.loginIconUrl !== undefined) {
+    next.login_icon_url = String(patch.loginIconUrl || "").trim().slice(0, 1000);
+  }
+
+  const { data, error } = await supabase
+    .from("settings")
+    .upsert(next, { onConflict: "id" })
+    .select("store_name, logo_url, login_icon_url")
+    .maybeSingle();
+  if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
+  return mapSettings(data);
+}

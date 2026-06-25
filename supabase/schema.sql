@@ -52,6 +52,19 @@ alter table public.orders add column if not exists seller text not null default 
 alter table public.products add column if not exists compare_at integer not null default 0;
 alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
 
+-- 2.c) Ajustes / branding (nombre de la tienda, logo, ícono de login). --------
+--      Tabla de una sola fila (id = 1). Idempotente.
+create table if not exists public.settings (
+  id             smallint primary key default 1,
+  store_name     text not null default 'Titan Supplements',
+  logo_url       text not null default '',
+  login_icon_url text not null default '',
+  updated_at     timestamptz not null default now(),
+  constraint settings_singleton check (id = 1)
+);
+insert into public.settings (id) values (1) on conflict (id) do nothing;
+alter table public.settings enable row level security;
+
 -- 3) Seguridad (RLS) ---------------------------------------------------------
 alter table public.products enable row level security;
 alter table public.orders   enable row level security;

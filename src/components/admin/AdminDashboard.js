@@ -13,12 +13,14 @@ import NewProductForm from "./NewProductForm";
 import ManualOrderForm from "./ManualOrderForm";
 import MediaManager from "./MediaManager";
 import OrderCard from "./OrderCard";
+import BrandingSettings from "./BrandingSettings";
 
 const VIEW_TITLES = {
   resumen: "Resumen",
   inventario: "Inventario",
   ordenes: "Órdenes",
   finanzas: "Finanzas",
+  ajustes: "Ajustes",
 };
 
 function Stat({ label, value }) {
@@ -134,6 +136,8 @@ export default function AdminDashboard({ onLogout }) {
             />
           ) : activeView === "finanzas" ? (
             <FinanceView orders={orders} />
+          ) : activeView === "ajustes" ? (
+            <BrandingSettings />
           ) : (
             <OrdenesView orders={orders} setOrders={setOrders} products={products} />
           )}

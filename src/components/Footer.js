@@ -1,9 +1,14 @@
+"use client";
+
 import Logo from "@/components/Logo";
+import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
 export default function Footer() {
+  const { storeName } = useBranding();
+  const store = storeName || STORE;
   const waUrl = PHONE
     ? `https://wa.me/${PHONE}?text=${encodeURIComponent(
         "¡Hola! Tengo una consulta sobre los suplementos."
@@ -79,7 +84,7 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-xs text-ink-muted sm:flex-row sm:items-center">
           <span>
-            © {new Date().getFullYear()} {STORE}. Todos los derechos reservados.
+            © {new Date().getFullYear()} {store}. Todos los derechos reservados.
           </span>
           <span>Hecho con cuidado · Pedidos por WhatsApp</span>
         </div>

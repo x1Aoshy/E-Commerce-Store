@@ -23,6 +23,7 @@ const ALLOWED = [
   "image/webp",
   "image/gif",
   "image/avif",
+  "image/svg+xml",
   "video/mp4",
   "video/webm",
   "video/quicktime",

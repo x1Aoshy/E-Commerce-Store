@@ -1,5 +1,6 @@
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { BrandingProvider } from "@/context/BrandingContext";
 import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
 
@@ -16,9 +17,11 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body>
         <Background />
-        <CartProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </CartProvider>
+        <BrandingProvider>
+          <CartProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </CartProvider>
+        </BrandingProvider>
       </body>
     </html>
   );
