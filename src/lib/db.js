@@ -72,8 +72,11 @@ export async function getProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(PRODUCT_COLUMNS)
-    .order("created_at", { ascending: true })
-    .order("id", { ascending: true });
+    // Más nuevos PRIMERO: así un producto recién creado aparece arriba en la
+    // tienda y en el inventario (antes salían al final y parecía que no se
+    // agregaban).
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
   if (error) throw new Error(`No se pudieron leer los productos: ${error.message}`);
   return data || [];
 }
