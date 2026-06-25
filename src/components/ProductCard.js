@@ -12,6 +12,8 @@ export default function ProductCard({ product }) {
   const s = stockStatus(product.stock);
   const [added, setAdded] = useState(false);
   const href = `/producto/${product.slug}`;
+  const onSale = Number(product.compareAt) > Number(product.price);
+  const off = onSale ? Math.round((1 - product.price / product.compareAt) * 100) : 0;
 
   const handleAdd = () => {
     addItem(product);
@@ -33,6 +35,11 @@ export default function ProductCard({ product }) {
         <span className="chip absolute left-3 top-3 bg-night/90 text-ink-soft ring-1 ring-white/10">
           {product.category}
         </span>
+        {onSale && (
+          <span className="chip absolute right-3 top-3 bg-accent-500 font-semibold text-night">
+            -{off}% OFF
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
@@ -48,9 +55,16 @@ export default function ProductCard({ product }) {
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
-          <span className="text-lg font-semibold text-ink">
-            {formatPrice(product.price)}
-          </span>
+          <div className="flex flex-col leading-tight">
+            {onSale && (
+              <span className="text-xs text-ink-muted line-through">
+                {formatPrice(product.compareAt)}
+              </span>
+            )}
+            <span className="text-lg font-semibold text-ink">
+              {formatPrice(product.price)}
+            </span>
+          </div>
           <button
             disabled={!s.available}
             onClick={handleAdd}

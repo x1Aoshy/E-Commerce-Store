@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function InventoryRow({ product, onUpdated, onDeleted, onRestock }) {
   const [price, setPrice] = useState(String(product.price));
+  const [compareAt, setCompareAt] = useState(String(product.compareAt || ""));
   const [stock, setStock] = useState(Number(product.stock));
   const [featured, setFeatured] = useState(Boolean(product.featured));
   const [saving, setSaving] = useState(false);
@@ -13,6 +14,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock 
 
   const dirty =
     Number(price) !== Number(product.price) ||
+    Number(compareAt || 0) !== Number(product.compareAt || 0) ||
     Number(stock) !== Number(product.stock) ||
     featured !== Boolean(product.featured);
 
@@ -25,6 +27,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           price: Number(price) || 0,
+          compareAt: Number(compareAt) || 0,
           stock: Math.max(0, Number(stock) || 0),
           featured,
         }),
@@ -70,7 +73,16 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock 
           value={price}
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
+          placeholder="Precio"
           className="w-24 rounded-lg border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
+        />
+        <input
+          value={compareAt}
+          onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))}
+          inputMode="numeric"
+          placeholder="Antes (OFF)"
+          title="Precio anterior tachado. Dejá vacío o 0 para no mostrar descuento."
+          className="mt-1.5 w-24 rounded-lg border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
         />
       </td>
       <td className="px-4 py-3">

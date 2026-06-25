@@ -54,29 +54,45 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-5">
+    <div className="flex min-h-screen items-center justify-center px-5 py-10">
       <div className="card w-full max-w-sm p-8 shadow-card">
-        <Logo />
-        <h1 className="mt-6 text-lg font-semibold text-ink">
-          Panel de administración
-        </h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          Ingresá la contraseña para gestionar inventario y pedidos.
-        </p>
+        <div className="flex flex-col items-center text-center">
+          <Logo />
+          <span className="mt-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-500/12 text-accent-300 ring-1 ring-accent-500/25">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="4" y="10.5" width="16" height="10" rx="2" />
+              <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+              <circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
+          <h1 className="mt-4 text-lg font-semibold text-ink">
+            Panel de administración
+          </h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            Ingresá tu contraseña para gestionar inventario y pedidos.
+          </p>
+        </div>
 
-        <form onSubmit={login} className="mt-6 space-y-3">
+        <form onSubmit={login} className="mt-7 space-y-3">
           <div>
             <label className="label" htmlFor="admin-pass">
               Contraseña
             </label>
             <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="10.5" width="16" height="10" rx="2" />
+                  <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+                </svg>
+              </span>
               <input
                 id="admin-pass"
                 type={showPass ? "text" : "password"}
-                className="input pr-10"
+                className="input pl-10 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="current-password"
                 autoFocus
               />
               <button
@@ -99,19 +115,31 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300 ring-1 ring-red-500/20">
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={submitting}
-            className="btn-primary w-full py-3"
+            className="btn-accent w-full py-3"
           >
             {submitting ? "Verificando…" : "Ingresar"}
           </button>
         </form>
 
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-ink-muted">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+          Sesión cifrada · acceso privado
+        </div>
+
         <a
           href="/"
-          className="mt-5 block text-center text-sm text-ink-muted underline-offset-2 hover:text-ink hover:underline"
+          className="mt-4 block text-center text-sm text-ink-muted underline-offset-2 hover:text-ink hover:underline"
         >
           ← Volver a la tienda
         </a>

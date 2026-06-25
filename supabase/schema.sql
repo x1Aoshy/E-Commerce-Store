@@ -24,6 +24,7 @@ create table if not exists public.products (
   featured    boolean not null default false,
   short       text not null default '',
   description text not null default '',
+  compare_at  integer not null default 0,   -- precio anterior (para mostrar descuentos OFF)
   created_at  timestamptz not null default now()
 );
 
@@ -45,6 +46,7 @@ create table if not exists public.orders (
 alter table public.orders add column if not exists payment_method text;
 alter table public.orders add column if not exists extra integer not null default 0;
 alter table public.orders add column if not exists extra_label text not null default '';
+alter table public.products add column if not exists compare_at integer not null default 0;
 
 -- 3) Seguridad (RLS) ---------------------------------------------------------
 alter table public.products enable row level security;

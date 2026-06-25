@@ -15,7 +15,7 @@
 import { getSupabase } from "./supabase";
 
 const PRODUCT_COLUMNS =
-  "id, slug, name, category, price, stock, featured, short, description";
+  "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at";
 const ORDER_COLUMNS =
   "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label";
 
@@ -96,6 +96,7 @@ export async function createProduct(data) {
     featured: Boolean(data.featured),
     short: data.short || "",
     description: data.description || "",
+    compare_at: Math.max(0, Number(data.compareAt) || 0),
   };
   const { data: inserted, error } = await supabase
     .from("products")
@@ -116,6 +117,7 @@ export async function updateProduct(id, patch) {
   if (patch.featured !== undefined) next.featured = Boolean(patch.featured);
   if (patch.short !== undefined) next.short = patch.short;
   if (patch.description !== undefined) next.description = patch.description;
+  if (patch.compareAt !== undefined) next.compare_at = Math.max(0, Number(patch.compareAt) || 0);
 
   if (Object.keys(next).length === 0) return getProductById(id);
 

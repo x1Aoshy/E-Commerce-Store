@@ -10,6 +10,8 @@ export default function ProductBuyPanel({ product }) {
   const s = stockStatus(product.stock);
   const max = Math.max(1, Number(product.stock) || 1);
   const [qty, setQty] = useState(1);
+  const onSale = Number(product.compareAt) > Number(product.price);
+  const off = onSale ? Math.round((1 - product.price / product.compareAt) * 100) : 0;
 
   const addToCart = () => {
     addItem(product, qty);
@@ -25,8 +27,20 @@ export default function ProductBuyPanel({ product }) {
         <StockBadge stock={product.stock} />
       </div>
 
-      <div className="mt-4 text-3xl font-semibold text-ink">
-        {formatPrice(product.price)}
+      <div className="mt-4 flex flex-wrap items-baseline gap-3">
+        <span className="text-3xl font-semibold text-ink">
+          {formatPrice(product.price)}
+        </span>
+        {onSale && (
+          <>
+            <span className="text-lg text-ink-muted line-through">
+              {formatPrice(product.compareAt)}
+            </span>
+            <span className="chip bg-accent-500 font-semibold text-night">
+              -{off}% OFF
+            </span>
+          </>
+        )}
       </div>
 
       {s.available ? (
