@@ -27,7 +27,7 @@ export default function Footer() {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent-500 px-5 py-2.5 text-sm font-semibold text-night transition hover:bg-accent-400"
+              className="btn-accent mt-6 px-5 py-2.5 text-sm"
             >
               <svg
                 viewBox="0 0 24 24"

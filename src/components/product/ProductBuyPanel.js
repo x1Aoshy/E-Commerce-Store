@@ -36,8 +36,8 @@ export default function ProductBuyPanel({ product }) {
             <span className="text-lg text-ink-muted line-through">
               {formatPrice(product.compareAt)}
             </span>
-            <span className="rounded-[3px] bg-accent-500 px-2 py-0.5 text-xs font-bold text-night">
-              -{off}% OFF
+            <span className="text-sm font-medium text-accent-300">
+              -{off}%
             </span>
           </>
         )}

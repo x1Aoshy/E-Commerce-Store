@@ -32,11 +32,6 @@ export default function ProductCard({ product }) {
           product={product}
           className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        {onSale && (
-          <span className="absolute right-3 top-3 rounded-[3px] bg-accent-500 px-2 py-0.5 text-[11px] font-bold text-night">
-            -{off}% OFF
-          </span>
-        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
@@ -56,8 +51,11 @@ export default function ProductCard({ product }) {
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div className="flex flex-col leading-tight">
             {onSale && (
-              <span className="text-xs text-ink-muted line-through">
-                {formatPrice(product.compareAt)}
+              <span className="flex items-baseline gap-1.5 text-xs">
+                <span className="text-ink-muted line-through">
+                  {formatPrice(product.compareAt)}
+                </span>
+                <span className="font-medium text-accent-300">-{off}%</span>
               </span>
             )}
             <span className="text-lg font-semibold text-ink">
