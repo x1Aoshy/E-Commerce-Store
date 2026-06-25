@@ -10,9 +10,12 @@ export default function Recommended({ products = [] }) {
   return (
     <section className="container-content pt-16 sm:pt-20">
       <Reveal>
-        <span className="chip bg-accent-500/10 text-accent-300 ring-1 ring-accent-500/30">
-          Recomendados
-        </span>
+        <div className="flex items-center gap-3 text-accent-300">
+          <span className="h-px w-8 bg-accent-400/70" />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+            Recomendados
+          </span>
+        </div>
         <h2 className="mt-3 text-2xl font-semibold text-ink sm:text-3xl">
           Elegidos para vos
         </h2>
