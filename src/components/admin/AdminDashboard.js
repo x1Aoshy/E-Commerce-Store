@@ -221,24 +221,27 @@ function RestockForm({ product, onDone }) {
 
 // Editor de medios (dentro de un modal): sube/quita fotos y videos del producto
 // y guarda el arreglo de URLs.
-function ProductMediaForm({ product, onDone }) {
+function ProductMediaForm({ product, onSaved, onClose }) {
   const [images, setImages] = useState(
     Array.isArray(product.images) ? product.images : []
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  async function save() {
+  // Persiste apenas se sube o se quita un medio: no hay botón "guardar" que se
+  // pueda olvidar. El preview local cambia al instante y se publica en la tienda.
+  async function persist(next) {
+    setImages(next);
     setSaving(true);
     setError(null);
     try {
       const res = await fetch(`/api/products/${product.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images }),
+        body: JSON.stringify({ images: next }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) onDone(data.product);
+      if (res.ok) onSaved?.(data.product);
       else setError(data.error || "No se pudieron guardar las imágenes.");
     } catch {
       setError("Error de conexión.");
@@ -249,11 +252,16 @@ function ProductMediaForm({ product, onDone }) {
 
   return (
     <div>
-      <MediaManager value={images} onChange={setImages} />
+      <MediaManager value={images} onChange={persist} />
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
-      <button onClick={save} disabled={saving} className="btn-accent mt-4 w-full py-3">
-        {saving ? "Guardando…" : "Guardar imágenes"}
-      </button>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="text-xs text-ink-muted">
+          {saving ? "Guardando…" : "Se guarda solo. Ya queda publicado en la tienda."}
+        </span>
+        <button onClick={onClose} className="btn-primary px-4 py-2 text-[13px]">
+          Listo
+        </button>
+      </div>
     </div>
   );
 }
@@ -399,12 +407,12 @@ function InventarioView({ products, categories, setProducts }) {
         {mediaProduct && (
           <ProductMediaForm
             product={mediaProduct}
-            onDone={(updated) => {
+            onSaved={(updated) =>
               setProducts((prev) =>
                 prev.map((x) => (x.id === updated.id ? updated : x))
-              );
-              setMediaProduct(null);
-            }}
+              )
+            }
+            onClose={() => setMediaProduct(null)}
           />
         )}
       </Modal>
