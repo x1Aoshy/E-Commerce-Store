@@ -6,6 +6,17 @@ export const dynamic = "force-dynamic";
 
 const BUCKET = "product-media";
 const MAX_BYTES = 15 * 1024 * 1024; // 15 MB
+
+// Crea el bucket público la primera vez (idempotente) y se asegura de que sea
+// público aunque ya existiera privado. Así no hay que configurar nada a mano en
+// Supabase: con sólo definir las variables de entorno, las subidas funcionan.
+let bucketReady = false;
+async function ensureBucket(supabase) {
+  if (bucketReady) return;
+  await supabase.storage.createBucket(BUCKET, { public: true });
+  await supabase.storage.updateBucket(BUCKET, { public: true });
+  bucketReady = true;
+}
 const ALLOWED = [
   "image/jpeg",
   "image/png",
@@ -49,6 +60,7 @@ export async function POST(req) {
     const bytes = Buffer.from(await file.arrayBuffer());
 
     const supabase = getSupabase();
+    await ensureBucket(supabase);
     const { error } = await supabase.storage
       .from(BUCKET)
       .upload(path, bytes, { contentType: type, upsert: false });
