@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import MediaManager from "./MediaManager";
 
 const EMPTY = {
   name: "",
@@ -10,6 +11,7 @@ const EMPTY = {
   short: "",
   description: "",
   featured: false,
+  images: [],
 };
 
 export default function NewProductForm({ categories = [], onCreated, onCancel }) {
@@ -120,6 +122,10 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
             onChange={(e) => set("description", e.target.value)}
             placeholder="Detalle del producto para la ficha"
           />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label">Imágenes / video</label>
+          <MediaManager value={form.images} onChange={(imgs) => set("images", imgs)} />
         </div>
       </div>
 

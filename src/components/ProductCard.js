@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import ProductImage from "./ProductImage";
+import ProductGallery from "./ProductGallery";
 import StockBadge, { stockStatus } from "./StockBadge";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
@@ -23,16 +23,13 @@ export default function ProductCard({ product }) {
 
   return (
     <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-card">
-      <Link
-        href={href}
-        className="relative block aspect-[4/3] w-full overflow-hidden"
-        aria-label={`Ver ${product.name}`}
-      >
-        <ProductImage
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <ProductGallery
           product={product}
-          className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-105"
+          href={href}
+          className="transition-transform duration-500 ease-out group-hover:scale-105"
         />
-      </Link>
+      </div>
 
       <div className="flex flex-1 flex-col p-4">
         <div className="mb-1.5 flex items-center justify-between gap-2">

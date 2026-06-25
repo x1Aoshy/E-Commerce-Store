@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useCart } from "@/context/CartContext";
@@ -41,6 +41,8 @@ function goCategory(cat) {
 export default function Header({ categories = [] }) {
   const { count, openCart, hydrated } = useCart();
   const [scrolled, setScrolled] = useState(false);
+  const [bump, setBump] = useState(false);
+  const prevCount = useRef(count);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -48,6 +50,17 @@ export default function Header({ categories = [] }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Anima el botón del carrito cuando aumenta la cantidad (se agregó algo).
+  useEffect(() => {
+    if (count > prevCount.current) {
+      setBump(true);
+      const t = setTimeout(() => setBump(false), 450);
+      prevCount.current = count;
+      return () => clearTimeout(t);
+    }
+    prevCount.current = count;
+  }, [count]);
 
   const navCats = ["Todos", ...categories];
 
@@ -66,7 +79,9 @@ export default function Header({ categories = [] }) {
 
         <button
           onClick={openCart}
-          className="relative inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95"
+          className={`relative inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95 ${
+            bump ? "animate-cart-bump border-accent-500/50" : ""
+          }`}
           aria-label="Abrir carrito"
         >
           <CartIcon />

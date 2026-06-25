@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function InventoryRow({ product, onUpdated, onDeleted, onRestock }) {
+export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia }) {
   const [price, setPrice] = useState(String(product.price));
   const [compareAt, setCompareAt] = useState(String(product.compareAt || ""));
   const [stock, setStock] = useState(Number(product.stock));
@@ -147,6 +147,23 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock 
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5">
+            <button
+              onClick={() => onEditMedia?.(product)}
+              aria-label="Imágenes"
+              title="Imágenes / video"
+              className="relative flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <circle cx="8.5" cy="10" r="1.5" />
+                <path d="M21 16l-5-5L5 19" />
+              </svg>
+              {Array.isArray(product.images) && product.images.length > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-500 px-1 text-[9px] font-semibold text-night">
+                  {product.images.length}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => onRestock?.(product)}
               aria-label="Restock"

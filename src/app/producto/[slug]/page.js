@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
 import AutoRefresh from "@/components/AutoRefresh";
-import ProductImage from "@/components/ProductImage";
+import ProductGallery from "@/components/ProductGallery";
 import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
 import ProductBuyPanel from "@/components/product/ProductBuyPanel";
@@ -68,8 +68,8 @@ export default async function ProductPage({ params }) {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
           <Reveal>
-            <div className="card overflow-hidden">
-              <ProductImage product={product} className="aspect-square w-full" />
+            <div className="card aspect-square overflow-hidden">
+              <ProductGallery product={product} controls />
             </div>
           </Reveal>
 

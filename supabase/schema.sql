@@ -25,6 +25,7 @@ create table if not exists public.products (
   short       text not null default '',
   description text not null default '',
   compare_at  integer not null default 0,   -- precio anterior (para mostrar descuentos OFF)
+  images      jsonb not null default '[]'::jsonb,  -- fotos/videos del producto (URLs)
   created_at  timestamptz not null default now()
 );
 
@@ -49,10 +50,18 @@ alter table public.orders add column if not exists extra integer not null defaul
 alter table public.orders add column if not exists extra_label text not null default '';
 alter table public.orders add column if not exists seller text not null default '';
 alter table public.products add column if not exists compare_at integer not null default 0;
+alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
 
 -- 3) Seguridad (RLS) ---------------------------------------------------------
 alter table public.products enable row level security;
 alter table public.orders   enable row level security;
+
+-- 3.b) Storage: bucket PÚBLICO para fotos/videos de productos. Las subidas las
+--      hace el servidor con la service role (omite RLS); la lectura es pública
+--      por ser un bucket público. Idempotente.
+insert into storage.buckets (id, name, public)
+values ('product-media', 'product-media', true)
+on conflict (id) do nothing;
 
 -- 4) Catálogo inicial de ejemplo (precios en córdobas, ~1.000 a 3.000) -------
 insert into public.products (id, slug, name, category, price, stock, featured, short, description) values

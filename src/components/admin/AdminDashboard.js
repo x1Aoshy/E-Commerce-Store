@@ -9,6 +9,7 @@ import DashboardCharts from "./DashboardCharts";
 import InventoryRow from "./InventoryRow";
 import NewProductForm from "./NewProductForm";
 import ManualOrderForm from "./ManualOrderForm";
+import MediaManager from "./MediaManager";
 import OrderCard from "./OrderCard";
 
 const VIEW_TITLES = {
@@ -218,9 +219,49 @@ function RestockForm({ product, onDone }) {
   );
 }
 
+// Editor de medios (dentro de un modal): sube/quita fotos y videos del producto
+// y guarda el arreglo de URLs.
+function ProductMediaForm({ product, onDone }) {
+  const [images, setImages] = useState(
+    Array.isArray(product.images) ? product.images : []
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) onDone(data.product);
+      else setError(data.error || "No se pudieron guardar las imágenes.");
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div>
+      <MediaManager value={images} onChange={setImages} />
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      <button onClick={save} disabled={saving} className="btn-accent mt-4 w-full py-3">
+        {saving ? "Guardando…" : "Guardar imágenes"}
+      </button>
+    </div>
+  );
+}
+
 function InventarioView({ products, categories, setProducts }) {
   const [addOpen, setAddOpen] = useState(false);
   const [restock, setRestock] = useState(null); // producto a reabastecer
+  const [mediaProduct, setMediaProduct] = useState(null); // producto a editar medios
   const [query, setQuery] = useState("");
 
   // Filtra la tabla por nombre y categoría mientras se escribe.
@@ -310,6 +351,7 @@ function InventarioView({ products, categories, setProducts }) {
                         setProducts((prev) => prev.filter((x) => x.id !== id))
                       }
                       onRestock={(prod) => setRestock(prod)}
+                      onEditMedia={(prod) => setMediaProduct(prod)}
                     />
                   ))}
                 </tbody>
@@ -344,6 +386,24 @@ function InventarioView({ products, categories, setProducts }) {
                 prev.map((x) => (x.id === updated.id ? updated : x))
               );
               setRestock(null);
+            }}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        open={!!mediaProduct}
+        onClose={() => setMediaProduct(null)}
+        title={mediaProduct ? `Imágenes · ${mediaProduct.name}` : "Imágenes"}
+      >
+        {mediaProduct && (
+          <ProductMediaForm
+            product={mediaProduct}
+            onDone={(updated) => {
+              setProducts((prev) =>
+                prev.map((x) => (x.id === updated.id ? updated : x))
+              );
+              setMediaProduct(null);
             }}
           />
         )}

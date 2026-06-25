@@ -73,12 +73,18 @@ module.exports = {
           from: { opacity: "0", transform: "scale(0.96)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "cart-bump": {
+          "0%, 100%": { transform: "scale(1) rotate(0deg)" },
+          "30%": { transform: "scale(1.18) rotate(-7deg)" },
+          "60%": { transform: "scale(0.94) rotate(5deg)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.5s ease forwards",
         "slide-in": "slide-in 0.28s cubic-bezier(0.22,1,0.36,1) forwards",
         pop: "pop 0.32s cubic-bezier(0.22,1,0.36,1)",
         "scale-in": "scale-in 0.24s ease forwards",
+        "cart-bump": "cart-bump 0.45s ease",
       },
     },
   },
