@@ -21,7 +21,7 @@ export default function MobileCartBar() {
       <button
         onClick={openCart}
         tabIndex={show ? 0 : -1}
-        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-surface p-2 pl-4 text-left text-ink shadow-card transition active:scale-[0.98]"
+        className="flex w-full items-center gap-3 rounded-[4px] border border-white/10 bg-surface p-2 pl-4 text-left text-ink shadow-card transition active:scale-[0.98]"
       >
         <span className="flex h-6 w-6 items-center justify-center text-accent-300">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -38,7 +38,7 @@ export default function MobileCartBar() {
             {formatPrice(total)}
           </span>
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-xl bg-accent-500 px-4 py-2.5 text-sm font-semibold text-night">
+        <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-accent-500 px-4 py-2.5 text-sm font-semibold text-night">
           Ver pedido
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 6l6 6-6 6" />

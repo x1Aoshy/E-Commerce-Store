@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { printInvoice } from "@/lib/invoice";
 import Modal from "@/components/Modal";
+import { useToast } from "@/components/Toast";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
@@ -92,7 +93,7 @@ function PaymentForm({ order, onSave, saving, sellers = [] }) {
             key={m}
             type="button"
             onClick={() => setMethod(m)}
-            className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
+            className={`flex-1 rounded-[4px] border px-3 py-2.5 text-sm font-medium transition ${
               method === m
                 ? "border-accent-500 bg-accent-500/10 text-accent-300"
                 : "border-white/15 text-ink-soft hover:border-white/30"
@@ -148,6 +149,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const [err, setErr] = useState(null);
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
+  const toast = useToast();
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
@@ -168,10 +170,13 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
         onUpdated(data.order);
         return true;
       }
-      setErr(data.error || "No se pudo actualizar el pedido.");
+      const msg = data.error || "No se pudo actualizar el pedido.";
+      setErr(msg);
+      toast.error(msg);
       return false;
     } catch {
       setErr("Error de conexión.");
+      toast.error("Error de conexión.");
       return false;
     } finally {
       setSaving(null);
@@ -185,12 +190,16 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
       const res = await fetch(`/api/orders/${order.id}`, { method: "DELETE" });
       if (res.ok) {
         onDeleted?.(order.id);
+        toast.success("Pedido eliminado");
         return;
       }
       const data = await res.json().catch(() => ({}));
-      setErr(data.error || "No se pudo eliminar la orden.");
+      const msg = data.error || "No se pudo eliminar la orden.";
+      setErr(msg);
+      toast.error(msg);
     } catch {
       setErr("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(null);
     }
@@ -229,7 +238,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             onClick={() =>
               printInvoice({ order, storeName: STORE, currency: CURRENCY, phone: PHONE })
             }
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
+            className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
             aria-label="Imprimir factura"
             title="Imprimir factura"
           >
@@ -261,7 +270,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
       </ul>
 
       {order.customer?.note && (
-        <p className="mt-3 rounded-lg bg-white/5 px-3 py-2 text-xs text-ink-soft">
+        <p className="mt-3 rounded-[4px] bg-white/5 px-3 py-2 text-xs text-ink-soft">
           {order.customer.note}
         </p>
       )}
@@ -269,7 +278,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
       {err && <p className="mt-3 text-xs text-red-300">{err}</p>}
 
       {confirmDel ? (
-        <div className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2">
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-[4px] border border-red-500/30 bg-red-500/5 px-3 py-2">
           <span className="text-xs text-ink-soft">
             ¿Eliminar del sistema? Devuelve stock si no estaba cancelada.
           </span>
@@ -277,7 +286,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             <button
               onClick={del}
               disabled={busy}
-              className="rounded-full bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
+              className="rounded-[4px] bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
             >
               {saving === "delete" ? "…" : "Sí, eliminar"}
             </button>
@@ -292,16 +301,19 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
       ) : cancelled ? (
         <div className="mt-3 flex items-stretch gap-2">
           <button
-            onClick={() => patch({ status: "pendiente" }, "reactivate")}
+            onClick={async () => {
+              const ok = await patch({ status: "pendiente" }, "reactivate");
+              if (ok) toast.success("Pedido reactivado");
+            }}
             disabled={busy}
-            className="flex-1 rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:pointer-events-none disabled:opacity-40"
+            className="flex-1 rounded-[4px] border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:pointer-events-none disabled:opacity-40"
           >
             {saving === "reactivate" ? "…" : "Reactivar pedido"}
           </button>
           <button
             onClick={() => setConfirmDel(true)}
             disabled={busy}
-            className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
+            className="rounded-[4px] border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
           >
             Eliminar
           </button>
@@ -309,11 +321,19 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
       ) : (
         <>
           <button
-            onClick={() =>
-              patch({ status: confirmed ? "pendiente" : "confirmada" }, "toggle")
-            }
+            onClick={async () => {
+              const toCompleted = !confirmed;
+              const ok = await patch(
+                { status: toCompleted ? "confirmada" : "pendiente" },
+                "toggle"
+              );
+              if (ok) {
+                if (toCompleted) toast.success("Pedido completado");
+                else toast.info("Pedido pendiente");
+              }
+            }}
             disabled={busy}
-            className={`mt-3 w-full rounded-full py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
+            className={`mt-3 w-full rounded-[4px] py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
               confirmed
                 ? "border border-white/15 text-ink-soft hover:border-white/35"
                 : "bg-accent-500 text-night hover:bg-accent-400"
@@ -329,15 +349,18 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             <button
               onClick={() => setShowPay(true)}
               disabled={busy}
-              className="flex-1 rounded-full border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:opacity-40"
+              className="flex-1 rounded-[4px] border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:opacity-40"
             >
               Pago / Extra
             </button>
             <button
-              onClick={() => patch({ status: "cancelada" }, "cancel")}
+              onClick={async () => {
+                const ok = await patch({ status: "cancelada" }, "cancel");
+                if (ok) toast.info("Pedido cancelado");
+              }}
               disabled={busy}
               title="Cancela el pedido y libera el stock reservado"
-              className="rounded-full border border-amber-400/30 px-4 py-2 text-[13px] font-medium text-amber-300 transition hover:border-amber-400/50 hover:bg-amber-400/10 disabled:opacity-40"
+              className="rounded-[4px] border border-amber-400/30 px-4 py-2 text-[13px] font-medium text-amber-300 transition hover:border-amber-400/50 hover:bg-amber-400/10 disabled:opacity-40"
             >
               {saving === "cancel" ? "…" : "Cancelar"}
             </button>
@@ -345,7 +368,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
               onClick={() => setConfirmDel(true)}
               disabled={busy}
               aria-label="Eliminar pedido"
-              className="rounded-full border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
+              className="rounded-[4px] border border-red-500/30 px-4 py-2 text-[13px] font-medium text-red-400 transition hover:border-red-500/50 hover:bg-red-500/10 disabled:opacity-40"
             >
               Eliminar
             </button>
@@ -360,7 +383,10 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           saving={saving === "pay"}
           onSave={async (body) => {
             const ok = await patch(body, "pay");
-            if (ok) setShowPay(false);
+            if (ok) {
+              toast.success("Pago guardado");
+              setShowPay(false);
+            }
           }}
         />
       </Modal>

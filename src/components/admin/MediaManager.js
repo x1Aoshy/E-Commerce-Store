@@ -49,7 +49,7 @@ export default function MediaManager({ value = [], onChange }) {
         {items.map((url, idx) => (
           <div
             key={url}
-            className="group relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-surface-soft"
+            className="group relative aspect-square overflow-hidden rounded-[4px] border border-white/10 bg-surface-soft"
           >
             {isVideo(url) ? (
               <video src={url} className="h-full w-full object-cover" muted playsInline preload="metadata" />
@@ -96,7 +96,7 @@ export default function MediaManager({ value = [], onChange }) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          className="flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-white/20 text-ink-muted transition hover:border-accent-400 hover:text-accent-300 disabled:opacity-50"
+          className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[4px] border border-dashed border-white/20 text-ink-muted transition hover:border-accent-400 hover:text-accent-300 disabled:opacity-50"
         >
           {busy ? (
             <span className="text-[11px]">Subiendo…</span>
@@ -122,7 +122,7 @@ export default function MediaManager({ value = [], onChange }) {
 
       {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
       <p className="mt-2 text-[11px] text-ink-muted">
-        Hasta 15 MB por archivo. La primera es la portada (tocá “Portada” para cambiarla).
+        La primera imagen es la portada.
       </p>
     </div>
   );

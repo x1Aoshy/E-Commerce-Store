@@ -1,5 +1,6 @@
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
@@ -15,7 +16,9 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body>
         <Background />
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </CartProvider>
       </body>
     </html>
   );

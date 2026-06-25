@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MediaManager from "./MediaManager";
+import { useToast } from "@/components/Toast";
 
 const EMPTY = {
   name: "",
@@ -18,6 +19,7 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
   const [form, setForm] = useState({ ...EMPTY });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const toast = useToast();
 
   function set(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -46,11 +48,15 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
       if (res.ok) {
         setForm({ ...EMPTY });
         onCreated(data.product);
+        toast.success("Producto creado");
       } else {
-        setError(data.error || "No se pudo crear el producto.");
+        const msg = data.error || "No se pudo crear el producto.";
+        setError(msg);
+        toast.error(msg);
       }
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(false);
     }

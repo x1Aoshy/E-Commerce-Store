@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/format";
+import { useToast } from "@/components/Toast";
 
 function WhatsAppIcon({ className = "h-5 w-5" }) {
   return (
@@ -26,6 +27,7 @@ export default function CartDrawer() {
   const { items, isOpen, closeCart, updateQty, removeItem, total, clear } =
     useCart();
   const router = useRouter();
+  const toast = useToast();
 
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
@@ -80,8 +82,10 @@ export default function CartDrawer() {
 
       if (!res.ok) {
         if (waWindow) waWindow.close();
-        setError(data.error || "No se pudo procesar el pedido.");
+        const msg = data.error || "No se pudo procesar el pedido.";
+        setError(msg);
         setConflicts(data.conflicts || []);
+        toast.error(msg);
         setLoading(false);
         return;
       }
@@ -90,6 +94,7 @@ export default function CartDrawer() {
       else window.location.href = data.whatsappUrl;
 
       setSuccess({ code: data.order.code, whatsappUrl: data.whatsappUrl });
+      toast.success("¡Pedido creado!");
       clear();
       setName("");
       setNote("");
@@ -97,6 +102,7 @@ export default function CartDrawer() {
     } catch {
       if (waWindow) waWindow.close();
       setError("Error de conexión. Intentá de nuevo.");
+      toast.error("Error de conexión. Intentá de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +118,7 @@ export default function CartDrawer() {
       />
 
       <aside
-        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-2xl border-t border-white/10 bg-surface shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none md:border-l md:border-t-0 ${
+        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-[4px] border-t border-white/10 bg-surface shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none md:border-l md:border-t-0 ${
           visible
             ? "translate-y-0 md:translate-x-0"
             : "translate-y-full md:translate-y-0 md:translate-x-full"
@@ -182,7 +188,7 @@ export default function CartDrawer() {
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="flex gap-3 rounded-xl border border-white/10 p-3"
+                    className="flex gap-3 rounded-[4px] border border-white/10 p-3"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
@@ -192,7 +198,7 @@ export default function CartDrawer() {
                         {formatPrice(item.price)} c/u
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded-lg border border-white/15">
+                        <div className="flex items-center rounded-[4px] border border-white/15">
                           <button
                             onClick={() => updateQty(item.id, item.quantity - 1)}
                             className="flex h-9 w-9 items-center justify-center text-ink-soft transition hover:text-ink active:scale-90"
@@ -228,7 +234,7 @@ export default function CartDrawer() {
               </ul>
 
               {error && (
-                <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
+                <div className="mt-4 rounded-[4px] border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
                   <p className="font-medium">{error}</p>
                   {conflicts.length > 0 && (
                     <ul className="mt-1 list-inside list-disc text-xs">

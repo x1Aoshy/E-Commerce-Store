@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import { useToast } from "@/components/Toast";
 
 // Formulario (para usar dentro de un Modal) para registrar un pedido MANUAL:
 // ventas hechas antes o por fuera de la tienda. Descuenta stock como una venta
@@ -23,6 +24,7 @@ export default function ManualOrderForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [conflicts, setConflicts] = useState([]);
+  const toast = useToast();
 
   const setQty = (id, q) => setQtys((m) => ({ ...m, [id]: Math.max(0, q) }));
 
@@ -63,12 +65,16 @@ export default function ManualOrderForm({
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         onCreated?.(data.order);
+        toast.success("Pedido creado");
       } else {
-        setError(data.error || "No se pudo crear el pedido.");
+        const msg = data.error || "No se pudo crear el pedido.";
+        setError(msg);
         setConflicts(data.conflicts || []);
+        toast.error(msg);
       }
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(false);
     }
@@ -76,22 +82,18 @@ export default function ManualOrderForm({
 
   return (
     <form onSubmit={submit}>
-      <p className="text-xs text-ink-muted">
-        Registrá una venta hecha antes o por fuera de la tienda. Descuenta stock.
-      </p>
-
       {products.length === 0 ? (
-        <p className="mt-4 text-sm text-ink-muted">
+        <p className="text-sm text-ink-muted">
           No hay productos cargados todavía.
         </p>
       ) : (
-        <div className="no-scrollbar mt-3 max-h-56 space-y-1.5 overflow-y-auto">
+        <div className="no-scrollbar max-h-56 space-y-1.5 overflow-y-auto">
           {products.map((p) => {
             const q = qtys[p.id] || 0;
             return (
               <div
                 key={p.id}
-                className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition ${
+                className={`flex items-center gap-3 rounded-[4px] border px-3 py-2 transition ${
                   q > 0 ? "border-accent-500/40 bg-accent-500/5" : "border-white/10"
                 }`}
               >
@@ -101,7 +103,7 @@ export default function ManualOrderForm({
                     {formatPrice(p.price)} · stock {p.stock}
                   </div>
                 </div>
-                <div className="flex items-center rounded-lg border border-white/15">
+                <div className="flex items-center rounded-[4px] border border-white/15">
                   <button
                     type="button"
                     onClick={() => setQty(p.id, q - 1)}
@@ -206,7 +208,7 @@ export default function ManualOrderForm({
       </div>
 
       {error && (
-        <div className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
+        <div className="mt-3 rounded-[4px] border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
           <p className="font-medium">{error}</p>
           {conflicts.length > 0 && (
             <ul className="mt-1 list-inside list-disc text-xs">

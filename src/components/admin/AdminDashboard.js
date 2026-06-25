@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import Logo from "@/components/Logo";
 import Modal from "@/components/Modal";
+import { LoadingOverlay } from "@/components/Spinner";
+import { useToast } from "@/components/Toast";
 import AdminSidebar from "./AdminSidebar";
 import DashboardCharts from "./DashboardCharts";
 import InventoryRow from "./InventoryRow";
@@ -109,11 +111,11 @@ export default function AdminDashboard({ onLogout }) {
 
         <main className="container-content py-8">
           {loadError && (
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-200 sm:flex-row sm:items-center">
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-[4px] border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-200 sm:flex-row sm:items-center">
               <p>{loadError}</p>
               <button
                 onClick={load}
-                className="shrink-0 rounded-full border border-amber-400/40 px-4 py-1.5 text-[13px] font-medium text-amber-100 transition hover:bg-amber-400/15"
+                className="shrink-0 rounded-[4px] border border-amber-400/40 px-4 py-1.5 text-[13px] font-medium text-amber-100 transition hover:bg-amber-400/15"
               >
                 Reintentar
               </button>
@@ -121,7 +123,7 @@ export default function AdminDashboard({ onLogout }) {
           )}
 
           {loading ? (
-            <p className="text-sm text-ink-muted">Cargando…</p>
+            <LoadingOverlay />
           ) : activeView === "resumen" ? (
             <ResumenView stats={stats} products={products} orders={orders} />
           ) : activeView === "inventario" ? (
@@ -164,6 +166,7 @@ function RestockForm({ product, onDone }) {
   const [units, setUnits] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const toast = useToast();
   const add = Number(units) || 0;
   const next = Number(product.stock) + add;
 
@@ -182,10 +185,17 @@ function RestockForm({ product, onDone }) {
         body: JSON.stringify({ stock: next }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) onDone(data.product);
-      else setError(data.error || "No se pudo actualizar el stock.");
+      if (res.ok) {
+        onDone(data.product);
+        toast.success("Stock actualizado");
+      } else {
+        const msg = data.error || "No se pudo actualizar el stock.";
+        setError(msg);
+        toast.error(msg);
+      }
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(false);
     }
@@ -227,6 +237,7 @@ function ProductMediaForm({ product, onSaved, onClose }) {
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const toast = useToast();
 
   // Persiste apenas se sube o se quita un medio: no hay botón "guardar" que se
   // pueda olvidar. El preview local cambia al instante y se publica en la tienda.
@@ -241,10 +252,17 @@ function ProductMediaForm({ product, onSaved, onClose }) {
         body: JSON.stringify({ images: next }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) onSaved?.(data.product);
-      else setError(data.error || "No se pudieron guardar las imágenes.");
+      if (res.ok) {
+        onSaved?.(data.product);
+        toast.success("Imágenes actualizadas");
+      } else {
+        const msg = data.error || "No se pudieron guardar las imágenes.";
+        setError(msg);
+        toast.error(msg);
+      }
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(false);
     }
@@ -254,10 +272,8 @@ function ProductMediaForm({ product, onSaved, onClose }) {
     <div>
       <MediaManager value={images} onChange={persist} />
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <span className="text-xs text-ink-muted">
-          {saving ? "Guardando…" : "Se guarda solo. Ya queda publicado en la tienda."}
-        </span>
+      <div className="mt-3 flex items-center justify-end gap-3">
+        {saving && <span className="text-xs text-ink-muted">Guardando…</span>}
         <button onClick={onClose} className="btn-primary px-4 py-2 text-[13px]">
           Listo
         </button>
@@ -645,9 +661,6 @@ function FinanceView({ orders }) {
           <h3 className="text-sm font-semibold text-ink">
             Ingresos por método de pago
           </h3>
-          <p className="mt-0.5 text-xs text-ink-muted">
-            Sólo pedidos confirmados.
-          </p>
           <div className="mt-4 space-y-3">
             {methodRows.map((r) => (
               <div key={r.label}>
@@ -657,9 +670,9 @@ function FinanceView({ orders }) {
                     {formatPrice(r.value)}
                   </span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/[0.07]">
+                <div className="h-2.5 w-full overflow-hidden rounded-[3px] bg-white/[0.07]">
                   <div
-                    className={`h-full rounded-full ${r.tone} transition-all duration-500`}
+                    className={`h-full rounded-[3px] ${r.tone} transition-all duration-500`}
                     style={{ width: `${Math.round((r.value / maxMethod) * 100)}%` }}
                   />
                 </div>
@@ -688,10 +701,6 @@ function FinanceView({ orders }) {
               <span className="font-semibold text-ink">{f.unidades}</span>
             </li>
           </ul>
-          <p className="mt-3 text-xs text-ink-muted">
-            Asigná el método de pago de cada pedido (botón “Pago / Extra” en
-            Órdenes) para ver el desglose completo.
-          </p>
         </div>
       </div>
     </div>

@@ -79,7 +79,7 @@ export default function Header({ categories = [] }) {
 
         <button
           onClick={openCart}
-          className={`relative inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95 ${
+          className={`relative inline-flex items-center gap-2 rounded-[4px] border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95 ${
             bump ? "animate-cart-bump border-accent-500/50" : ""
           }`}
           aria-label="Abrir carrito"
@@ -105,7 +105,7 @@ export default function Header({ categories = [] }) {
                 <button
                   key={c}
                   onClick={() => goCategory(c)}
-                  className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2.5 text-[13px] font-medium text-ink-soft transition hover:text-accent-300"
+                  className="shrink-0 whitespace-nowrap rounded-[4px] px-3 py-2.5 text-[13px] font-medium text-ink-soft transition hover:text-accent-300"
                 >
                   {c}
                 </button>

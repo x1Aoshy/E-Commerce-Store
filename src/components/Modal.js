@@ -24,14 +24,14 @@ export default function Modal({ open, onClose, title, children, maxW = "max-w-lg
       onClick={onClose}
     >
       <div
-        className={`card w-full ${maxW} max-h-[90vh] animate-scale-in overflow-y-auto rounded-b-none rounded-t-2xl p-5 shadow-card sm:rounded-2xl`}
+        className={`card w-full ${maxW} max-h-[90vh] animate-scale-in overflow-y-auto rounded-[4px] p-5 shadow-card`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-base font-semibold text-ink">{title}</h3>
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition hover:bg-white/10 hover:text-ink"
+            className="flex h-9 w-9 items-center justify-center rounded-[4px] text-ink-soft transition hover:bg-white/10 hover:text-ink"
             aria-label="Cerrar"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

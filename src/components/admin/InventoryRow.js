@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/Toast";
 
 export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia }) {
+  const toast = useToast();
   const [price, setPrice] = useState(String(product.price));
   const [compareAt, setCompareAt] = useState(String(product.compareAt || ""));
   const [stock, setStock] = useState(Number(product.stock));
@@ -33,10 +35,17 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) onUpdated(data.product);
-      else setError(data.error || "No se pudo guardar.");
+      if (res.ok) {
+        onUpdated(data.product);
+        toast.success("Cambios guardados");
+      } else {
+        const msg = data.error || "No se pudo guardar.";
+        setError(msg);
+        toast.error(msg);
+      }
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setSaving(false);
     }
@@ -49,12 +58,16 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
       const res = await fetch(`/api/products/${product.id}`, { method: "DELETE" });
       if (res.ok) {
         onDeleted?.(product.id);
+        toast.success("Producto eliminado");
         return; // la fila se desmonta
       }
       const data = await res.json().catch(() => ({}));
-      setError(data.error || "No se pudo eliminar.");
+      const msg = data.error || "No se pudo eliminar.";
+      setError(msg);
+      toast.error(msg);
     } catch {
       setError("Error de conexión.");
+      toast.error("Error de conexión.");
     } finally {
       setDeleting(false);
     }
@@ -74,7 +87,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
           placeholder="Precio"
-          className="w-24 rounded-lg border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
+          className="w-24 rounded-[4px] border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
         />
         <input
           value={compareAt}
@@ -82,11 +95,11 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           inputMode="numeric"
           placeholder="Antes (OFF)"
           title="Precio anterior tachado. Dejá vacío o 0 para no mostrar descuento."
-          className="mt-1.5 w-24 rounded-lg border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
+          className="mt-1.5 w-24 rounded-[4px] border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
         />
       </td>
       <td className="px-4 py-3">
-        <div className="inline-flex items-center rounded-lg border border-white/15">
+        <div className="inline-flex items-center rounded-[4px] border border-white/15">
           <button
             onClick={() => setStock((s) => Math.max(0, Number(s) - 1))}
             className="flex h-8 w-8 items-center justify-center text-ink-soft hover:text-ink"
@@ -114,7 +127,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
       <td className="px-4 py-3">
         <button
           onClick={() => setFeatured((f) => !f)}
-          className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${
+          className={`flex h-8 w-8 items-center justify-center rounded-[4px] transition ${
             featured
               ? "bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30"
               : "text-ink-muted ring-1 ring-white/10 hover:ring-white/30"
@@ -134,7 +147,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
             <button
               onClick={remove}
               disabled={deleting}
-              className="rounded-full bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
+              className="rounded-[4px] bg-red-500/15 px-3 py-1.5 text-[12px] font-medium text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-500/25 disabled:opacity-50"
             >
               {deleting ? "…" : "Sí, eliminar"}
             </button>
@@ -151,7 +164,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
               onClick={() => onEditMedia?.(product)}
               aria-label="Imágenes"
               title="Imágenes / video"
-              className="relative flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+              className="relative flex h-8 w-8 items-center justify-center rounded-[4px] text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -168,7 +181,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
               onClick={() => onRestock?.(product)}
               aria-label="Restock"
               title="Sumar stock"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="9" />
@@ -186,7 +199,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
               onClick={() => setConfirming(true)}
               aria-label="Eliminar producto"
               title="Eliminar producto"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted ring-1 ring-white/10 transition hover:text-red-300 hover:ring-red-500/40"
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-ink-muted ring-1 ring-white/10 transition hover:text-red-300 hover:ring-red-500/40"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />

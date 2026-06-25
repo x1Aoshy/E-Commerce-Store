@@ -95,16 +95,16 @@
   }
 
   .card {
-    @apply rounded-2xl border border-white/10 bg-surface;
+    @apply rounded-[4px] border border-white/10 bg-surface;
   }
   .input {
-    @apply w-full rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25;
+    @apply w-full rounded-[4px] border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25;
   }
   .label {
     @apply mb-1.5 block text-xs font-medium text-ink-soft;
   }
   .chip {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium;
+    @apply inline-flex items-center rounded-[3px] px-2.5 py-0.5 text-[11px] font-medium;
   }
 
   /* Oculta la scrollbar (p. ej. en la fila de filtros deslizable en mobile). */
@@ -114,6 +114,39 @@
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Anillo giratorio reutilizable para spinners y toasts de "loading". */
+  .spin-ring {
+    animation: spin-ring 0.7s linear infinite;
+  }
+}
+
+/* Animaciones de toast: entran deslizando hacia arriba + fade; salen con
+   fade/scale. ~220ms, planas y suaves. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes spin-ring {
+  to {
+    transform: rotate(360deg);
   }
 }
 
