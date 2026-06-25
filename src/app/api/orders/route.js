@@ -31,6 +31,10 @@ export async function POST(req) {
         items: body.items,
         customer: body.customer,
         status: body.status,
+        paymentMethod: body.paymentMethod,
+        extra: body.extra,
+        extraLabel: body.extraLabel,
+        seller: body.seller,
       });
       if (result.error) {
         return NextResponse.json(

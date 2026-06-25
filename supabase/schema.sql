@@ -9,8 +9,8 @@
 --  Es idempotente: lo podés correr más de una vez sin romper nada.
 --
 --  ¿YA tenías la base creada antes? Corré igual este archivo: la sección 2.b
---  (MIGRACIÓN) agrega las columnas nuevas (método de pago y cargo extra) sin
---  borrar tus datos.
+--  (MIGRACIÓN) agrega las columnas nuevas (método de pago, cargo extra,
+--  vendedor y descuentos) sin borrar tus datos.
 -- ============================================================================
 
 -- 1) Productos ---------------------------------------------------------------
@@ -39,6 +39,7 @@ create table if not exists public.orders (
   payment_method text,                                 -- efectivo | transferencia | null
   extra          integer not null default 0,           -- cargo extra (ej. delivery)
   extra_label    text not null default '',             -- nombre del cargo extra
+  seller         text not null default '',             -- quién facturó / atendió la venta
   created_at     timestamptz not null default now()
 );
 
@@ -46,6 +47,7 @@ create table if not exists public.orders (
 alter table public.orders add column if not exists payment_method text;
 alter table public.orders add column if not exists extra integer not null default 0;
 alter table public.orders add column if not exists extra_label text not null default '';
+alter table public.orders add column if not exists seller text not null default '';
 alter table public.products add column if not exists compare_at integer not null default 0;
 
 -- 3) Seguridad (RLS) ---------------------------------------------------------

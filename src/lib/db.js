@@ -17,7 +17,7 @@ import { getSupabase } from "./supabase";
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at";
 const ORDER_COLUMNS =
-  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label";
+  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller";
 
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const PAYMENT_METHODS = ["efectivo", "transferencia"];
@@ -44,7 +44,13 @@ function mapOrder(row) {
     paymentMethod: row.payment_method || null,
     extra: Number(row.extra) || 0,
     extraLabel: row.extra_label || "",
+    seller: row.seller || "",
   };
+}
+
+// Limpia el nombre del vendedor: recorta espacios y limita la longitud.
+function cleanSeller(value) {
+  return String(value || "").trim().slice(0, 60);
 }
 
 /* ------------------------------- Productos ------------------------------- */
@@ -239,6 +245,7 @@ async function buildOrder({
   extra,
   extraLabel,
   paymentMethod,
+  seller,
   reserve,
 }) {
   const supabase = getSupabase();
@@ -318,6 +325,7 @@ async function buildOrder({
     extra: Math.max(0, Number(extra) || 0),
     extra_label: extraLabel || "",
     payment_method: PAYMENT_METHODS.includes(paymentMethod) ? paymentMethod : null,
+    seller: cleanSeller(seller),
   };
 
   const { data: inserted, error: insErr } = await supabase
@@ -344,6 +352,7 @@ export async function createManualOrder({
   paymentMethod,
   extra,
   extraLabel,
+  seller,
 }) {
   const wanted = status === "pendiente" ? "pendiente" : "confirmada";
   const code = "TS-M" + Math.floor(1000 + Math.random() * 9000);
@@ -355,6 +364,7 @@ export async function createManualOrder({
     extra,
     extraLabel,
     paymentMethod,
+    seller,
     reserve: wanted === "confirmada",
   });
 }
@@ -422,6 +432,7 @@ export async function updateOrder(id, patch) {
   }
   if (patch.extra !== undefined) fields.extra = Math.max(0, Number(patch.extra) || 0);
   if (patch.extraLabel !== undefined) fields.extra_label = patch.extraLabel || "";
+  if (patch.seller !== undefined) fields.seller = cleanSeller(patch.seller);
 
   if (Object.keys(fields).length > 0) {
     const { data, error } = await supabase

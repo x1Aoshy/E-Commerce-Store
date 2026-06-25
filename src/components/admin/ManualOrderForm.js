@@ -6,12 +6,18 @@ import { formatPrice } from "@/lib/format";
 // Formulario (para usar dentro de un Modal) para registrar un pedido MANUAL:
 // ventas hechas antes o por fuera de la tienda. Descuenta stock como una venta
 // normal y permite fijar método de pago y un cargo extra (ej. delivery).
-export default function ManualOrderForm({ products = [], onCreated, onCancel }) {
+export default function ManualOrderForm({
+  products = [],
+  sellers = [],
+  onCreated,
+  onCancel,
+}) {
   const [qtys, setQtys] = useState({});
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [status, setStatus] = useState("confirmada");
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
+  const [seller, setSeller] = useState("");
   const [extra, setExtra] = useState("");
   const [extraLabel, setExtraLabel] = useState("Delivery");
   const [saving, setSaving] = useState(false);
@@ -47,6 +53,7 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
           manual: true,
           status,
           paymentMethod,
+          seller,
           extra: Number(extra) || 0,
           extraLabel,
           items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
@@ -128,6 +135,21 @@ export default function ManualOrderForm({ products = [], onCreated, onCancel }) 
             onChange={(e) => setName(e.target.value)}
             placeholder="Nombre del cliente"
           />
+        </div>
+        <div>
+          <label className="label">Atendido por</label>
+          <input
+            className="input"
+            value={seller}
+            onChange={(e) => setSeller(e.target.value)}
+            placeholder="Quién facturó"
+            list="sellers-list"
+          />
+          <datalist id="sellers-list">
+            {sellers.map((s) => (
+              <option key={s} value={s} />
+            ))}
+          </datalist>
         </div>
         <div>
           <label className="label">Método de pago</label>

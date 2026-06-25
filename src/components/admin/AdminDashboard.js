@@ -377,6 +377,15 @@ function OrdenesView({ orders, setOrders, products }) {
     return c;
   }, [orders]);
 
+  // Lista de personas que ya facturaron antes, para autocompletar (datalist).
+  const sellers = useMemo(
+    () =>
+      Array.from(
+        new Set(orders.map((o) => (o.seller || "").trim()).filter(Boolean))
+      ).sort((a, b) => a.localeCompare(b, "es")),
+    [orders]
+  );
+
   // "Completadas" es la etiqueta para el estado 'confirmada' (no cambia el dato).
   const tabs = [
     { id: "todas", label: "Todas" },
@@ -476,6 +485,7 @@ function OrdenesView({ orders, setOrders, products }) {
                 <OrderCard
                   key={o.id}
                   order={o}
+                  sellers={sellers}
                   onUpdated={(updated) =>
                     setOrders((prev) =>
                       prev.map((x) => (x.id === updated.id ? updated : x))
@@ -498,6 +508,7 @@ function OrdenesView({ orders, setOrders, products }) {
       >
         <ManualOrderForm
           products={products}
+          sellers={sellers}
           onCreated={(order) => {
             setOrders((prev) => [order, ...prev]);
             setManualOpen(false);

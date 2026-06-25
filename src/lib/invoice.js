@@ -65,6 +65,9 @@ export function buildInvoiceHtml({
           order.customer.name
         )}</span></div>`
       : "";
+  const vendedor = order.seller
+    ? `<div class="row"><span>Atendió</span><span>${esc(order.seller)}</span></div>`
+    : "";
   // Desglose de montos: si hay cargo extra mostramos Subtotal + concepto;
   // si no, sólo el TOTAL (= order.total).
   const desglose =
@@ -139,6 +142,7 @@ export function buildInvoiceHtml({
       <div class="row"><span>Código</span><span>${esc(order.code || "")}</span></div>
       <div class="row"><span>Fecha</span><span>${esc(fecha)}</span></div>
       ${cliente}
+      ${vendedor}
     </div>
 
     <hr/>

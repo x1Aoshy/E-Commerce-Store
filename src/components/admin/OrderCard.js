@@ -60,14 +60,29 @@ function PaymentChip({ method }) {
   return null;
 }
 
-function PaymentForm({ order, onSave, saving }) {
+function PaymentForm({ order, onSave, saving, sellers = [] }) {
   const [method, setMethod] = useState(order.paymentMethod || "efectivo");
   const [extra, setExtra] = useState(order.extra ? String(order.extra) : "");
   const [label, setLabel] = useState(order.extraLabel || "Delivery");
+  const [seller, setSeller] = useState(order.seller || "");
 
   return (
     <div>
-      <label className="label">Método de pago</label>
+      <label className="label">Atendido por</label>
+      <input
+        className="input"
+        value={seller}
+        onChange={(e) => setSeller(e.target.value)}
+        placeholder="Quién facturó"
+        list="order-sellers-list"
+      />
+      <datalist id="order-sellers-list">
+        {sellers.map((s) => (
+          <option key={s} value={s} />
+        ))}
+      </datalist>
+
+      <label className="label mt-4">Método de pago</label>
       <div className="flex gap-2">
         {[
           ["efectivo", "Efectivo"],
@@ -112,7 +127,12 @@ function PaymentForm({ order, onSave, saving }) {
 
       <button
         onClick={() =>
-          onSave({ paymentMethod: method, extra: Number(extra) || 0, extraLabel: label })
+          onSave({
+            paymentMethod: method,
+            extra: Number(extra) || 0,
+            extraLabel: label,
+            seller,
+          })
         }
         disabled={saving}
         className="btn-accent mt-5 w-full py-3"
@@ -123,7 +143,7 @@ function PaymentForm({ order, onSave, saving }) {
   );
 }
 
-export default function OrderCard({ order, onUpdated, onDeleted }) {
+export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] }) {
   const [saving, setSaving] = useState(null);
   const [err, setErr] = useState(null);
   const [showPay, setShowPay] = useState(false);
@@ -191,6 +211,11 @@ export default function OrderCard({ order, onUpdated, onDeleted }) {
             {formatDate(order.createdAt)}
             {order.customer?.name ? ` · ${order.customer.name}` : ""}
           </div>
+          {order.seller && (
+            <div className="mt-0.5 text-xs text-ink-muted">
+              Atendido por <span className="text-ink-soft">{order.seller}</span>
+            </div>
+          )}
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <div
@@ -331,6 +356,7 @@ export default function OrderCard({ order, onUpdated, onDeleted }) {
       <Modal open={showPay} onClose={() => setShowPay(false)} title="Pago y cargo extra" maxW="max-w-sm">
         <PaymentForm
           order={order}
+          sellers={sellers}
           saving={saving === "pay"}
           onSave={async (body) => {
             const ok = await patch(body, "pay");
