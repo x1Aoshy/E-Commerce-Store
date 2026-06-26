@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
 
-export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia, onEditStats }) {
+export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia, onEditStats, onEdit }) {
   const toast = useToast();
   const [price, setPrice] = useState(String(product.price));
   const [compareAt, setCompareAt] = useState(String(product.compareAt || ""));
@@ -160,6 +160,17 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5">
+            <button
+              onClick={() => onEdit?.(product)}
+              aria-label="Editar"
+              title="Editar nombre y descripción"
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+              </svg>
+            </button>
             <button
               onClick={() => onEditMedia?.(product)}
               aria-label="Imágenes"

@@ -381,11 +381,115 @@ function ProductStatsForm({ product, onSaved, onClose }) {
   );
 }
 
+// Editor de datos de texto del producto (nombre, categoría, descripciones).
+function ProductEditForm({ product, categories = [], onSaved, onClose }) {
+  const [name, setName] = useState(product.name || "");
+  const [category, setCategory] = useState(product.category || "");
+  const [short, setShort] = useState(product.short || "");
+  const [description, setDescription] = useState(product.description || "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const toast = useToast();
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          category: category.trim() || "General",
+          short,
+          description,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        onSaved?.(data.product);
+        toast.success("Producto actualizado");
+        onClose?.();
+      } else {
+        const msg = data.error || "No se pudo guardar.";
+        setError(msg);
+        toast.error(msg);
+      }
+    } catch {
+      setError("Error de conexión.");
+      toast.error("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="label">Nombre (opcional)</label>
+        <input
+          className="input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Dejalo vacío si la foto ya trae el nombre"
+        />
+      </div>
+      <div>
+        <label className="label">Categoría</label>
+        <input
+          className="input"
+          list="edit-cat-list"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          placeholder="Proteínas, Salud…"
+        />
+        <datalist id="edit-cat-list">
+          {categories.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
+      </div>
+      <div>
+        <label className="label">Descripción corta</label>
+        <input
+          className="input"
+          value={short}
+          onChange={(e) => setShort(e.target.value)}
+          placeholder="Una línea que se muestra en la tarjeta"
+        />
+      </div>
+      <div>
+        <label className="label">Descripción completa</label>
+        <textarea
+          className="input min-h-[110px] resize-y"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Detalle del producto para la ficha"
+        />
+      </div>
+      {error && <p className="text-sm text-red-400">{error}</p>}
+      <div className="flex items-center justify-end gap-2 pt-1">
+        <button onClick={onClose} className="btn-ghost px-4 py-2 text-[13px]">
+          Cancelar
+        </button>
+        <button
+          onClick={save}
+          disabled={saving}
+          className="btn-accent px-4 py-2 text-[13px]"
+        >
+          {saving ? "Guardando…" : "Guardar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function InventarioView({ products, categories, setProducts }) {
   const [addOpen, setAddOpen] = useState(false);
   const [restock, setRestock] = useState(null); // producto a reabastecer
   const [mediaProduct, setMediaProduct] = useState(null); // producto a editar medios
   const [statsProduct, setStatsProduct] = useState(null); // producto a editar stats
+  const [editProduct, setEditProduct] = useState(null); // producto a editar (texto)
   const [query, setQuery] = useState("");
 
   // Filtra la tabla por nombre y categoría mientras se escribe.
@@ -477,6 +581,7 @@ function InventarioView({ products, categories, setProducts }) {
                       onRestock={(prod) => setRestock(prod)}
                       onEditMedia={(prod) => setMediaProduct(prod)}
                       onEditStats={(prod) => setStatsProduct(prod)}
+                      onEdit={(prod) => setEditProduct(prod)}
                     />
                   ))}
                 </tbody>
@@ -553,6 +658,25 @@ function InventarioView({ products, categories, setProducts }) {
               )
             }
             onClose={() => setStatsProduct(null)}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        open={!!editProduct}
+        onClose={() => setEditProduct(null)}
+        title="Editar producto"
+      >
+        {editProduct && (
+          <ProductEditForm
+            product={editProduct}
+            categories={categories}
+            onSaved={(updated) =>
+              setProducts((prev) =>
+                prev.map((x) => (x.id === updated.id ? updated : x))
+              )
+            }
+            onClose={() => setEditProduct(null)}
           />
         )}
       </Modal>
