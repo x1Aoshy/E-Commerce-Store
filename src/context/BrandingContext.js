@@ -32,7 +32,9 @@ export function BrandingProvider({ children }) {
       const data = await res.json().catch(() => ({}));
       if (data && data.settings) {
         setBranding({
-          storeName: data.settings.storeName || DEFAULTS.storeName,
+          // ?? (no ||): un nombre vacío a propósito se respeta (no se reemplaza
+          // por el default), porque el logo puede traer el nombre.
+          storeName: data.settings.storeName ?? DEFAULTS.storeName,
           logoUrl: data.settings.logoUrl || "",
           loginIconUrl: data.settings.loginIconUrl || "",
           whatsappNumber: data.settings.whatsappNumber || "",

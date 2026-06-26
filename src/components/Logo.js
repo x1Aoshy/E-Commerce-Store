@@ -42,7 +42,8 @@ export function LogoMark({ size = 32 }) {
 
 export default function Logo({ size = 32, className = "", imgClass = "h-10 sm:h-11" }) {
   const { storeName, logoUrl } = useBranding();
-  const name = storeName || "Titan Supplements";
+  // Puede quedar vacío a propósito (cuando el logo ya trae el nombre).
+  const name = storeName || "";
 
   // Con logo subido: mostramos SÓLO la imagen (suele traer su propio nombre),
   // más grande y sin duplicar el texto. Sin logo: escudo por defecto + nombre.
@@ -52,7 +53,7 @@ export default function Logo({ size = 32, className = "", imgClass = "h-10 sm:h-
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={logoUrl}
-          alt={name}
+          alt={name || "Logo"}
           className={`${imgClass} w-auto max-w-[220px] object-contain`}
         />
       </span>
@@ -62,9 +63,11 @@ export default function Logo({ size = 32, className = "", imgClass = "h-10 sm:h-
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark size={size} />
-      <span className="text-[15px] font-extrabold tracking-wide text-accent-300">
-        {name}
-      </span>
+      {name && (
+        <span className="text-[15px] font-extrabold tracking-wide text-accent-300">
+          {name}
+        </span>
+      )}
     </span>
   );
 }

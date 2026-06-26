@@ -530,7 +530,10 @@ function mapSettings(row) {
   if (!row) return defaultSettings();
   const def = defaultSettings();
   return {
-    storeName: row.store_name || def.storeName,
+    // Si hay fila, respetamos el nombre TAL CUAL (incluso vacío: el dueño puede
+    // dejarlo en blanco si su logo ya trae el nombre). El default sólo aplica
+    // cuando no hay fila (migración sin correr).
+    storeName: row.store_name ?? def.storeName,
     logoUrl: row.logo_url || "",
     loginIconUrl: row.login_icon_url || "",
     whatsappNumber: row.whatsapp_number || def.whatsappNumber,
