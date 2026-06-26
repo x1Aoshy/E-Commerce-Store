@@ -39,12 +39,21 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          "var(--font-inter)",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
           "Roboto",
           "Helvetica Neue",
           "Arial",
+          "sans-serif",
+        ],
+        // Títulos atléticos (condensados).
+        display: [
+          "var(--font-oswald)",
+          "Oswald",
+          "Impact",
+          "Haettenschweiler",
           "sans-serif",
         ],
       },

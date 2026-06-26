@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Inter, Oswald } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { BrandingProvider } from "@/context/BrandingContext";
 import { ToastProvider } from "@/components/Toast";
@@ -7,6 +8,20 @@ import BrandFavicon from "@/components/BrandFavicon";
 import { getSettings } from "@/lib/db";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
+
+// Tipografía: Oswald (condensado, atlético) para los títulos; Inter (limpio)
+// para el texto. Se cargan optimizadas y se exponen como variables CSS.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-oswald",
+  display: "swap",
+});
 
 // Dinámico: leemos el branding en cada request para que el logo/nombre/Icon
 // correctos salgan en el primer render (sin parpadeo del default al recargar).
@@ -34,7 +49,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="es">
+    <html lang="es" className={`${inter.variable} ${oswald.variable}`}>
       <body>
         <Background />
         <BrandingProvider initial={settings}>

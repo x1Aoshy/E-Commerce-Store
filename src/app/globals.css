@@ -15,15 +15,19 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    /* Fondo oscuro de página; el <Background/> con textura va por encima de él. */
-    @apply bg-night text-ink antialiased;
+    /* Fondo oscuro de página; el <Background/> con textura va por encima de él.
+       Texto base en Inter (font-sans). */
+    @apply bg-night font-sans text-ink antialiased;
   }
   ::selection {
     background: #e7c454;
     color: #1a1306;
   }
+  /* Títulos grandes en Oswald (atlético/condensado). */
   h1,
-  h2,
+  h2 {
+    @apply font-display;
+  }
   h3 {
     @apply tracking-tight;
   }
