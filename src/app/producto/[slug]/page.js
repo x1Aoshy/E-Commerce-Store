@@ -12,6 +12,7 @@ import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
 import ProductBuyPanel from "@/components/product/ProductBuyPanel";
 import ProductProfile from "@/components/product/ProductProfile";
+import ProductReviews from "@/components/product/ProductReviews";
 import { getProductBySlug, getProducts } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -97,6 +98,13 @@ export default async function ProductPage({ params }) {
             </div>
           </Reveal>
         </div>
+
+        <ProductReviews
+          productId={product.id}
+          reviews={product.reviews || []}
+          ratingAvg={product.ratingAvg || 0}
+          reviewCount={product.reviewCount || 0}
+        />
 
         {related.length > 0 && (
           <section className="mt-16">

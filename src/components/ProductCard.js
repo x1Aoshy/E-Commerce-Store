@@ -8,6 +8,25 @@ import FavoriteButton from "./FavoriteButton";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 
+// Estrellas compactas para la reseña destacada de la tarjeta.
+function MiniStars({ rating = 5 }) {
+  return (
+    <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
+      {Array.from({ length: 5 }).map((_, s) => (
+        <svg
+          key={s}
+          viewBox="0 0 24 24"
+          className={`h-3 w-3 ${s < Math.round(rating) ? "" : "text-white/15"}`}
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="m12 2 3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const s = stockStatus(product.stock);
@@ -103,6 +122,27 @@ export default function ProductCard({ product }) {
             )}
           </button>
         </div>
+
+        {/* Reseña destacada: prueba social directa en la tarjeta. Solo aparece
+            si el producto ya tiene una reseña aprobada. */}
+        {product.featuredReview && (
+          <Link
+            href={`${href}#resenas`}
+            className="mt-2.5 block border-t border-white/10 pt-2.5"
+          >
+            <div className="flex items-center gap-1.5">
+              <MiniStars rating={product.featuredReview.rating} />
+              {product.reviewCount > 1 && (
+                <span className="text-[10px] text-ink-muted">
+                  ({product.reviewCount})
+                </span>
+              )}
+            </div>
+            <p className="mt-1 line-clamp-2 text-[11px] italic leading-snug text-ink-muted">
+              “{product.featuredReview.text}”
+            </p>
+          </Link>
+        )}
       </div>
     </article>
   );

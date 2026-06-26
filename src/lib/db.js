@@ -92,7 +92,56 @@ export async function getProducts() {
     .order("created_at", { ascending: false })
     .order("id", { ascending: false });
   if (error) throw new Error(`No se pudieron leer los productos: ${error.message}`);
-  return data || [];
+  const products = data || [];
+  // Adjunta a cada producto su reseña destacada + promedio (para la tarjeta).
+  const map = await reviewsByProductMap(products.map((p) => p.id));
+  return products.map((p) => attachReviewSummary(p, map.get(p.id) || []));
+}
+
+// Mapa productId -> reseñas APROBADAS (más nuevas primero). Resiliente: si la
+// tabla `reviews` no existe todavía, devuelve un mapa vacío (no rompe la tienda).
+async function reviewsByProductMap(productIds) {
+  const ids = (productIds || []).filter(Boolean);
+  if (ids.length === 0) return new Map();
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("reviews")
+      .select(REVIEW_COLUMNS)
+      .eq("approved", true)
+      .in("product_id", ids)
+      .order("created_at", { ascending: false });
+    if (error) return new Map();
+    const map = new Map();
+    for (const row of data || []) {
+      const r = mapReview(row);
+      if (!r.productId) continue;
+      if (!map.has(r.productId)) map.set(r.productId, []);
+      map.get(r.productId).push(r);
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
+// Resumen de reseñas para la tarjeta: cantidad, promedio y la reseña destacada
+// (la mejor puntuada; entre iguales, la más reciente).
+function attachReviewSummary(product, list) {
+  const count = list.length;
+  const avg = count ? list.reduce((s, r) => s + r.rating, 0) / count : 0;
+  let featured = null;
+  for (const r of list) {
+    if (!featured || r.rating > featured.rating) featured = r;
+  }
+  return {
+    ...product,
+    reviewCount: count,
+    ratingAvg: Math.round(avg * 10) / 10,
+    featuredReview: featured
+      ? { name: featured.name, rating: featured.rating, text: featured.text }
+      : null,
+  };
 }
 
 export async function getProductById(id) {
@@ -114,7 +163,11 @@ export async function getProductBySlug(slug) {
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw new Error(`No se pudo leer el producto: ${error.message}`);
-  return data || null;
+  if (!data) return null;
+  // Adjunta la lista completa de reseñas aprobadas (para la ficha del producto).
+  const map = await reviewsByProductMap([data.id]);
+  const list = map.get(data.id) || [];
+  return { ...attachReviewSummary(data, list), reviews: list };
 }
 
 export async function createProduct(data) {
