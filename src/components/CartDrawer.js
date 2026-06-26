@@ -67,8 +67,6 @@ export default function CartDrawer() {
     setError(null);
     setConflicts([]);
 
-    const waWindow = window.open("", "_blank");
-
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -81,7 +79,6 @@ export default function CartDrawer() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (waWindow) waWindow.close();
         const msg = data.error || "No se pudo procesar el pedido.";
         setError(msg);
         setConflicts(data.conflicts || []);
@@ -90,9 +87,9 @@ export default function CartDrawer() {
         return;
       }
 
-      if (waWindow) waWindow.location.href = data.whatsappUrl;
-      else window.location.href = data.whatsappUrl;
-
+      // No abrimos WhatsApp por código (en mobile eso suele caer en la página de
+      // descarga). Mostramos la pantalla de éxito con un LINK real que el usuario
+      // toca: así el deep-link al chat funciona a la primera.
       setSuccess({ code: data.order.code, whatsappUrl: data.whatsappUrl });
       toast.success("¡Pedido creado!");
       clear();
@@ -100,7 +97,6 @@ export default function CartDrawer() {
       setNote("");
       router.refresh();
     } catch {
-      if (waWindow) waWindow.close();
       setError("Error de conexión. Intentá de nuevo.");
       toast.error("Error de conexión. Intentá de nuevo.");
     } finally {
@@ -149,16 +145,16 @@ export default function CartDrawer() {
             </h3>
             <p className="mt-2 text-sm text-ink-soft">
               Tu pedido <span className="font-medium text-ink">{success.code}</span>{" "}
-              quedó registrado. Se abrió WhatsApp para que lo confirmes con
-              nosotros y coordinemos el pago y la entrega.
+              quedó registrado. Tocá el botón para abrirlo en WhatsApp y
+              confirmar el pago y la entrega.
             </p>
             <a
               href={success.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-accent mt-6 w-full py-3"
+              className="btn-accent mt-6 w-full py-3.5 text-[15px]"
             >
-              <WhatsAppIcon className="h-4 w-4" /> Abrir WhatsApp de nuevo
+              <WhatsAppIcon className="h-5 w-5" /> Abrir WhatsApp
             </a>
             <button onClick={closeCart} className="btn-ghost mt-3 w-full py-3">
               Seguir comprando

@@ -58,7 +58,6 @@ export default function AdminPage() {
       <div className="card w-full max-w-sm p-8 shadow-card">
         <div className="flex flex-col items-center text-center">
           <Logo />
-          <h1 className="mt-5 text-lg font-semibold text-ink">Acceso</h1>
         </div>
 
         <form onSubmit={login} className="mt-6 space-y-3">
