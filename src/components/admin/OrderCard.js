@@ -151,7 +151,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
   const toast = useToast();
-  const { whatsappNumber } = useBranding();
+  const { whatsappNumber, storeName, logoUrl } = useBranding();
   const phone = (whatsappNumber || "").replace(/[^\d]/g, "") || PHONE;
 
   const confirmed = order.status === "confirmada";
@@ -239,7 +239,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           </div>
           <button
             onClick={() =>
-              printInvoice({ order, storeName: STORE, currency: CURRENCY, phone })
+              printInvoice({ order, storeName: storeName || STORE, currency: CURRENCY, phone, logoUrl })
             }
             className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
             aria-label="Imprimir factura"
@@ -379,7 +379,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
         </>
       )}
 
-      <Modal open={showPay} onClose={() => setShowPay(false)} title="Pago y cargo extra" maxW="max-w-sm">
+      <Modal open={showPay} onClose={() => setShowPay(false)} title="Pago y cargo extra" maxW="max-w-md">
         <PaymentForm
           order={order}
           sellers={sellers}

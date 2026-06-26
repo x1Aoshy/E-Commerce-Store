@@ -26,10 +26,21 @@ export function buildInvoiceHtml({
   storeName = "Titan Supplements",
   currency = "C$",
   phone = "",
+  logoUrl = "",
 }) {
   // Miles con coma (ej. C$2,500), enteros sin decimales.
   const money = (n) =>
     `${currency}${Math.round(Number(n) || 0).toLocaleString("en-US")}`;
+
+  // Marca: si hay logo subido, usamos esa imagen (suele traer el nombre); si no,
+  // el escudo por defecto + el nombre de la tienda.
+  const brandHtml = logoUrl
+    ? `<img class="logo" src="${esc(logoUrl)}" alt="" />`
+    : `<svg width="42" height="42" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2.5l11 3.8v7.9c0 8-5.2 12.2-11 14.3-5.8-2.1-11-6.3-11-14.3V6.3z" fill="#16382b" stroke="#c79a2b" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M10 20.5l6-10 6 10" fill="none" stroke="#c79a2b" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.3 20.5h7.4" stroke="#c79a2b" stroke-width="2.1" stroke-linecap="round"/>
+      </svg><div class="name">${esc(storeName || "Titan Supplements")}</div>`;
 
   let fecha = "";
   try {
@@ -103,6 +114,7 @@ export function buildInvoiceHtml({
   }
   .brand { text-align: center; }
   .brand svg { display: block; margin: 0 auto 6px; }
+  .brand .logo { display: block; margin: 0 auto 4px; max-width: 220px; max-height: 70px; object-fit: contain; }
   .name { font-weight: 800; letter-spacing: 2px; font-size: 15px; text-transform: uppercase; }
   .doc { text-align: center; font-weight: 700; letter-spacing: 1px; margin: 12px 0 6px; }
   .meta { font-size: 11px; color: #2b2e30; }
@@ -129,12 +141,7 @@ export function buildInvoiceHtml({
 <body>
   <div class="ticket">
     <div class="brand">
-      <svg width="42" height="42" viewBox="0 0 32 32" fill="none">
-        <path d="M16 2.5l11 3.8v7.9c0 8-5.2 12.2-11 14.3-5.8-2.1-11-6.3-11-14.3V6.3z" fill="#16382b" stroke="#c79a2b" stroke-width="1.4" stroke-linejoin="round"/>
-        <path d="M10 20.5l6-10 6 10" fill="none" stroke="#c79a2b" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12.3 20.5h7.4" stroke="#c79a2b" stroke-width="2.1" stroke-linecap="round"/>
-      </svg>
-      <div class="name">${esc(storeName)}</div>
+      ${brandHtml}
     </div>
 
     <div class="doc">FACTURA / RECIBO</div>
@@ -173,11 +180,18 @@ export function printInvoice(args) {
   win.document.write(html);
   win.document.close();
   win.focus();
-  setTimeout(() => {
+  // Imprime cuando la ventana terminó de cargar (incluye el logo), con un
+  // fallback por si el evento no dispara.
+  let printed = false;
+  const doPrint = () => {
+    if (printed) return;
+    printed = true;
     try {
       win.print();
     } catch {
       /* el usuario puede imprimir manualmente */
     }
-  }, 350);
+  };
+  win.onload = doPrint;
+  setTimeout(doPrint, 700);
 }

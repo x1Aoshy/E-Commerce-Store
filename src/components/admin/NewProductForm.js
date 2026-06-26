@@ -75,109 +75,117 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
   }
 
   return (
-    <form onSubmit={submit} className="space-y-6">
-      <Section title="Datos" hint="Lo esencial del producto.">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className="label">Nombre (opcional)</label>
-            <input
-              className="input"
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              placeholder="Dejalo vacío si la foto ya trae el nombre"
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="label">Categoría</label>
-            <input
-              className="input"
-              list="cat-list"
-              value={form.category}
-              onChange={(e) => set("category", e.target.value)}
-              placeholder="Proteínas, Salud…"
-            />
-            <datalist id="cat-list">
-              {categories.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
-          </div>
-          <label className="flex cursor-pointer items-center gap-2.5 rounded-[4px] border border-white/10 bg-white/[0.03] px-3.5 py-2.5 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(e) => set("featured", e.target.checked)}
-              className="h-4 w-4 shrink-0 accent-accent-500"
-            />
-            <span className="text-sm text-ink-soft">
-              Destacar este producto en la tienda
-            </span>
-          </label>
+    <form onSubmit={submit}>
+      {/* 2 columnas en desktop para que el modal no quede tan alto; 1 columna
+          en mobile (se apila y scrollea). */}
+      <div className="grid gap-x-6 lg:grid-cols-2">
+        <div>
+          <Section title="Datos" hint="Lo esencial del producto.">
+            <div className="grid gap-3">
+              <div>
+                <label className="label">Nombre (opcional)</label>
+                <input
+                  className="input"
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  placeholder="Dejalo vacío si la foto ya trae el nombre"
+                />
+              </div>
+              <div>
+                <label className="label">Categoría</label>
+                <input
+                  className="input"
+                  list="cat-list"
+                  value={form.category}
+                  onChange={(e) => set("category", e.target.value)}
+                  placeholder="Proteínas, Salud…"
+                />
+                <datalist id="cat-list">
+                  {categories.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+              </div>
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-[4px] border border-white/10 bg-white/[0.03] px-3.5 py-2.5">
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) => set("featured", e.target.checked)}
+                  className="h-4 w-4 shrink-0 accent-accent-500"
+                />
+                <span className="text-sm text-ink-soft">
+                  Destacar en la tienda
+                </span>
+              </label>
+            </div>
+          </Section>
+
+          <Section title="Precio y stock">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="label">Precio</label>
+                <input
+                  className="input"
+                  inputMode="numeric"
+                  value={form.price}
+                  onChange={(e) => set("price", e.target.value.replace(/[^\d.]/g, ""))}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="label">Stock</label>
+                <input
+                  className="input"
+                  inputMode="numeric"
+                  value={form.stock}
+                  onChange={(e) => set("stock", e.target.value.replace(/[^\d]/g, ""))}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </Section>
+
+          <Section title="Descripción">
+            <div className="grid gap-3">
+              <div>
+                <label className="label">Descripción corta</label>
+                <input
+                  className="input"
+                  value={form.short}
+                  onChange={(e) => set("short", e.target.value)}
+                  placeholder="Una línea que se muestra en la tarjeta"
+                />
+              </div>
+              <div>
+                <label className="label">Descripción completa</label>
+                <textarea
+                  className="input min-h-[80px] resize-y"
+                  value={form.description}
+                  onChange={(e) => set("description", e.target.value)}
+                  placeholder="Detalle del producto para la ficha"
+                />
+              </div>
+            </div>
+          </Section>
         </div>
-      </Section>
 
-      <Section title="Precio y stock">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">Precio</label>
-            <input
-              className="input"
-              inputMode="numeric"
-              value={form.price}
-              onChange={(e) => set("price", e.target.value.replace(/[^\d.]/g, ""))}
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label className="label">Stock</label>
-            <input
-              className="input"
-              inputMode="numeric"
-              value={form.stock}
-              onChange={(e) => set("stock", e.target.value.replace(/[^\d]/g, ""))}
-              placeholder="0"
-            />
-          </div>
+        <div className="mt-5 lg:mt-0">
+          <Section title="Imágenes / video" hint="La primera imagen es la portada.">
+            <MediaManager value={form.images} onChange={(imgs) => set("images", imgs)} />
+          </Section>
+
+          <Section
+            title="Estadísticas (gráfico)"
+            hint="Hasta 6 métricas (0–100) para los anillos."
+          >
+            <StatsEditor value={form.stats} onChange={(s) => set("stats", s)} />
+          </Section>
         </div>
-      </Section>
+      </div>
 
-      <Section title="Descripción">
-        <div className="grid gap-3">
-          <div>
-            <label className="label">Descripción corta</label>
-            <input
-              className="input"
-              value={form.short}
-              onChange={(e) => set("short", e.target.value)}
-              placeholder="Una línea que se muestra en la tarjeta"
-            />
-          </div>
-          <div>
-            <label className="label">Descripción completa</label>
-            <textarea
-              className="input min-h-[88px] resize-y"
-              value={form.description}
-              onChange={(e) => set("description", e.target.value)}
-              placeholder="Detalle del producto para la ficha"
-            />
-          </div>
-        </div>
-      </Section>
+      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
-      <Section title="Imágenes / video" hint="La primera imagen es la portada.">
-        <MediaManager value={form.images} onChange={(imgs) => set("images", imgs)} />
-      </Section>
-
-      <Section
-        title="Estadísticas (gráfico)"
-        hint="Hasta 6 métricas (0–100) para los anillos de la ficha."
-      >
-        <StatsEditor value={form.stats} onChange={(s) => set("stats", s)} />
-      </Section>
-
-      {error && <p className="text-sm text-red-400">{error}</p>}
-
-      <div className="flex items-center gap-2 border-t border-white/[0.07] pt-5">
+      <div className="mt-6 flex items-center gap-2 border-t border-white/[0.07] pt-5">
         <button type="submit" disabled={saving} className="btn-accent px-5 py-2">
           {saving ? "Guardando…" : "Crear producto"}
         </button>
