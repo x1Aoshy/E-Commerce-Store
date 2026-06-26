@@ -15,7 +15,7 @@
 import { getSupabase } from "./supabase";
 
 const PRODUCT_COLUMNS =
-  "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images";
+  "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
 const ORDER_COLUMNS =
   "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller";
 
@@ -32,6 +32,20 @@ function sanitizeMedia(list) {
     .filter(Boolean)
     .slice(0, 12)
     .map((u) => u.slice(0, 1000));
+}
+
+// Normaliza las métricas del gráfico: arreglo de { label, value(0-100) }, hasta
+// 6, con etiqueta no vacía. Devuelve [] si no hay nada válido.
+function sanitizeStats(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((s) => s && typeof s === "object")
+    .map((s) => ({
+      label: String(s.label || "").trim().slice(0, 30),
+      value: Math.max(0, Math.min(100, Math.round(Number(s.value) || 0))),
+    }))
+    .filter((s) => s.label)
+    .slice(0, 6);
 }
 
 function slugify(text) {
@@ -119,6 +133,7 @@ export async function createProduct(data) {
     description: data.description || "",
     compare_at: Math.max(0, Number(data.compareAt) || 0),
     images: sanitizeMedia(data.images),
+    stats: sanitizeStats(data.stats),
   };
   const { data: inserted, error } = await supabase
     .from("products")
@@ -141,6 +156,7 @@ export async function updateProduct(id, patch) {
   if (patch.description !== undefined) next.description = patch.description;
   if (patch.compareAt !== undefined) next.compare_at = Math.max(0, Number(patch.compareAt) || 0);
   if (patch.images !== undefined) next.images = sanitizeMedia(patch.images);
+  if (patch.stats !== undefined) next.stats = sanitizeStats(patch.stats);
 
   if (Object.keys(next).length === 0) return getProductById(id);
 
@@ -505,15 +521,20 @@ function defaultSettings() {
     storeName: process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements",
     logoUrl: "",
     loginIconUrl: "",
+    whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
+    whatsappMessage: "",
   };
 }
 
 function mapSettings(row) {
   if (!row) return defaultSettings();
+  const def = defaultSettings();
   return {
-    storeName: row.store_name || defaultSettings().storeName,
+    storeName: row.store_name || def.storeName,
     logoUrl: row.logo_url || "",
     loginIconUrl: row.login_icon_url || "",
+    whatsappNumber: row.whatsapp_number || def.whatsappNumber,
+    whatsappMessage: row.whatsapp_message || "",
   };
 }
 
@@ -524,7 +545,7 @@ export async function getSettings() {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("settings")
-      .select("store_name, logo_url, login_icon_url")
+      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message")
       .eq("id", 1)
       .maybeSingle();
     if (error) return defaultSettings();
@@ -548,6 +569,13 @@ export async function updateSettings(patch = {}) {
   }
   if (patch.loginIconUrl !== undefined) {
     next.login_icon_url = String(patch.loginIconUrl || "").trim().slice(0, 1000);
+  }
+  if (patch.whatsappNumber !== undefined) {
+    // Sólo dígitos (formato wa.me), tope razonable.
+    next.whatsapp_number = String(patch.whatsappNumber || "").replace(/[^\d]/g, "").slice(0, 20);
+  }
+  if (patch.whatsappMessage !== undefined) {
+    next.whatsapp_message = String(patch.whatsappMessage || "").trim().slice(0, 400);
   }
 
   const { data, error } = await supabase

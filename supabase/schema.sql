@@ -26,6 +26,7 @@ create table if not exists public.products (
   description text not null default '',
   compare_at  integer not null default 0,   -- precio anterior (para mostrar descuentos OFF)
   images      jsonb not null default '[]'::jsonb,  -- fotos/videos del producto (URLs)
+  stats       jsonb not null default '[]'::jsonb,  -- métricas del gráfico [{label,value}]
   created_at  timestamptz not null default now()
 );
 
@@ -51,18 +52,24 @@ alter table public.orders add column if not exists extra_label text not null def
 alter table public.orders add column if not exists seller text not null default '';
 alter table public.products add column if not exists compare_at integer not null default 0;
 alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
+alter table public.products add column if not exists stats jsonb not null default '[]'::jsonb;
 
--- 2.c) Ajustes / branding (nombre de la tienda, logo, ícono de login). --------
+-- 2.c) Ajustes / branding (nombre, logo, ícono de login, WhatsApp). -----------
 --      Tabla de una sola fila (id = 1). Idempotente.
 create table if not exists public.settings (
-  id             smallint primary key default 1,
-  store_name     text not null default 'Titan Supplements',
-  logo_url       text not null default '',
-  login_icon_url text not null default '',
-  updated_at     timestamptz not null default now(),
+  id               smallint primary key default 1,
+  store_name       text not null default 'Titan Supplements',
+  logo_url         text not null default '',
+  login_icon_url   text not null default '',
+  whatsapp_number  text not null default '',   -- número del chat (solo dígitos)
+  whatsapp_message text not null default '',   -- mensaje/cierre automatizado
+  updated_at       timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );
 insert into public.settings (id) values (1) on conflict (id) do nothing;
+-- Migración para settings creadas antes (agrega las columnas de WhatsApp):
+alter table public.settings add column if not exists whatsapp_number text not null default '';
+alter table public.settings add column if not exists whatsapp_message text not null default '';
 alter table public.settings enable row level security;
 
 -- 3) Seguridad (RLS) ---------------------------------------------------------

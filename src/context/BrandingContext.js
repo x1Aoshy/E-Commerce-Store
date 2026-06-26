@@ -17,6 +17,8 @@ const DEFAULTS = {
   storeName: "Titan Supplements",
   logoUrl: "",
   loginIconUrl: "",
+  whatsappNumber: "",
+  whatsappMessage: "",
 };
 
 const BrandingContext = createContext(null);
@@ -33,6 +35,8 @@ export function BrandingProvider({ children }) {
           storeName: data.settings.storeName || DEFAULTS.storeName,
           logoUrl: data.settings.logoUrl || "",
           loginIconUrl: data.settings.loginIconUrl || "",
+          whatsappNumber: data.settings.whatsappNumber || "",
+          whatsappMessage: data.settings.whatsappMessage || "",
         });
       }
     } catch {

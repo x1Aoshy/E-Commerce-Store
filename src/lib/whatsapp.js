@@ -8,7 +8,7 @@ function money(n) {
   return `${CURRENCY}${(Number(n) || 0).toLocaleString("es-AR")}`;
 }
 
-export function buildOrderMessage(order, storeName = "Titan Supplements") {
+export function buildOrderMessage(order, storeName = "Titan Supplements", customMessage = "") {
   const lines = [];
   lines.push(`*Nuevo pedido — ${storeName}*`);
   lines.push(`Código: ${order.code}`);
@@ -26,13 +26,18 @@ export function buildOrderMessage(order, storeName = "Titan Supplements") {
     lines.push(`Nota: ${order.customer.note}`);
   }
   lines.push("");
-  lines.push("¡Quiero confirmar este pedido!");
+  // Cierre configurable desde Ajustes; si no hay, usa el mensaje por defecto.
+  lines.push(
+    customMessage && customMessage.trim()
+      ? customMessage.trim()
+      : "¡Quiero confirmar este pedido!"
+  );
   return lines.join("\n");
 }
 
-export function buildWhatsAppUrl({ phone, order, storeName }) {
+export function buildWhatsAppUrl({ phone, order, storeName, message }) {
   const number = String(phone || "").replace(/[^\d]/g, "");
-  const text = encodeURIComponent(buildOrderMessage(order, storeName));
+  const text = encodeURIComponent(buildOrderMessage(order, storeName, message));
   if (!number) {
     // Sin número configurado: abre WhatsApp para elegir contacto igualmente.
     return `https://wa.me/?text=${text}`;

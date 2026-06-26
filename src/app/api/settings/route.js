@@ -20,6 +20,8 @@ export async function PATCH(req) {
       storeName: body.storeName,
       logoUrl: body.logoUrl,
       loginIconUrl: body.loginIconUrl,
+      whatsappNumber: body.whatsappNumber,
+      whatsappMessage: body.whatsappMessage,
     });
     return NextResponse.json({ settings });
   } catch (err) {
