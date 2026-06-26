@@ -3,41 +3,7 @@
 import { useEffect, useState } from "react";
 import { useBranding } from "@/context/BrandingContext";
 
-const WORDS = ["PROTEÍNAS", "CREATINA", "PRE-ENTRENOS", "RESULTADOS"];
-// Palabra más larga: la usamos como "molde" invisible para reservar el ancho y
-// que el título no cambie de tamaño mientras se escribe/borra.
-const LONGEST = WORDS.reduce((a, b) => (b.length > a.length ? b : a), "");
-
-// Efecto máquina de escribir: escribe una palabra, la mantiene, la borra y pasa
-// a la siguiente, en loop.
-function useTypewriter(words, { type = 75, del = 40, hold = 1300 } = {}) {
-  const [text, setText] = useState("");
-  const [i, setI] = useState(0);
-  const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const word = words[i % words.length];
-    let t;
-    if (!deleting && text === word) {
-      t = setTimeout(() => setDeleting(true), hold);
-    } else if (deleting && text === "") {
-      setDeleting(false);
-      setI((v) => v + 1);
-    } else {
-      t = setTimeout(() => {
-        setText((cur) =>
-          deleting ? cur.slice(0, -1) : word.slice(0, cur.length + 1)
-        );
-      }, deleting ? del : type);
-    }
-    return () => clearTimeout(t);
-  }, [text, deleting, i, words, type, del, hold]);
-
-  return text;
-}
-
 export default function Hero() {
-  const typed = useTypewriter(WORDS);
   const { heroImages } = useBranding();
   const images = Array.isArray(heroImages) ? heroImages.filter(Boolean) : [];
   const [current, setCurrent] = useState(0);
@@ -53,13 +19,14 @@ export default function Hero() {
   }, [images.length]);
 
   const active = images.length ? current % images.length : 0;
+  const hasImage = images.length > 0;
 
   return (
     <section id="top" className="relative overflow-hidden">
       {/* Fondo (gym/productos) configurable desde Ajustes. Si hay varias, rotan
           en carrusel con crossfade. Overlays para fundir con el header y dejar
-          el texto legible. */}
-      {images.length > 0 && (
+          el texto legible aun sobre fondos claros. */}
+      {hasImage && (
         <div className="absolute inset-0 z-0" aria-hidden="true">
           {images.map((src, idx) => (
             // eslint-disable-next-line @next/next/no-img-element
@@ -72,40 +39,30 @@ export default function Hero() {
               }`}
             />
           ))}
-          {/* Fundido vertical: oscuro arriba (header) y abajo (Recomendados),
-              pero con la imagen visible en casi todo el alto. */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#0a0c0d_0%,transparent_22%,transparent_88%,#0a0c0d_100%)]" />
-          {/* Oscurecido del lado del texto (izquierda) para legibilidad. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/55 to-night/20" />
+          {/* Fundido vertical: oscuro arriba (header) y abajo (productos). */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#0a0c0d_0%,transparent_28%,transparent_82%,#0a0c0d_100%)]" />
+          {/* Velo oscuro del lado del texto (izquierda) para que las letras
+              SIEMPRE se lean, aunque el fondo sea blanco. A la derecha se vuelve
+              transparente para no tapar el logo. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/80 to-transparent sm:via-night/65" />
+          {/* Refuerzo inferior para separar del contenido siguiente. */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-night to-transparent" />
         </div>
       )}
 
-      <div className="container-content relative z-10 flex min-h-[92vh] flex-col justify-center pb-16 pt-10 sm:pt-16">
+      <div className="container-content relative z-10 flex min-h-[88vh] flex-col justify-center pb-16 pt-10 sm:pt-16">
         <h1
-          className="max-w-4xl animate-fade-in text-[2rem] font-extrabold leading-[1.04] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
+          className="max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink [text-shadow:0_2px_18px_rgba(0,0,0,0.6)] min-[380px]:text-4xl sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}
         >
           Tu mejor versión
           <br />
           empieza con{" "}
-          <span className="relative inline-block whitespace-nowrap text-accent-400">
-            {/* Molde invisible: fija el ancho/alto al de la palabra más larga. */}
-            <span className="invisible" aria-hidden="true">
-              {LONGEST}
-            </span>
-            {/* Texto que se escribe, superpuesto con la misma línea base. */}
-            <span className="absolute left-0 top-0 whitespace-nowrap">
-              {typed}
-              <span
-                className="ml-1 inline-block w-[3px] animate-pulse bg-accent-400 align-[-0.1em]"
-                style={{ height: "0.82em" }}
-              />
-            </span>
-          </span>
+          <span className="text-accent-400">RESULTADOS</span>
         </h1>
 
         <p
-          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink-soft sm:text-lg"
+          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] sm:text-lg"
           style={{ animationDelay: "160ms", animationFillMode: "both" }}
         >
           Suplementos de alta pureza para entrenar, recuperarte y rendir al
@@ -123,18 +80,6 @@ export default function Hero() {
             Por qué Titan
           </a>
         </div>
-
-        {/* Flecha animada que baja a los productos. */}
-        <a
-          href="#productos"
-          aria-label="Ver productos"
-          className="mt-16 inline-flex w-fit flex-col items-center gap-1 self-center text-ink-muted transition hover:text-accent-300"
-        >
-          <span className="text-[11px] uppercase tracking-[0.2em]">Mirá los productos</span>
-          <svg className="animate-bounce" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M6 13l6 6 6-6" />
-          </svg>
-        </a>
       </div>
     </section>
   );
