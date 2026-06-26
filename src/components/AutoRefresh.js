@@ -22,6 +22,11 @@ export default function AutoRefresh({ interval = 10000 }) {
     // Aviso en vivo desde el panel admin (otra pestaña del mismo navegador).
     const offSync = onDataChanged(() => router.refresh());
 
+    // Refresco inmediato al montar: al llegar a la tienda desde el panel (misma
+    // pestaña), limpia el Router Cache del cliente y trae los datos frescos sin
+    // esperar al primer intervalo.
+    refresh();
+
     const stop = () => {
       if (timer) clearInterval(timer);
       timer = null;

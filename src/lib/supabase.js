@@ -26,6 +26,12 @@ export function getSupabase() {
 
   client = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // IMPORTANTE: Next.js cachea el `fetch` global por defecto (Data Cache), lo
+    // que hacía que la tienda mostrara datos VIEJOS aun después de refrescar.
+    // Forzamos `no-store` en cada consulta para que siempre traiga lo último.
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
 
   return client;
