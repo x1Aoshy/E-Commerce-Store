@@ -18,6 +18,13 @@ export const metadata = {
     "Proteínas, creatina, pre-entrenos y más, de alta pureza. Elegí tu suplemento y hacé tu pedido en segundos por WhatsApp.",
 };
 
+// viewport-fit=cover hace que env(safe-area-inset-*) funcione en iPhones con
+// notch (lo usan el Modal, los toasts y el carrito para no quedar tapados).
+export const viewport = {
+  themeColor: "#0a0c0d",
+  viewportFit: "cover",
+};
+
 export default async function RootLayout({ children }) {
   let settings;
   try {
