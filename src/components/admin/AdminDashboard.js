@@ -166,18 +166,21 @@ function ResumenView({ stats, products, orders }) {
   );
 }
 
-// Formulario de restock (dentro de un modal): suma unidades al stock actual.
+// Formulario de stock (dentro de un modal): AGREGA o QUITA unidades al stock
+// actual (no baja de 0).
 function RestockForm({ product, onDone }) {
   const [units, setUnits] = useState("");
+  const [mode, setMode] = useState("add"); // add | remove
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const toast = useToast();
-  const add = Number(units) || 0;
-  const next = Number(product.stock) + add;
+  const amount = Number(units) || 0;
+  const delta = mode === "add" ? amount : -amount;
+  const next = Math.max(0, Number(product.stock) + delta);
 
   async function submit(e) {
     e.preventDefault();
-    if (add <= 0) {
+    if (amount <= 0) {
       setError("Ingresá una cantidad mayor a 0.");
       return;
     }
@@ -192,7 +195,7 @@ function RestockForm({ product, onDone }) {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         onDone(data.product);
-        toast.success("Stock actualizado");
+        toast.success(mode === "add" ? "Stock agregado" : "Stock descontado");
       } else {
         const msg = data.error || "No se pudo actualizar el stock.";
         setError(msg);
@@ -212,7 +215,30 @@ function RestockForm({ product, onDone }) {
         Stock actual:{" "}
         <span className="font-semibold text-ink">{product.stock}</span>
       </p>
-      <label className="label mt-4">Unidades a agregar</label>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {[
+          ["add", "Agregar"],
+          ["remove", "Quitar"],
+        ].map(([m, l]) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            className={`rounded-[4px] border px-3 py-2 text-sm font-medium transition ${
+              mode === m
+                ? "border-accent-500 bg-accent-500/10 text-accent-300"
+                : "border-white/15 text-ink-soft hover:border-white/30"
+            }`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
+      <label className="label mt-4">
+        Unidades a {mode === "add" ? "agregar" : "quitar"}
+      </label>
       <input
         className="input"
         inputMode="numeric"
@@ -221,14 +247,21 @@ function RestockForm({ product, onDone }) {
         onChange={(e) => setUnits(e.target.value.replace(/[^\d]/g, ""))}
         placeholder="Ej: 20"
       />
-      {add > 0 && (
+      {amount > 0 && (
         <p className="mt-2 text-xs text-ink-muted">
           Nuevo stock: <span className="text-accent-300">{next}</span>
+          {mode === "remove" && Number(product.stock) - amount < 0 && (
+            <span className="text-amber-300"> (no baja de 0)</span>
+          )}
         </p>
       )}
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
       <button type="submit" disabled={saving} className="btn-accent mt-5 w-full py-3">
-        {saving ? "Guardando…" : "Agregar al stock"}
+        {saving
+          ? "Guardando…"
+          : mode === "add"
+          ? "Agregar al stock"
+          : "Quitar del stock"}
       </button>
     </form>
   );
@@ -472,7 +505,7 @@ function InventarioView({ products, categories, setProducts }) {
       <Modal
         open={!!restock}
         onClose={() => setRestock(null)}
-        title={restock ? `Restock · ${restock.name}` : "Restock"}
+        title={restock ? `Stock · ${restock.name || "producto"}` : "Stock"}
         maxW="max-w-sm"
       >
         {restock && (

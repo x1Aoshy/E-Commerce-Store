@@ -23,8 +23,10 @@ const DEFAULTS = {
 
 const BrandingContext = createContext(null);
 
-export function BrandingProvider({ children }) {
-  const [branding, setBranding] = useState(DEFAULTS);
+export function BrandingProvider({ children, initial }) {
+  // Sembrado con los ajustes leídos en el server (sin parpadeo del default al
+  // recargar). Igual se refresca al montar para tomar cambios en vivo.
+  const [branding, setBranding] = useState({ ...DEFAULTS, ...(initial || {}) });
 
   const refresh = useCallback(async () => {
     try {

@@ -41,18 +41,21 @@ export function LogoMark({ size = 32 }) {
 }
 
 export default function Logo({ size = 32, className = "", imgClass = "h-10 sm:h-11" }) {
-  const { storeName, logoUrl } = useBranding();
+  const { storeName, logoUrl, loginIconUrl } = useBranding();
   // Puede quedar vacío a propósito (cuando el logo ya trae el nombre).
   const name = storeName || "";
+  // Usa el logo si lo hay; si no, cae al "Icon" subido (así con subir una sola
+  // imagen ya aparece en el header de la tienda, además del favicon y el sidebar).
+  const img = logoUrl || loginIconUrl;
 
-  // Con logo subido: mostramos SÓLO la imagen (suele traer su propio nombre),
-  // más grande y sin duplicar el texto. Sin logo: escudo por defecto + nombre.
-  if (logoUrl) {
+  // Con imagen subida: mostramos SÓLO la imagen (suele traer su propio nombre),
+  // más grande y sin duplicar el texto. Sin imagen: escudo por defecto + nombre.
+  if (img) {
     return (
       <span className={`inline-flex items-center ${className}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={logoUrl}
+          src={img}
           alt={name || "Logo"}
           className={`${imgClass} w-auto max-w-[220px] object-contain`}
         />
