@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useBranding } from "@/context/BrandingContext";
 
 const WORDS = ["PROTEÍNAS", "CREATINA", "PRE-ENTRENOS", "RESULTADOS"];
 // Palabra más larga: la usamos como "molde" invisible para reservar el ancho y
@@ -37,10 +38,48 @@ function useTypewriter(words, { type = 75, del = 40, hold = 1300 } = {}) {
 
 export default function Hero() {
   const typed = useTypewriter(WORDS);
+  const { heroImages } = useBranding();
+  const images = Array.isArray(heroImages) ? heroImages.filter(Boolean) : [];
+  const [current, setCurrent] = useState(0);
+
+  // Carrusel automático del fondo (sólo si hay más de una imagen).
+  useEffect(() => {
+    if (images.length < 2) return;
+    const t = setInterval(
+      () => setCurrent((c) => (c + 1) % images.length),
+      5000
+    );
+    return () => clearInterval(t);
+  }, [images.length]);
+
+  const active = images.length ? current % images.length : 0;
 
   return (
     <section id="top" className="relative overflow-hidden">
-      <div className="container-content relative flex min-h-[80vh] flex-col justify-center pb-14 pt-10 sm:pt-16">
+      {/* Fondo (gym/productos) configurable desde Ajustes. Si hay varias, rotan
+          en carrusel con crossfade. Overlays para fundir con el header y dejar
+          el texto legible. */}
+      {images.length > 0 && (
+        <div className="absolute inset-0 z-0" aria-hidden="true">
+          {images.map((src, idx) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt=""
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-out ${
+                idx === active ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+          {/* Fundido vertical: oscuro arriba (header) y abajo (productos). */}
+          <div className="absolute inset-0 bg-gradient-to-b from-night via-transparent to-night" />
+          {/* Oscurecido del lado del texto (izquierda) para legibilidad. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/55 to-night/20" />
+        </div>
+      )}
+
+      <div className="container-content relative z-10 flex min-h-[80vh] flex-col justify-center pb-14 pt-10 sm:pt-16">
         <h1
           className="max-w-4xl animate-fade-in text-[2rem] font-extrabold leading-[1.04] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}

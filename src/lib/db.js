@@ -523,6 +523,7 @@ function defaultSettings() {
     loginIconUrl: "",
     whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
     whatsappMessage: "",
+    heroImages: [],
   };
 }
 
@@ -538,6 +539,7 @@ function mapSettings(row) {
     loginIconUrl: row.login_icon_url || "",
     whatsappNumber: row.whatsapp_number || def.whatsappNumber,
     whatsappMessage: row.whatsapp_message || "",
+    heroImages: Array.isArray(row.hero_images) ? row.hero_images : [],
   };
 }
 
@@ -548,7 +550,7 @@ export async function getSettings() {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("settings")
-      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message")
+      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images")
       .eq("id", 1)
       .maybeSingle();
     if (error) return defaultSettings();
@@ -580,11 +582,15 @@ export async function updateSettings(patch = {}) {
   if (patch.whatsappMessage !== undefined) {
     next.whatsapp_message = String(patch.whatsappMessage || "").trim().slice(0, 400);
   }
+  if (patch.heroImages !== undefined) {
+    // Fondo del hero: arreglo de URLs (reusa el saneador de medios).
+    next.hero_images = sanitizeMedia(patch.heroImages);
+  }
 
   const { data, error } = await supabase
     .from("settings")
     .upsert(next, { onConflict: "id" })
-    .select("store_name, logo_url, login_icon_url")
+    .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images")
     .maybeSingle();
   if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
   return mapSettings(data);

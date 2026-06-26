@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
+import MediaManager from "./MediaManager";
 
 // Panel de Ajustes (branding): el dueño cambia el nombre de la tienda, el logo
 // y el "Icon" (favicon del sitio + ícono del sidebar del admin). Las imágenes/
@@ -101,6 +102,7 @@ export default function BrandingSettings() {
   const [loginIconUrl, setLoginIconUrl] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState("");
+  const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -117,6 +119,9 @@ export default function BrandingSettings() {
           setLoginIconUrl(data.settings.loginIconUrl || "");
           setWhatsappNumber(data.settings.whatsappNumber || "");
           setWhatsappMessage(data.settings.whatsappMessage || "");
+          setHeroImages(
+            Array.isArray(data.settings.heroImages) ? data.settings.heroImages : []
+          );
         }
       } catch {
         /* deja los campos vacíos */
@@ -141,6 +146,7 @@ export default function BrandingSettings() {
           loginIconUrl,
           whatsappNumber,
           whatsappMessage,
+          heroImages,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -226,6 +232,17 @@ export default function BrandingSettings() {
             placeholder="¡Quiero confirmar este pedido!"
           />
         </div>
+      </div>
+
+      <div className="card space-y-3 p-5 shadow-soft">
+        <div>
+          <h3 className="text-sm font-semibold text-ink">Fondo del inicio</h3>
+          <p className="mt-0.5 text-[11px] text-ink-muted">
+            Imagen de fondo del hero (la portada de la tienda). Si subís más de
+            una, rotan solas en carrusel. Lo ideal: una foto apaisada (horizontal).
+          </p>
+        </div>
+        <MediaManager value={heroImages} onChange={setHeroImages} />
       </div>
 
       <div className="flex justify-end">

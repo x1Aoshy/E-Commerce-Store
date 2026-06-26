@@ -19,6 +19,7 @@ const DEFAULTS = {
   loginIconUrl: "",
   whatsappNumber: "",
   whatsappMessage: "",
+  heroImages: [],
 };
 
 const BrandingContext = createContext(null);
@@ -41,6 +42,9 @@ export function BrandingProvider({ children, initial }) {
           loginIconUrl: data.settings.loginIconUrl || "",
           whatsappNumber: data.settings.whatsappNumber || "",
           whatsappMessage: data.settings.whatsappMessage || "",
+          heroImages: Array.isArray(data.settings.heroImages)
+            ? data.settings.heroImages
+            : [],
         });
       }
     } catch {
