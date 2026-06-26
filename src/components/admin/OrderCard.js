@@ -151,8 +151,9 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
   const toast = useToast();
-  const { whatsappNumber, storeName, logoUrl } = useBranding();
+  const { whatsappNumber, storeName, logoUrl, loginIconUrl } = useBranding();
   const phone = (whatsappNumber || "").replace(/[^\d]/g, "") || PHONE;
+  const invoiceLogo = logoUrl || loginIconUrl;
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
@@ -239,7 +240,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           </div>
           <button
             onClick={() =>
-              printInvoice({ order, storeName: storeName || STORE, currency: CURRENCY, phone, logoUrl })
+              printInvoice({ order, storeName: storeName || STORE, currency: CURRENCY, phone, logoUrl: invoiceLogo })
             }
             className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
             aria-label="Imprimir factura"
