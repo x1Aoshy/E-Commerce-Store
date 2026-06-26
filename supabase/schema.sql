@@ -74,6 +74,20 @@ alter table public.settings add column if not exists whatsapp_message text not n
 alter table public.settings add column if not exists hero_images jsonb not null default '[]'::jsonb;
 alter table public.settings enable row level security;
 
+-- 2.d) Suscriptores / contactos (lista para ofertas y avisos de reposición). --
+--      El cliente deja su WhatsApp o email desde el footer. Idempotente.
+create table if not exists public.subscribers (
+  id         text primary key,
+  contact    text not null,                     -- WhatsApp/teléfono o email
+  name       text not null default '',
+  source     text not null default 'web',       -- de dónde vino (web, etc.)
+  created_at timestamptz not null default now()
+);
+-- Evita duplicados del mismo contacto (sin distinguir mayúsculas).
+create unique index if not exists subscribers_contact_uniq
+  on public.subscribers (lower(contact));
+alter table public.subscribers enable row level security;
+
 -- 3) Seguridad (RLS) ---------------------------------------------------------
 alter table public.products enable row level security;
 alter table public.orders   enable row level security;

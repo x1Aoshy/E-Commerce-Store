@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
+import TrackRecentlyViewed from "@/components/TrackRecentlyViewed";
 import AutoRefresh from "@/components/AutoRefresh";
 import ProductGallery from "@/components/ProductGallery";
 import ProductCard from "@/components/ProductCard";
@@ -52,6 +54,7 @@ export default async function ProductPage({ params }) {
   return (
     <>
       <AutoRefresh />
+      <TrackRecentlyViewed id={product.id} />
       <Header categories={categories} />
       <main className="container-content py-8 sm:py-12">
         <nav className="text-sm text-ink-muted">
@@ -113,6 +116,7 @@ export default async function ProductPage({ params }) {
       <Footer />
       <CartDrawer />
       <MobileCartBar />
+      <WhatsAppFloat />
     </>
   );
 }

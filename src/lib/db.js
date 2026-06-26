@@ -595,3 +595,68 @@ export async function updateSettings(patch = {}) {
   if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
   return mapSettings(data);
 }
+
+/* ----------------------------- Suscriptores ------------------------------ */
+// Lista de contactos (WhatsApp/email) que el cliente deja para recibir ofertas
+// y avisos de reposición. Ver tabla `subscribers` en supabase/schema.sql.
+
+function mapSubscriber(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    contact: row.contact,
+    name: row.name || "",
+    source: row.source || "web",
+    createdAt: row.created_at,
+  };
+}
+
+// Da de alta un contacto. Normaliza, evita duplicados (devuelve el existente)
+// y nunca lanza por la restricción única (lo trata como "ya estaba").
+// Devuelve { subscriber } o { error } con un mensaje claro.
+export async function addSubscriber({ contact, name, source } = {}) {
+  const clean = String(contact || "").trim().slice(0, 120);
+  if (!clean) return { error: "Dejá un WhatsApp o email válido." };
+
+  const supabase = getSupabase();
+  const row = {
+    id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    contact: clean,
+    name: String(name || "").trim().slice(0, 80),
+    source: String(source || "web").trim().slice(0, 30) || "web",
+  };
+
+  const { data, error } = await supabase
+    .from("subscribers")
+    .insert(row)
+    .select("id, contact, name, source, created_at")
+    .single();
+
+  if (error) {
+    // 23505 = violación de índice único → el contacto ya estaba suscripto.
+    if (error.code === "23505") return { subscriber: null, duplicate: true };
+    throw new Error(`No se pudo guardar el contacto: ${error.message}`);
+  }
+  return { subscriber: mapSubscriber(data) };
+}
+
+export async function getSubscribers() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("subscribers")
+    .select("id, contact, name, source, created_at")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer los contactos: ${error.message}`);
+  return (data || []).map(mapSubscriber);
+}
+
+export async function deleteSubscriber(id) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("subscribers")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) throw new Error(`No se pudo eliminar el contacto: ${error.message}`);
+  return Array.isArray(data) && data.length > 0;
+}

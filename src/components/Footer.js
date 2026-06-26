@@ -1,6 +1,7 @@
 "use client";
 
 import Logo from "@/components/Logo";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
@@ -72,15 +73,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold">Categorías</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-ink-muted">
-              <li>Proteínas</li>
-              <li>Rendimiento</li>
-              <li>Recuperación</li>
-              <li>Salud</li>
-            </ul>
-          </div>
+          <NewsletterSignup />
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-xs text-ink-muted sm:flex-row sm:items-center">

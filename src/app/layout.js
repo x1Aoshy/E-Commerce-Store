@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Nunito_Sans, Fraunces } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 import { BrandingProvider } from "@/context/BrandingContext";
 import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
@@ -57,7 +58,9 @@ export default async function RootLayout({ children }) {
         <BrandingProvider initial={settings}>
           <BrandFavicon />
           <CartProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <FavoritesProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </FavoritesProvider>
           </CartProvider>
         </BrandingProvider>
       </body>

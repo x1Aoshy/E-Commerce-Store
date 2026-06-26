@@ -21,6 +21,7 @@ const VIEW_TITLES = {
   inventario: "Inventario",
   ordenes: "Órdenes",
   finanzas: "Finanzas",
+  contactos: "Contactos",
   ajustes: "Ajustes",
 };
 
@@ -137,6 +138,8 @@ export default function AdminDashboard({ onLogout }) {
             />
           ) : activeView === "finanzas" ? (
             <FinanceView orders={orders} />
+          ) : activeView === "contactos" ? (
+            <ContactosView />
           ) : activeView === "ajustes" ? (
             <BrandingSettings />
           ) : (
@@ -952,5 +955,126 @@ function FinanceView({ orders }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Tab de Contactos: lista de clientes que dejaron su WhatsApp/email para
+// recibir ofertas y avisos de reposición. Permite copiar la lista y borrar.
+function ContactosView() {
+  const [subs, setSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const toast = useToast();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/subscribe");
+      if (!res.ok) throw new Error("No autorizado");
+      const data = await res.json();
+      setSubs(data.subscribers || []);
+    } catch {
+      setError("No se pudieron cargar los contactos.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function remove(id) {
+    if (!confirm("¿Eliminar este contacto de la lista?")) return;
+    try {
+      const res = await fetch(`/api/subscribe/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setSubs((prev) => prev.filter((s) => s.id !== id));
+        toast.success("Contacto eliminado");
+      } else {
+        toast.error("No se pudo eliminar.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    }
+  }
+
+  async function copyAll() {
+    const text = subs.map((s) => s.contact).join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Lista copiada al portapapeles");
+    } catch {
+      toast.error("No se pudo copiar.");
+    }
+  }
+
+  return (
+    <section className="animate-fade-in">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-ink">
+          Contactos ({subs.length})
+        </h2>
+        {subs.length > 0 && (
+          <button
+            onClick={copyAll}
+            className="btn-primary shrink-0 px-4 py-2 text-[13px]"
+          >
+            Copiar todos
+          </button>
+        )}
+      </div>
+
+      <p className="mb-4 text-sm text-ink-muted">
+        Clientes que dejaron su WhatsApp o email desde la tienda para recibir
+        ofertas y avisos de reposición.
+      </p>
+
+      {loading ? (
+        <LoadingOverlay />
+      ) : error ? (
+        <div className="card p-6 text-sm text-amber-200 shadow-soft">{error}</div>
+      ) : subs.length === 0 ? (
+        <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+          Todavía no hay contactos. Aparecerán acá cuando un cliente deje su
+          WhatsApp o email en la tienda.
+        </div>
+      ) : (
+        <div className="card overflow-x-auto shadow-soft">
+          <table className="w-full min-w-[520px] text-sm">
+            <thead>
+              <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
+                <th className="px-4 py-3 font-medium">Contacto</th>
+                <th className="px-4 py-3 font-medium">Origen</th>
+                <th className="px-4 py-3 font-medium">Fecha</th>
+                <th className="px-4 py-3 text-right font-medium">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subs.map((s) => (
+                <tr key={s.id} className="border-b border-white/[0.06] last:border-0">
+                  <td className="px-4 py-3 font-medium text-ink">{s.contact}</td>
+                  <td className="px-4 py-3 text-ink-muted">{s.source}</td>
+                  <td className="px-4 py-3 text-ink-muted">
+                    {s.createdAt
+                      ? new Date(s.createdAt).toLocaleDateString("es-NI")
+                      : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => remove(s.id)}
+                      className="rounded-[4px] border border-white/15 px-3 py-1.5 text-[13px] text-ink-soft transition hover:border-red-400/40 hover:text-red-400"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import ProductGallery from "./ProductGallery";
 import StockBadge, { stockStatus } from "./StockBadge";
+import FavoriteButton from "./FavoriteButton";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 
@@ -14,6 +15,8 @@ export default function ProductCard({ product }) {
   const href = `/producto/${product.slug}`;
   const onSale = Number(product.compareAt) > Number(product.price);
   const off = onSale ? Math.round((1 - product.price / product.compareAt) * 100) : 0;
+  // Urgencia honesta: solo cuando de verdad quedan pocas unidades.
+  const lowStock = s.available && Number(product.stock) > 0 && Number(product.stock) <= 5;
 
   const handleAdd = () => {
     addItem(product);
@@ -29,6 +32,17 @@ export default function ProductCard({ product }) {
           href={href}
           className="transition-transform duration-500 ease-out group-hover:scale-105"
         />
+        <FavoriteButton id={product.id} variant="overlay" />
+        {onSale && (
+          <span className="absolute left-2.5 top-2.5 z-10 rounded-[3px] bg-accent-500 px-2 py-0.5 text-[11px] font-bold text-night shadow-soft">
+            -{off}%
+          </span>
+        )}
+        {lowStock && (
+          <span className="absolute bottom-2.5 left-2.5 z-10 rounded-[3px] bg-night/70 px-2 py-0.5 text-[11px] font-semibold text-accent-200 ring-1 ring-white/10 backdrop-blur-sm">
+            ¡Últimas {product.stock} u.!
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
