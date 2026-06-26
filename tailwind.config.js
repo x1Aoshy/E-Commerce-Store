@@ -8,9 +8,9 @@ module.exports = {
         // de las clases existentes (text-ink, border-ink/x, bg-ink/5...) se
         // invierten solas y quedan correctas sobre fondo oscuro.
         ink: {
-          DEFAULT: "#e9ebec",
-          soft: "#a6adb1",
-          muted: "#6f777c",
+          DEFAULT: "#f1ece1", // blanco cálido (crema), no blanco frío
+          soft: "#b3ac9f",
+          muted: "#837b6f",
         },
         night: "#0a0c0d", // fondo de página (casi negro)
         surface: {
@@ -39,7 +39,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          "var(--font-inter)",
+          "var(--font-nunito)",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
@@ -48,14 +48,8 @@ module.exports = {
           "Arial",
           "sans-serif",
         ],
-        // Títulos atléticos (condensados).
-        display: [
-          "var(--font-oswald)",
-          "Oswald",
-          "Impact",
-          "Haettenschweiler",
-          "sans-serif",
-        ],
+        // Títulos: serif suave y natural.
+        display: ["var(--font-fraunces)", "Georgia", "Cambria", "serif"],
       },
       maxWidth: {
         content: "1180px",

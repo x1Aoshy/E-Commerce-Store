@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter, Oswald } from "next/font/google";
+import { Nunito_Sans, Fraunces } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { BrandingProvider } from "@/context/BrandingContext";
 import { ToastProvider } from "@/components/Toast";
@@ -9,17 +9,19 @@ import { getSettings } from "@/lib/db";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
-// Tipografía: Oswald (condensado, atlético) para los títulos; Inter (limpio)
-// para el texto. Se cargan optimizadas y se exponen como variables CSS.
-const inter = Inter({
+// Tipografía: Fraunces (serif suave y natural) para los títulos; Nunito Sans
+// (sans humanista cálido) para el texto. Se cargan optimizadas como variables.
+const nunito = Nunito_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "600", "700"],
+  variable: "--font-nunito",
   display: "swap",
+  adjustFontFallback: false,
 });
-const oswald = Oswald({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-oswald",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -49,7 +51,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="es" className={`${inter.variable} ${oswald.variable}`}>
+    <html lang="es" className={`${nunito.variable} ${fraunces.variable}`}>
       <body>
         <Background />
         <BrandingProvider initial={settings}>
