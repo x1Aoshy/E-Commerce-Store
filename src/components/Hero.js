@@ -72,14 +72,15 @@ export default function Hero() {
               }`}
             />
           ))}
-          {/* Fundido vertical: oscuro arriba (header) y abajo (productos). */}
-          <div className="absolute inset-0 bg-gradient-to-b from-night via-transparent to-night" />
+          {/* Fundido vertical: oscuro arriba (header) y abajo (Recomendados),
+              pero con la imagen visible en casi todo el alto. */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#0a0c0d_0%,transparent_22%,transparent_88%,#0a0c0d_100%)]" />
           {/* Oscurecido del lado del texto (izquierda) para legibilidad. */}
           <div className="absolute inset-0 bg-gradient-to-r from-night via-night/55 to-night/20" />
         </div>
       )}
 
-      <div className="container-content relative z-10 flex min-h-[80vh] flex-col justify-center pb-14 pt-10 sm:pt-16">
+      <div className="container-content relative z-10 flex min-h-[92vh] flex-col justify-center pb-16 pt-10 sm:pt-16">
         <h1
           className="max-w-4xl animate-fade-in text-[2rem] font-extrabold leading-[1.04] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}
