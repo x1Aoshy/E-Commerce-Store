@@ -76,7 +76,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
   return (
     <tr className="border-b border-white/[0.06] last:border-0">
       <td className="px-4 py-3">
-        <div className="font-medium text-ink">{product.name}</div>
+        <div className="font-medium text-ink">{product.name || "(sin nombre)"}</div>
         <div className="text-xs text-ink-muted">{product.short}</div>
         {error && <div className="mt-1 text-[11px] text-red-300">{error}</div>}
       </td>

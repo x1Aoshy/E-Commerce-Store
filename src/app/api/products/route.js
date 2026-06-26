@@ -18,9 +18,6 @@ export async function POST(req) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const body = await req.json();
-  if (!body.name || !String(body.name).trim()) {
-    return NextResponse.json({ error: "El nombre es obligatorio." }, { status: 400 });
-  }
   try {
     const product = await createProduct(body);
     return NextResponse.json({ product }, { status: 201 });

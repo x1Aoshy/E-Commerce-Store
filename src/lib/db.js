@@ -124,7 +124,7 @@ export async function createProduct(data) {
   const product = {
     id,
     slug,
-    name: data.name || "Producto sin nombre",
+    name: (data.name || "").trim(),
     category: data.category || "General",
     price: Number(data.price) || 0,
     stock: Number(data.stock) || 0,

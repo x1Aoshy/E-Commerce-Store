@@ -14,7 +14,7 @@ export function buildOrderMessage(order, storeName = "Titan Supplements", custom
   lines.push(`Código: ${order.code}`);
   lines.push("");
   for (const item of order.items) {
-    lines.push(`• ${item.quantity}× ${item.name} — ${money(item.subtotal)}`);
+    lines.push(`• ${item.quantity}× ${item.name || "Producto"} — ${money(item.subtotal)}`);
   }
   lines.push("");
   lines.push(`*Total: ${money(order.total)}*`);

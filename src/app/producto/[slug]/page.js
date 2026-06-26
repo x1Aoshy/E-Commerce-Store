@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
     const product = await getProductBySlug(params.slug);
     if (product) {
       return {
-        title: `${product.name} — ${STORE}`,
+        title: `${product.name || "Producto"} — ${STORE}`,
         description: product.short || (product.description || "").slice(0, 150),
       };
     }
@@ -75,9 +75,11 @@ export default async function ProductPage({ params }) {
 
           <Reveal delay={80}>
             <div>
-              <h1 className="text-2xl font-semibold text-ink sm:text-3xl">
-                {product.name}
-              </h1>
+              {product.name && (
+                <h1 className="text-2xl font-semibold text-ink sm:text-3xl">
+                  {product.name}
+                </h1>
+              )}
               <p className="mt-3 leading-relaxed text-ink-soft">
                 {product.description || product.short}
               </p>

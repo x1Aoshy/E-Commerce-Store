@@ -49,7 +49,7 @@ export function buildInvoiceHtml({
       (it) => `
     <tr>
       <td class="q">${Number(it.quantity) || 0}×</td>
-      <td class="n">${esc(it.name)}</td>
+      <td class="n">${esc(it.name || "Producto")}</td>
       <td class="p">${money(it.subtotal)}</td>
     </tr>`
     )

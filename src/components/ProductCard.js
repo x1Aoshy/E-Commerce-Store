@@ -38,12 +38,16 @@ export default function ProductCard({ product }) {
           </span>
           <StockBadge stock={product.stock} />
         </div>
-        <h3 className="text-[15px] font-semibold leading-snug text-ink">
-          <Link href={href} className="transition-colors hover:text-accent-300">
-            {product.name}
-          </Link>
-        </h3>
-        <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{product.short}</p>
+        {product.name && (
+          <h3 className="text-[15px] font-semibold leading-snug text-ink">
+            <Link href={href} className="transition-colors hover:text-accent-300">
+              {product.name}
+            </Link>
+          </h3>
+        )}
+        {product.short && (
+          <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{product.short}</p>
+        )}
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div className="flex flex-col leading-tight">

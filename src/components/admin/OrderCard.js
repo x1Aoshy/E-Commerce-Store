@@ -259,7 +259,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
         {order.items.map((it) => (
           <li key={it.id} className="flex justify-between gap-3">
             <span>
-              {it.quantity}× {it.name}
+              {it.quantity}× {it.name || "Producto"}
             </span>
             <span className="text-ink-muted">{formatPrice(it.subtotal)}</span>
           </li>

@@ -192,7 +192,7 @@ export default function CartDrawer() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
-                        {item.name}
+                        {item.name || "Producto"}
                       </p>
                       <p className="mt-0.5 text-xs text-ink-muted">
                         {formatPrice(item.price)} c/u

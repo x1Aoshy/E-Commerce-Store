@@ -43,10 +43,6 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
 
   async function submit(e) {
     e.preventDefault();
-    if (!form.name.trim()) {
-      setError("El nombre es obligatorio.");
-      return;
-    }
     setSaving(true);
     setError(null);
     try {
@@ -83,12 +79,12 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
       <Section title="Datos" hint="Lo esencial del producto.">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="label">Nombre *</label>
+            <label className="label">Nombre (opcional)</label>
             <input
               className="input"
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              placeholder="Ej: Proteína Whey Isolate"
+              placeholder="Dejalo vacío si la foto ya trae el nombre"
             />
           </div>
           <div className="sm:col-span-2">
