@@ -1,0 +1,142 @@
+"use client";
+
+import { useState } from "react";
+
+function Stars({ value, onChange }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex gap-1" role="radiogroup" aria-label="Puntuación">
+      {[1, 2, 3, 4, 5].map((n) => {
+        const active = (hover || value) >= n;
+        return (
+          <button
+            key={n}
+            type="button"
+            onMouseEnter={() => setHover(n)}
+            onMouseLeave={() => setHover(0)}
+            onClick={() => onChange(n)}
+            aria-label={`${n} estrella${n > 1 ? "s" : ""}`}
+            aria-checked={value === n}
+            role="radio"
+            className="p-0.5 transition active:scale-90"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className={`h-7 w-7 transition-colors ${active ? "text-accent-400" : "text-white/20"}`}
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="m12 2 3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
+            </svg>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// Formulario para que el cliente deje su reseña. Queda pendiente de aprobación
+// del admin antes de mostrarse en la tienda (evita spam/reseñas falsas).
+export default function ReviewForm({ productId = null, onClose }) {
+  const [name, setName] = useState("");
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const [state, setState] = useState("idle"); // idle | loading | done | error
+  const [msg, setMsg] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!text.trim()) {
+      setState("error");
+      setMsg("Escribí tu reseña.");
+      return;
+    }
+    setState("loading");
+    setMsg("");
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, name, rating, text }),
+      });
+      if (res.ok) {
+        setState("done");
+        setMsg("¡Gracias! Tu reseña fue enviada y se publicará al ser aprobada.");
+        setName("");
+        setText("");
+        setRating(5);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setState("error");
+        setMsg(data.error || "No se pudo enviar. Probá de nuevo.");
+      }
+    } catch {
+      setState("error");
+      setMsg("Error de conexión. Probá de nuevo.");
+    }
+  }
+
+  if (state === "done") {
+    return (
+      <div className="card p-6 text-center shadow-soft">
+        <p className="text-sm text-green-300">{msg}</p>
+        {onClose && (
+          <button onClick={onClose} className="btn-ghost mt-4 px-4 py-2 text-[13px]">
+            Cerrar
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="card p-5 shadow-soft sm:p-6">
+      <h3 className="text-base font-semibold text-ink">Dejá tu reseña</h3>
+      <p className="mt-1 text-sm text-ink-muted">
+        Contanos tu experiencia. La revisamos y la publicamos.
+      </p>
+
+      <div className="mt-4">
+        <span className="label">Tu puntuación</span>
+        <Stars value={rating} onChange={setRating} />
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="label">Tu nombre (opcional)</label>
+          <input
+            className="input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Ej: María G."
+            maxLength={80}
+          />
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <label className="label">Tu reseña</label>
+        <textarea
+          className="input min-h-[90px] resize-y"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="¿Qué te pareció el producto y la atención?"
+          maxLength={600}
+        />
+      </div>
+
+      {state === "error" && <p className="mt-2 text-sm text-red-400">{msg}</p>}
+
+      <div className="mt-4 flex items-center justify-end gap-2">
+        {onClose && (
+          <button type="button" onClick={onClose} className="btn-ghost px-4 py-2 text-[13px]">
+            Cancelar
+          </button>
+        )}
+        <button type="submit" disabled={state === "loading"} className="btn-accent px-5 py-2.5 text-sm">
+          {state === "loading" ? "Enviando…" : "Enviar reseña"}
+        </button>
+      </div>
+    </form>
+  );
+}

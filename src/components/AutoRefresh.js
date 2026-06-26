@@ -2,13 +2,14 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { onDataChanged } from "@/lib/sync";
 
 // Mantiene la tienda al día SIN recargar la página: vuelve a pedir los datos del
-// servidor (precios, stock, descuentos) cuando la pestaña vuelve al foco y cada
-// cierto intervalo mientras está visible. Usa router.refresh(), así no se pierde
-// el carrito ni la posición del scroll. Pensado para que un cambio hecho en el
-// panel se vea en la tienda en segundos, sin apretar F5.
-export default function AutoRefresh({ interval = 15000 }) {
+// servidor (precios, stock, descuentos) cuando la pestaña vuelve al foco, cada
+// cierto intervalo mientras está visible, y AL INSTANTE cuando el panel avisa de
+// un cambio (alta/baja/edición de productos) vía BroadcastChannel. Usa
+// router.refresh(), así no se pierde el carrito ni la posición del scroll.
+export default function AutoRefresh({ interval = 10000 }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -17,6 +18,9 @@ export default function AutoRefresh({ interval = 15000 }) {
     const refresh = () => {
       if (document.visibilityState === "visible") router.refresh();
     };
+
+    // Aviso en vivo desde el panel admin (otra pestaña del mismo navegador).
+    const offSync = onDataChanged(() => router.refresh());
 
     const stop = () => {
       if (timer) clearInterval(timer);
@@ -42,6 +46,7 @@ export default function AutoRefresh({ interval = 15000 }) {
 
     return () => {
       stop();
+      offSync();
       window.removeEventListener("focus", refresh);
       document.removeEventListener("visibilitychange", onVisibility);
     };

@@ -88,6 +88,21 @@ create unique index if not exists subscribers_contact_uniq
   on public.subscribers (lower(contact));
 alter table public.subscribers enable row level security;
 
+-- 2.e) Reseñas de clientes (prueba social). El cliente la deja desde la tienda
+--      y el admin la APRUEBA antes de publicarla; el admin también puede cargar
+--      reseñas reales a mano. Idempotente.
+create table if not exists public.reviews (
+  id         text primary key,
+  product_id text,                               -- opcional: reseña de un producto puntual
+  name       text not null default '',
+  rating     smallint not null default 5,        -- 1 a 5 estrellas
+  text       text not null default '',
+  approved   boolean not null default false,     -- visible en la tienda solo si true
+  source     text not null default 'cliente',    -- cliente | admin
+  created_at timestamptz not null default now()
+);
+alter table public.reviews enable row level security;
+
 -- 3) Seguridad (RLS) ---------------------------------------------------------
 alter table public.products enable row level security;
 alter table public.orders   enable row level security;

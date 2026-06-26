@@ -103,7 +103,7 @@ export default async function ProductPage({ params }) {
             <h2 className="text-xl font-semibold text-ink">
               También te puede interesar
             </h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {related.map((p, i) => (
                 <Reveal key={p.id} delay={i * 60}>
                   <ProductCard product={p} />

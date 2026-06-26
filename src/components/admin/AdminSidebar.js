@@ -119,12 +119,21 @@ function ContactosIcon() {
   );
 }
 
+function ResenasIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="m12 3.5 2.6 5.27L20.5 9.6l-4.25 4.14L17.25 20 12 16.77 6.75 20l1-6.26L3.5 9.6l5.9-.83z" />
+    </svg>
+  );
+}
+
 const NAV_ITEMS = [
   { key: "resumen", label: "Resumen", Icon: ResumenIcon },
   { key: "inventario", label: "Inventario", Icon: InventarioIcon },
   { key: "ordenes", label: "Órdenes", Icon: OrdenesIcon },
   { key: "finanzas", label: "Finanzas", Icon: FinanzasIcon },
   { key: "contactos", label: "Contactos", Icon: ContactosIcon },
+  { key: "resenas", label: "Reseñas", Icon: ResenasIcon },
 ];
 
 // Etiqueta que aparece a la derecha del ícono al hacer hover/focus.

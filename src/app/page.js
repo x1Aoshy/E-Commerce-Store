@@ -11,7 +11,7 @@ import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import AutoRefresh from "@/components/AutoRefresh";
-import { getProducts } from "@/lib/db";
+import { getProducts, getApprovedReviews } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +25,9 @@ export default async function HomePage() {
     console.error("No se pudieron cargar los productos:", err);
   }
 
+  // Reseñas aprobadas (prueba social). Resiliente: getApprovedReviews nunca lanza.
+  const reviews = await getApprovedReviews();
+
   const categories = Array.from(new Set(products.map((p) => p.category)));
 
   return (
@@ -37,7 +40,7 @@ export default async function HomePage() {
         <Recommended products={products} />
         <RecentlyViewed products={products} />
         <ProductGrid products={products} />
-        <Testimonials />
+        <Testimonials reviews={reviews} />
         <Benefits />
       </main>
       <Footer />

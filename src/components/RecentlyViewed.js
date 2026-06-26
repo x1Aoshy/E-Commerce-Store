@@ -29,7 +29,7 @@ export default function RecentlyViewed({ products, excludeId = null, title = "Vi
       <Reveal>
         <h2 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h2>
       </Reveal>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {items.map((p, i) => (
           <Reveal key={p.id} delay={i * 60}>
             <ProductCard product={p} />

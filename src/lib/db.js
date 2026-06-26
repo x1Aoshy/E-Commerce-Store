@@ -660,3 +660,101 @@ export async function deleteSubscriber(id) {
   if (error) throw new Error(`No se pudo eliminar el contacto: ${error.message}`);
   return Array.isArray(data) && data.length > 0;
 }
+
+/* ------------------------------- Reseñas --------------------------------- */
+// Prueba social: el cliente deja su reseña (queda pendiente de aprobación) y el
+// admin la publica; el admin también puede cargar reseñas reales a mano.
+
+const REVIEW_COLUMNS = "id, product_id, name, rating, text, approved, source, created_at";
+
+function mapReview(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    productId: row.product_id || null,
+    name: row.name || "",
+    rating: Math.max(1, Math.min(5, Number(row.rating) || 5)),
+    text: row.text || "",
+    approved: !!row.approved,
+    source: row.source || "cliente",
+    createdAt: row.created_at,
+  };
+}
+
+// Crea una reseña. Desde la tienda nace SIN aprobar (source 'cliente'); desde el
+// admin nace aprobada (source 'admin'). Devuelve { review } o { error }.
+export async function addReview({ productId, name, rating, text, approved, source } = {}) {
+  const cleanText = String(text || "").trim().slice(0, 600);
+  const cleanName = String(name || "").trim().slice(0, 80);
+  if (!cleanText) return { error: "Escribí tu reseña." };
+
+  const supabase = getSupabase();
+  const row = {
+    id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    product_id: productId ? String(productId).slice(0, 60) : null,
+    name: cleanName,
+    rating: Math.max(1, Math.min(5, Math.round(Number(rating) || 5))),
+    text: cleanText,
+    approved: !!approved,
+    source: source === "admin" ? "admin" : "cliente",
+  };
+
+  const { data, error } = await supabase
+    .from("reviews")
+    .insert(row)
+    .select(REVIEW_COLUMNS)
+    .single();
+  if (error) throw new Error(`No se pudo guardar la reseña: ${error.message}`);
+  return { review: mapReview(data) };
+}
+
+// Reseñas aprobadas para mostrar en la tienda (más nuevas primero).
+export async function getApprovedReviews(limit = 12) {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("reviews")
+      .select(REVIEW_COLUMNS)
+      .eq("approved", true)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data || []).map(mapReview);
+  } catch {
+    return [];
+  }
+}
+
+// Todas las reseñas (admin), para moderar.
+export async function getAllReviews() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("reviews")
+    .select(REVIEW_COLUMNS)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer las reseñas: ${error.message}`);
+  return (data || []).map(mapReview);
+}
+
+export async function setReviewApproved(id, approved) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("reviews")
+    .update({ approved: !!approved })
+    .eq("id", id)
+    .select(REVIEW_COLUMNS)
+    .maybeSingle();
+  if (error) throw new Error(`No se pudo actualizar la reseña: ${error.message}`);
+  return data ? mapReview(data) : null;
+}
+
+export async function deleteReview(id) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("reviews")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) throw new Error(`No se pudo eliminar la reseña: ${error.message}`);
+  return Array.isArray(data) && data.length > 0;
+}

@@ -154,7 +154,7 @@ export default function ProductGrid({ products }) {
         </select>
       </Reveal>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((p, i) => (
           <Reveal key={p.id} delay={Math.min(i * 60, 360)}>
             <ProductCard product={p} />

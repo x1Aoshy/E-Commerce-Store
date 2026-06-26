@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import { notifyDataChanged } from "@/lib/sync";
 import Logo from "@/components/Logo";
 import Modal from "@/components/Modal";
 import { LoadingOverlay } from "@/components/Spinner";
@@ -22,6 +23,7 @@ const VIEW_TITLES = {
   ordenes: "Órdenes",
   finanzas: "Finanzas",
   contactos: "Contactos",
+  resenas: "Reseñas",
   ajustes: "Ajustes",
 };
 
@@ -140,6 +142,8 @@ export default function AdminDashboard({ onLogout }) {
             <FinanceView orders={orders} />
           ) : activeView === "contactos" ? (
             <ContactosView />
+          ) : activeView === "resenas" ? (
+            <ResenasView />
           ) : activeView === "ajustes" ? (
             <BrandingSettings />
           ) : (
@@ -494,6 +498,17 @@ function InventarioView({ products, categories, setProducts }) {
   const [statsProduct, setStatsProduct] = useState(null); // producto a editar stats
   const [editProduct, setEditProduct] = useState(null); // producto a editar (texto)
   const [query, setQuery] = useState("");
+
+  // Avisa a la tienda (otras pestañas) cada vez que cambia el inventario, para
+  // que se refresque al instante. Se saltea el primer render (carga inicial).
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    notifyDataChanged();
+  }, [products]);
 
   // Filtra la tabla por nombre y categoría mientras se escribe.
   const filtered = useMemo(() => {
@@ -1075,6 +1090,321 @@ function ContactosView() {
           </table>
         </div>
       )}
+    </section>
+  );
+}
+
+// Estrellas de solo lectura para las tarjetas de reseña del admin.
+function ReviewStars({ rating = 5 }) {
+  return (
+    <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
+      {Array.from({ length: 5 }).map((_, s) => (
+        <svg
+          key={s}
+          viewBox="0 0 24 24"
+          className={`h-3.5 w-3.5 ${s < rating ? "" : "text-white/15"}`}
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="m12 2 3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+// Formulario del admin para cargar una reseña real a mano (nace aprobada).
+function AdminReviewForm({ onCreated, onCancel }) {
+  const [name, setName] = useState("");
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const toast = useToast();
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!text.trim()) {
+      setError("Escribí el texto de la reseña.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ manual: true, name, rating, text }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.review) {
+        onCreated(data.review);
+        toast.success("Reseña publicada");
+      } else {
+        setError(data.error || "No se pudo guardar.");
+        toast.error(data.error || "No se pudo guardar.");
+      }
+    } catch {
+      setError("Error de conexión.");
+      toast.error("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-3">
+      <div>
+        <label className="label">Nombre del cliente</label>
+        <input
+          className="input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ej: María G."
+          maxLength={80}
+        />
+      </div>
+      <div>
+        <span className="label">Puntuación</span>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setRating(n)}
+              aria-label={`${n} estrellas`}
+              className="p-0.5 transition active:scale-90"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className={`h-7 w-7 ${rating >= n ? "text-accent-400" : "text-white/20"}`}
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="m12 2 3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="label">Reseña</label>
+        <textarea
+          className="input min-h-[100px] resize-y"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Texto de la reseña del cliente"
+          maxLength={600}
+        />
+      </div>
+      {error && <p className="text-sm text-red-400">{error}</p>}
+      <div className="flex items-center justify-end gap-2 pt-1">
+        <button type="button" onClick={onCancel} className="btn-ghost px-4 py-2 text-[13px]">
+          Cancelar
+        </button>
+        <button type="submit" disabled={saving} className="btn-accent px-4 py-2 text-[13px]">
+          {saving ? "Guardando…" : "Publicar reseña"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Tab de Reseñas: modera las reseñas de clientes (aprobar/ocultar/eliminar) y
+// permite cargar reseñas reales a mano. Las aprobadas se ven en la tienda.
+function ResenasView() {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [filter, setFilter] = useState("todas"); // todas | pendiente | publicada
+  const toast = useToast();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/reviews?all=1");
+      if (!res.ok) throw new Error("No autorizado");
+      const data = await res.json();
+      setReviews(data.reviews || []);
+    } catch {
+      setError("No se pudieron cargar las reseñas.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function setApproved(id, approved) {
+    try {
+      const res = await fetch(`/api/reviews/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approved }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.review) {
+        setReviews((prev) => prev.map((r) => (r.id === id ? data.review : r)));
+        toast.success(approved ? "Reseña publicada" : "Reseña ocultada");
+      } else {
+        toast.error("No se pudo actualizar.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    }
+  }
+
+  async function remove(id) {
+    if (!confirm("¿Eliminar esta reseña?")) return;
+    try {
+      const res = await fetch(`/api/reviews/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+        toast.success("Reseña eliminada");
+      } else {
+        toast.error("No se pudo eliminar.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    }
+  }
+
+  const pendingCount = useMemo(
+    () => reviews.filter((r) => !r.approved).length,
+    [reviews]
+  );
+  const filtered = useMemo(() => {
+    if (filter === "pendiente") return reviews.filter((r) => !r.approved);
+    if (filter === "publicada") return reviews.filter((r) => r.approved);
+    return reviews;
+  }, [reviews, filter]);
+
+  const tabs = [
+    { id: "todas", label: `Todas (${reviews.length})` },
+    { id: "pendiente", label: `Pendientes (${pendingCount})` },
+    { id: "publicada", label: `Publicadas (${reviews.length - pendingCount})` },
+  ];
+
+  return (
+    <section className="animate-fade-in">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-ink">
+          Reseñas ({reviews.length})
+        </h2>
+        <button
+          onClick={() => setAddOpen(true)}
+          className="btn-primary shrink-0 px-4 py-2 text-[13px]"
+        >
+          + Agregar reseña
+        </button>
+      </div>
+
+      <p className="mb-4 text-sm text-ink-muted">
+        Las reseñas de clientes llegan <strong>pendientes</strong>: aprobalas para
+        que se vean en la tienda. También podés cargar reseñas reales a mano.
+      </p>
+
+      {loading ? (
+        <LoadingOverlay />
+      ) : error ? (
+        <div className="card p-6 text-sm text-amber-200 shadow-soft">{error}</div>
+      ) : reviews.length === 0 ? (
+        <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+          Todavía no hay reseñas. Aparecerán acá cuando un cliente escriba una, o
+          cargá una con “+ Agregar reseña”.
+        </div>
+      ) : (
+        <>
+          <div className="no-scrollbar -mx-5 mb-4 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            {tabs.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setFilter(t.id)}
+                className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
+                  filter === t.id
+                    ? "bg-accent-500 text-night"
+                    : "bg-white/5 text-ink-soft ring-1 ring-white/10 hover:ring-white/30"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="card p-8 text-center text-sm text-ink-muted shadow-soft">
+              No hay reseñas en este filtro.
+            </div>
+          ) : (
+            <div className="grid items-start gap-3 lg:grid-cols-2">
+              {filtered.map((r) => (
+                <div key={r.id} className="card p-4 shadow-soft">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <ReviewStars rating={r.rating} />
+                      <span
+                        className={`chip px-2 py-0.5 text-[10px] ${
+                          r.approved
+                            ? "bg-green-500/15 text-green-300"
+                            : "bg-amber-400/15 text-amber-300"
+                        }`}
+                      >
+                        {r.approved ? "Publicada" : "Pendiente"}
+                      </span>
+                      {r.source === "admin" && (
+                        <span className="chip bg-white/5 px-2 py-0.5 text-[10px] text-ink-muted">
+                          manual
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-ink-muted">
+                      {r.createdAt
+                        ? new Date(r.createdAt).toLocaleDateString("es-NI")
+                        : ""}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-ink-soft">“{r.text}”</p>
+                  <p className="mt-2 text-xs font-medium text-ink">
+                    — {r.name || "Cliente"}
+                  </p>
+                  <div className="mt-3 flex items-center justify-end gap-2 border-t border-white/10 pt-3">
+                    <button
+                      onClick={() => setApproved(r.id, !r.approved)}
+                      className={`rounded-[4px] border px-3 py-1.5 text-[13px] font-medium transition ${
+                        r.approved
+                          ? "border-white/15 text-ink-soft hover:border-white/30"
+                          : "border-green-500/40 bg-green-500/10 text-green-300 hover:bg-green-500/20"
+                      }`}
+                    >
+                      {r.approved ? "Ocultar" : "Aprobar"}
+                    </button>
+                    <button
+                      onClick={() => remove(r.id)}
+                      className="rounded-[4px] border border-white/15 px-3 py-1.5 text-[13px] text-ink-soft transition hover:border-red-400/40 hover:text-red-400"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Agregar reseña">
+        <AdminReviewForm
+          onCreated={(review) => {
+            setReviews((prev) => [review, ...prev]);
+            setAddOpen(false);
+          }}
+          onCancel={() => setAddOpen(false)}
+        />
+      </Modal>
     </section>
   );
 }

@@ -4,7 +4,7 @@ import ProductCard from "./ProductCard";
 // Sección de recomendados: muestra los productos destacados (featured) para que
 // el usuario vea opciones relevantes ni bien entra, sin tener que buscar.
 export default function Recommended({ products = [] }) {
-  const featured = products.filter((p) => p.featured).slice(0, 3);
+  const featured = products.filter((p) => p.featured).slice(0, 4);
   if (featured.length === 0) return null;
 
   return (
@@ -24,7 +24,7 @@ export default function Recommended({ products = [] }) {
         </p>
       </Reveal>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {featured.map((p, i) => (
           <Reveal key={p.id} delay={i * 60}>
             <ProductCard product={p} />
