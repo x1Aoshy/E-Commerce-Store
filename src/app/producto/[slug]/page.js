@@ -68,8 +68,8 @@ export default async function ProductPage({ params }) {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
           <Reveal>
-            <div className="card aspect-square overflow-hidden">
-              <ProductGallery product={product} controls />
+            <div className="card aspect-square overflow-hidden bg-surface-soft">
+              <ProductGallery product={product} controls fit="contain" />
             </div>
           </Reveal>
 

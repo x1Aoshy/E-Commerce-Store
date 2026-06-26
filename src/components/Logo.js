@@ -40,22 +40,28 @@ export function LogoMark({ size = 32 }) {
   );
 }
 
-export default function Logo({ size = 32, className = "" }) {
+export default function Logo({ size = 32, className = "", imgClass = "h-10 sm:h-11" }) {
   const { storeName, logoUrl } = useBranding();
   const name = storeName || "Titan Supplements";
 
-  return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      {logoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
+  // Con logo subido: mostramos SÓLO la imagen (suele traer su propio nombre),
+  // más grande y sin duplicar el texto. Sin logo: escudo por defecto + nombre.
+  if (logoUrl) {
+    return (
+      <span className={`inline-flex items-center ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={logoUrl}
           alt={name}
-          className="h-7 w-auto object-contain"
+          className={`${imgClass} w-auto max-w-[220px] object-contain`}
         />
-      ) : (
-        <LogoMark size={size} />
-      )}
+      </span>
+    );
+  }
+
+  return (
+    <span className={`inline-flex items-center gap-2.5 ${className}`}>
+      <LogoMark size={size} />
       <span className="text-[15px] font-extrabold tracking-wide text-accent-300">
         {name}
       </span>

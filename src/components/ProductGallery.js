@@ -8,17 +8,18 @@ import { productImages, isVideo } from "@/lib/images";
 // Galería de medios del producto: flechas suaves, puntitos indicadores y swipe
 // táctil. Si hay 0/1 medio, muestra la imagen (o el placeholder) sin controles.
 // `href` (opcional) hace que tocar la imagen navegue; las flechas/puntos no.
-export default function ProductGallery({ product, href, className = "", controls = false }) {
+export default function ProductGallery({ product, href, className = "", controls = false, fit = "cover" }) {
   const media = productImages(product);
   const [i, setI] = useState(0);
   const startX = useRef(null);
   const count = media.length;
+  const fitClass = fit === "contain" ? "object-contain" : "object-cover";
 
   function Slide({ src }) {
     return isVideo(src) ? (
       <video
         src={src}
-        className={`h-full w-full object-cover ${className}`}
+        className={`h-full w-full ${fitClass} ${className}`}
         muted={!controls}
         playsInline
         controls={controls}
@@ -26,7 +27,7 @@ export default function ProductGallery({ product, href, className = "", controls
       />
     ) : (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={product?.name || ""} className={`h-full w-full object-cover ${className}`} />
+      <img src={src} alt={product?.name || ""} className={`h-full w-full ${fitClass} ${className}`} />
     );
   }
 

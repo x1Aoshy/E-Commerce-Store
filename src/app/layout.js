@@ -3,6 +3,7 @@ import { CartProvider } from "@/context/CartContext";
 import { BrandingProvider } from "@/context/BrandingContext";
 import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
+import BrandFavicon from "@/components/BrandFavicon";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
       <body>
         <Background />
         <BrandingProvider>
+          <BrandFavicon />
           <CartProvider>
             <ToastProvider>{children}</ToastProvider>
           </CartProvider>
