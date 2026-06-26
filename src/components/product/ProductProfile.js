@@ -75,7 +75,7 @@ export default function ProductProfile({ product }) {
       <p className="mt-1 text-xs text-ink-muted">
         Valoración general según pureza, absorción y relación calidad-precio.
       </p>
-      <div className="mt-5 grid grid-cols-4 gap-3">
+      <div className="mt-5 grid grid-cols-4 gap-3 max-[360px]:grid-cols-2 max-[360px]:gap-4">
         {rings.map((r, i) => (
           <Ring key={`${r.label}-${i}`} label={r.label} value={r.value} />
         ))}

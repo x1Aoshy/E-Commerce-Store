@@ -69,7 +69,7 @@
   .btn-primary,
   .btn-accent,
   .btn-ghost {
-    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] disabled:pointer-events-none disabled:opacity-40;
+    @apply relative isolate inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:pointer-events-none disabled:opacity-40 sm:min-h-0;
   }
   .btn-primary {
     @apply border-night/80 bg-white text-night hover:bg-white/90;
@@ -98,7 +98,7 @@
     @apply rounded-[4px] border border-white/10 bg-surface;
   }
   .input {
-    @apply w-full rounded-[4px] border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25;
+    @apply min-h-[44px] w-full rounded-[4px] border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25;
   }
   .label {
     @apply mb-1.5 block text-xs font-medium text-ink-soft;

@@ -399,13 +399,13 @@ function InventarioView({ products, categories, setProducts }) {
 
   return (
     <section className="animate-fade-in">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-ink">
           Inventario ({products.length})
         </h2>
         <button
           onClick={() => setAddOpen(true)}
-          className="btn-primary px-4 py-2 text-[13px]"
+          className="btn-primary shrink-0 px-4 py-2 text-[13px]"
         >
           + Agregar producto
         </button>
@@ -418,7 +418,7 @@ function InventarioView({ products, categories, setProducts }) {
         </div>
       ) : (
         <>
-          <div className="mb-4 relative max-w-xs">
+          <div className="relative mb-4 w-full sm:max-w-xs">
             <svg
               className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
               width="18"
@@ -619,13 +619,13 @@ function OrdenesView({ orders, setOrders, products }) {
 
   return (
     <section className="animate-fade-in">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-ink">
           Órdenes ({orders.length})
         </h2>
         <button
           onClick={() => setManualOpen(true)}
-          className="btn-primary px-4 py-2 text-[13px]"
+          className="btn-primary shrink-0 px-4 py-2 text-[13px]"
         >
           + Pedido manual
         </button>

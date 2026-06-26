@@ -223,7 +223,7 @@ export default function ManualOrderForm({
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <div className="text-sm text-ink-soft">
           Total:{" "}
           <span className="font-semibold text-ink">{formatPrice(total)}</span>

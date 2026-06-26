@@ -42,7 +42,7 @@ export default function Hero() {
     <section id="top" className="relative overflow-hidden">
       <div className="container-content relative flex min-h-[80vh] flex-col justify-center pb-14 pt-10 sm:pt-16">
         <h1
-          className="max-w-4xl animate-fade-in text-4xl font-extrabold leading-[1.04] text-ink sm:text-6xl md:text-7xl"
+          className="max-w-4xl animate-fade-in text-[2rem] font-extrabold leading-[1.04] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}
         >
           Tu mejor versión

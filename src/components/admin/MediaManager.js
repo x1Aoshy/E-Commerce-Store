@@ -64,7 +64,7 @@ export default function MediaManager({ value = [], onChange }) {
               </span>
             )}
 
-            <div className="absolute inset-x-1 bottom-1 flex items-center justify-between gap-1 opacity-0 transition group-hover:opacity-100">
+            <div className="absolute inset-x-1 bottom-1 flex items-center justify-between gap-1 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
               {idx !== 0 ? (
                 <button
                   type="button"
