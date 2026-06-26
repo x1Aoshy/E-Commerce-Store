@@ -5,8 +5,8 @@ import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
 
 // Panel de Ajustes (branding): el dueño cambia el nombre de la tienda, el logo
-// y el ícono de la pantalla de login. Las imágenes/SVG se suben al servidor con
-// /api/upload (igual que el gestor de medios) y se guardan como URL.
+// y el "Icon" (favicon del sitio + ícono del sidebar del admin). Las imágenes/
+// SVG se suben al servidor con /api/upload y se guardan como URL.
 //
 // SEGURIDAD: un SVG subido se previsualiza/usa SIEMPRE vía <img src>, nunca
 // inline, así no se ejecuta ningún script embebido.
@@ -185,7 +185,7 @@ export default function BrandingSettings() {
         <ImageUploader label="Logo" value={logoUrl} onChange={setLogoUrl} />
 
         <ImageUploader
-          label="Ícono de login"
+          label="Icon"
           value={loginIconUrl}
           onChange={setLoginIconUrl}
         />

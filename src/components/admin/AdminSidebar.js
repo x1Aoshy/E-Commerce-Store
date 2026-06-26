@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoMark } from "@/components/Logo";
+import { useBranding } from "@/context/BrandingContext";
 
 // Barra lateral fija (no desplegable). Es un rail de íconos: al hacer hover
 // sobre un ítem aparece su nombre a la derecha con una transición suave
@@ -128,14 +129,20 @@ function HoverLabel({ children, tone = "ink" }) {
 }
 
 export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }) {
+  const { loginIconUrl } = useBranding();
   return (
     <nav
       aria-label="Navegación del panel"
       className="fixed inset-x-0 bottom-0 z-40 flex h-16 flex-row items-center justify-around border-t border-white/10 bg-surface px-2 md:inset-y-0 md:left-0 md:right-auto md:h-screen md:w-16 md:flex-col md:justify-start md:gap-1.5 md:border-r md:border-t-0 md:py-4"
     >
-      {/* Logo de la tienda (sólo en desktop, arriba del rail). */}
+      {/* Icon del sitio (el que se sube en Ajustes; si no, el escudo). */}
       <div className="hidden md:mb-3 md:flex md:h-10 md:w-10 md:items-center md:justify-center">
-        <LogoMark size={30} />
+        {loginIconUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={loginIconUrl} alt="" className="h-9 w-9 rounded-[4px] object-contain" />
+        ) : (
+          <LogoMark size={30} />
+        )}
       </div>
 
       {NAV_ITEMS.map(({ key, label, Icon }) => {
