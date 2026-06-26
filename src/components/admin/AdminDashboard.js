@@ -12,6 +12,7 @@ import InventoryRow from "./InventoryRow";
 import NewProductForm from "./NewProductForm";
 import ManualOrderForm from "./ManualOrderForm";
 import MediaManager from "./MediaManager";
+import StatsEditor from "./StatsEditor";
 import OrderCard from "./OrderCard";
 import BrandingSettings from "./BrandingSettings";
 
@@ -286,10 +287,72 @@ function ProductMediaForm({ product, onSaved, onClose }) {
   );
 }
 
+// Editor de estadísticas (dentro de un modal): edita las métricas del gráfico
+// de anillos del producto y las guarda con el botón. Refleja a ProductMediaForm.
+function ProductStatsForm({ product, onSaved, onClose }) {
+  const [stats, setStats] = useState(
+    Array.isArray(product.stats) ? product.stats : []
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const toast = useToast();
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stats }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        onSaved?.(data.product);
+        toast.success("Estadísticas guardadas");
+        onClose?.();
+      } else {
+        const msg = data.error || "No se pudieron guardar las estadísticas.";
+        setError(msg);
+        toast.error(msg);
+      }
+    } catch {
+      setError("Error de conexión.");
+      toast.error("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div>
+      <p className="mb-3 text-xs text-ink-muted">
+        Hasta 6 métricas (0–100) para los anillos de la ficha. Si las dejás
+        vacías, el producto usa una valoración automática.
+      </p>
+      <StatsEditor value={stats} onChange={setStats} />
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <button onClick={onClose} className="btn-ghost px-4 py-2 text-[13px]">
+          Cancelar
+        </button>
+        <button
+          onClick={save}
+          disabled={saving}
+          className="btn-accent px-4 py-2 text-[13px]"
+        >
+          {saving ? "Guardando…" : "Guardar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function InventarioView({ products, categories, setProducts }) {
   const [addOpen, setAddOpen] = useState(false);
   const [restock, setRestock] = useState(null); // producto a reabastecer
   const [mediaProduct, setMediaProduct] = useState(null); // producto a editar medios
+  const [statsProduct, setStatsProduct] = useState(null); // producto a editar stats
   const [query, setQuery] = useState("");
 
   // Filtra la tabla por nombre y categoría mientras se escribe.
@@ -380,6 +443,7 @@ function InventarioView({ products, categories, setProducts }) {
                       }
                       onRestock={(prod) => setRestock(prod)}
                       onEditMedia={(prod) => setMediaProduct(prod)}
+                      onEditStats={(prod) => setStatsProduct(prod)}
                     />
                   ))}
                 </tbody>
@@ -389,7 +453,12 @@ function InventarioView({ products, categories, setProducts }) {
         </>
       )}
 
-      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Nuevo producto">
+      <Modal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Nuevo producto"
+        maxW="max-w-2xl"
+      >
         <NewProductForm
           categories={categories}
           onCreated={(created) => {
@@ -433,6 +502,24 @@ function InventarioView({ products, categories, setProducts }) {
               )
             }
             onClose={() => setMediaProduct(null)}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        open={!!statsProduct}
+        onClose={() => setStatsProduct(null)}
+        title={statsProduct ? `Estadísticas · ${statsProduct.name}` : "Estadísticas"}
+      >
+        {statsProduct && (
+          <ProductStatsForm
+            product={statsProduct}
+            onSaved={(updated) =>
+              setProducts((prev) =>
+                prev.map((x) => (x.id === updated.id ? updated : x))
+              )
+            }
+            onClose={() => setStatsProduct(null)}
           />
         )}
       </Modal>

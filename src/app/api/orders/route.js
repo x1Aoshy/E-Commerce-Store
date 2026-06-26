@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createOrder, createManualOrder, getOrders } from "@/lib/db";
+import { createOrder, createManualOrder, getOrders, getSettings } from "@/lib/db";
 import { checkAdmin } from "@/lib/auth";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -55,9 +55,13 @@ export async function POST(req) {
       );
     }
 
-    const storeName = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
-    const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
-    const whatsappUrl = buildWhatsAppUrl({ phone, order: result.order, storeName });
+    const s = await getSettings();
+    const whatsappUrl = buildWhatsAppUrl({
+      phone: s.whatsappNumber,
+      order: result.order,
+      storeName: s.storeName,
+      message: s.whatsappMessage,
+    });
 
     return NextResponse.json({ order: result.order, whatsappUrl }, { status: 201 });
   } catch (err) {

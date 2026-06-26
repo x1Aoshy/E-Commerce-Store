@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
 
-export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia }) {
+export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia, onEditStats }) {
   const toast = useToast();
   const [price, setPrice] = useState(String(product.price));
   const [compareAt, setCompareAt] = useState(String(product.compareAt || ""));
@@ -174,6 +174,21 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
               {Array.isArray(product.images) && product.images.length > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-500 px-1 text-[9px] font-semibold text-night">
                   {product.images.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => onEditStats?.(product)}
+              aria-label="Estadísticas"
+              title="Estadísticas (gráfico)"
+              className="relative flex h-8 w-8 items-center justify-center rounded-[4px] text-ink-muted ring-1 ring-white/10 transition hover:text-accent-300 hover:ring-accent-500/40"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20V10M10 20V4M16 20v-7M20 20H3" />
+              </svg>
+              {Array.isArray(product.stats) && product.stats.length > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent-500 px-1 text-[9px] font-semibold text-night">
+                  {product.stats.length}
                 </span>
               )}
             </button>

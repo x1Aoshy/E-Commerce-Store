@@ -58,6 +58,17 @@ function Ring({ label, value }) {
 }
 
 export default function ProductProfile({ product }) {
+  // Métricas editables del producto si existen; si no, valoración derivada
+  // (determinística) para que los productos antiguos sigan viéndose bien.
+  const custom = Array.isArray(product.stats) ? product.stats : [];
+  const rings =
+    custom.length > 0
+      ? custom.slice(0, 6).map((s) => ({
+          label: s.label,
+          value: Math.max(0, Math.min(100, Math.round(Number(s.value) || 0))),
+        }))
+      : METRICS.map((label) => ({ label, value: valueFor(product, label) }));
+
   return (
     <div className="card p-5 shadow-soft">
       <h3 className="text-sm font-semibold text-ink">Perfil del producto</h3>
@@ -65,8 +76,8 @@ export default function ProductProfile({ product }) {
         Valoración general según pureza, absorción y relación calidad-precio.
       </p>
       <div className="mt-5 grid grid-cols-4 gap-3">
-        {METRICS.map((label) => (
-          <Ring key={label} label={label} value={valueFor(product, label)} />
+        {rings.map((r, i) => (
+          <Ring key={`${r.label}-${i}`} label={r.label} value={r.value} />
         ))}
       </div>
     </div>

@@ -7,10 +7,11 @@ const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
 export default function Footer() {
-  const { storeName } = useBranding();
+  const { storeName, whatsappNumber } = useBranding();
   const store = storeName || STORE;
-  const waUrl = PHONE
-    ? `https://wa.me/${PHONE}?text=${encodeURIComponent(
+  const phone = (whatsappNumber || "").replace(/[^\d]/g, "") || PHONE;
+  const waUrl = phone
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(
         "¡Hola! Tengo una consulta sobre los suplementos."
       )}`
     : "https://wa.me/";

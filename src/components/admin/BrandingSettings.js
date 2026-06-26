@@ -99,6 +99,8 @@ export default function BrandingSettings() {
   const [storeName, setStoreName] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [loginIconUrl, setLoginIconUrl] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [whatsappMessage, setWhatsappMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -113,6 +115,8 @@ export default function BrandingSettings() {
           setStoreName(data.settings.storeName || "");
           setLogoUrl(data.settings.logoUrl || "");
           setLoginIconUrl(data.settings.loginIconUrl || "");
+          setWhatsappNumber(data.settings.whatsappNumber || "");
+          setWhatsappMessage(data.settings.whatsappMessage || "");
         }
       } catch {
         /* deja los campos vacíos */
@@ -131,7 +135,13 @@ export default function BrandingSettings() {
       const res = await fetch("/api/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeName, logoUrl, loginIconUrl }),
+        body: JSON.stringify({
+          storeName,
+          logoUrl,
+          loginIconUrl,
+          whatsappNumber,
+          whatsappMessage,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -179,6 +189,43 @@ export default function BrandingSettings() {
           value={loginIconUrl}
           onChange={setLoginIconUrl}
         />
+      </div>
+
+      <div className="card space-y-4 p-5 shadow-soft">
+        <h3 className="text-sm font-semibold text-ink">WhatsApp</h3>
+
+        <div>
+          <label className="label" htmlFor="wa-number">
+            Número del chat
+          </label>
+          <input
+            id="wa-number"
+            className="input mt-2"
+            type="text"
+            inputMode="numeric"
+            value={whatsappNumber}
+            onChange={(e) =>
+              setWhatsappNumber(e.target.value.replace(/[^\d]/g, ""))
+            }
+            placeholder="505XXXXXXXX"
+          />
+          <p className="mt-1 text-[11px] text-ink-muted">
+            código de país + número, sin + ni espacios. Ej: 505XXXXXXXX
+          </p>
+        </div>
+
+        <div>
+          <label className="label" htmlFor="wa-message">
+            Mensaje automático
+          </label>
+          <textarea
+            id="wa-message"
+            className="input mt-2 min-h-[80px] resize-none"
+            value={whatsappMessage}
+            onChange={(e) => setWhatsappMessage(e.target.value)}
+            placeholder="¡Quiero confirmar este pedido!"
+          />
+        </div>
       </div>
 
       <div className="flex justify-end">

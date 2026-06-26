@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { printInvoice } from "@/lib/invoice";
 import Modal from "@/components/Modal";
 import { useToast } from "@/components/Toast";
+import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
@@ -150,6 +151,8 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
   const toast = useToast();
+  const { whatsappNumber } = useBranding();
+  const phone = (whatsappNumber || "").replace(/[^\d]/g, "") || PHONE;
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
@@ -236,7 +239,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           </div>
           <button
             onClick={() =>
-              printInvoice({ order, storeName: STORE, currency: CURRENCY, phone: PHONE })
+              printInvoice({ order, storeName: STORE, currency: CURRENCY, phone })
             }
             className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
             aria-label="Imprimir factura"
