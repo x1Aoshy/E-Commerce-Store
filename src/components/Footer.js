@@ -22,19 +22,19 @@ export default function Footer() {
       id="contacto"
       className="border-t border-white/10 bg-surface/40 text-ink"
     >
-      <div className="container-content py-14">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
+      <div className="container-content py-8">
+        <div className="grid gap-7 md:grid-cols-[1.5fr_1fr_1.2fr]">
           <div>
             <Logo />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-muted">
-              Suplementos de alta pureza, seleccionados para acompañar tu
-              entrenamiento, tu recuperación y tu salud.
+            <p className="mt-2.5 max-w-xs text-[13px] leading-relaxed text-ink-muted">
+              Suplementos de alta pureza para tu entrenamiento, recuperación y
+              salud.
             </p>
             <a
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-accent mt-6 px-5 py-2.5 text-sm"
+              className="btn-accent mt-3.5 px-4 py-2 text-[13px]"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -53,8 +53,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Tienda</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-ink-muted">
+            <h4 className="text-[13px] font-semibold">Tienda</h4>
+            <ul className="mt-2.5 space-y-1.5 text-[13px] text-ink-muted">
               <li>
                 <a href="/#productos" className="transition hover:text-ink">
                   Productos
@@ -76,7 +76,7 @@ export default function Footer() {
           <NewsletterSignup />
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-xs text-ink-muted sm:flex-row sm:items-center">
+        <div className="mt-7 flex flex-col items-start justify-between gap-2 border-t border-white/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
           <span>
             © {new Date().getFullYear()} {store}. Todos los derechos reservados.
           </span>

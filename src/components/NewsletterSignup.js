@@ -42,16 +42,16 @@ export default function NewsletterSignup() {
 
   return (
     <div>
-      <h4 className="text-sm font-semibold">Ofertas y novedades</h4>
-      <p className="mt-3 text-sm text-ink-muted">
+      <h4 className="text-[13px] font-semibold">Ofertas y novedades</h4>
+      <p className="mt-2.5 text-[13px] text-ink-muted">
         Dejanos tu WhatsApp o email y te avisamos de promos y reposiciones.
       </p>
       {state === "done" ? (
-        <p className="mt-4 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-sm text-green-300">
+        <p className="mt-3 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-[13px] text-green-300">
           {msg}
         </p>
       ) : (
-        <form onSubmit={submit} className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input
             type="text"
             value={contact}

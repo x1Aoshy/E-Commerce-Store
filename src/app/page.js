@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import TrustStrip from "@/components/TrustStrip";
 import ProductGrid from "@/components/ProductGrid";
 import Benefits from "@/components/Benefits";
 import Footer from "@/components/Footer";
@@ -30,7 +29,6 @@ export default async function HomePage() {
       <Header categories={categories} />
       <main>
         <Hero />
-        <TrustStrip />
         <ProductGrid products={products} />
         <Benefits />
       </main>
