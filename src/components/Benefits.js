@@ -3,7 +3,7 @@ import Reveal from "./Reveal";
 const BENEFITS = [
   {
     title: "Calidad certificada",
-    text: "Cada lote pasa controles de pureza. Sólo trabajamos marcas y materias primas que usaríamos nosotros.",
+    text: "Controles de pureza en cada lote.",
     icon: (
       <>
         <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
@@ -13,7 +13,7 @@ const BENEFITS = [
   },
   {
     title: "Asesoramiento real",
-    text: "Te ayudamos a elegir según tu objetivo. Escribinos y armamos tu plan de suplementación.",
+    text: "Te ayudamos a elegir según tu objetivo.",
     icon: (
       <>
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -22,7 +22,7 @@ const BENEFITS = [
   },
   {
     title: "Despacho rápido",
-    text: "Preparamos y despachamos tu pedido dentro de las 24 horas hábiles tras la confirmación.",
+    text: "Despachamos dentro de las 24h hábiles.",
     icon: (
       <>
         <path d="M3 7h11v8H3z" />
@@ -34,7 +34,7 @@ const BENEFITS = [
   },
   {
     title: "Pedido por WhatsApp",
-    text: "Sin formularios largos ni pasos de pago complicados. Confirmás tu compra por chat en segundos.",
+    text: "Confirmás tu compra por chat en segundos.",
     icon: (
       <>
         <path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z" />
@@ -46,39 +46,33 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="beneficios" className="border-t border-white/10 bg-white/[0.015]">
-      <div className="container-content py-16 sm:py-20">
-        <Reveal className="max-w-2xl">
-          <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
-            Suplementación seria, sin vueltas
-          </h2>
-          <p className="mt-3 text-ink-soft">
-            Una experiencia simple y transparente, desde que elegís tu producto
-            hasta que llega a tu puerta.
-          </p>
-        </Reveal>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <section id="beneficios" className="border-t border-white/10">
+      <div className="container-content py-10 sm:py-12">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-7 lg:grid-cols-4">
           {BENEFITS.map((b, i) => (
-            <Reveal key={b.title} delay={i * 80}>
-              <div className="card h-full p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-card">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-500 text-night">
+            <Reveal key={b.title} delay={i * 70}>
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/25">
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-5 w-5"
+                    width="16"
+                    height="16"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.6"
+                    strokeWidth="1.7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    aria-hidden="true"
                   >
                     {b.icon}
                   </svg>
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-ink">{b.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  {b.text}
-                </p>
+                <div className="min-w-0">
+                  <h3 className="text-[13px] font-semibold text-ink">{b.title}</h3>
+                  <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">
+                    {b.text}
+                  </p>
+                </div>
               </div>
             </Reveal>
           ))}
