@@ -37,30 +37,31 @@ export default function Hero() {
           en carrusel con crossfade. Overlays para fundir con el header y dejar
           el texto legible aun sobre fondos claros. */}
       {hasImage && (
-        <div className="absolute inset-0 z-0" aria-hidden="true">
+        <div className="absolute inset-0 z-0 bg-night" aria-hidden="true">
           {images.map((src, idx) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={src}
               src={src}
               alt=""
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-out ${
+              // object-contain: muestra la imagen COMPLETA (sin recortar ni
+              // agrandar). El relleno que sobra queda en `night`, que combina con
+              // el fondo oscuro de la imagen. Así se ve como tu mockup en vez de
+              // estirarse y tapar todo.
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out ${
                 idx === active ? "opacity-100" : "opacity-0"
               }`}
             />
           ))}
-          {/* Fundido vertical: oscuro arriba (header) y abajo (productos). */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#0a0c0d_0%,transparent_28%,transparent_82%,#0a0c0d_100%)]" />
-          {/* Velo oscuro del lado del texto (izquierda) para que las letras
-              SIEMPRE se lean, aunque el fondo sea blanco. A la derecha se vuelve
-              transparente para no tapar el logo. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/80 to-transparent sm:via-night/65" />
-          {/* Refuerzo inferior para separar del contenido siguiente. */}
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-night to-transparent" />
+          {/* Velo suave a la izquierda para que el texto se lea sobre la imagen,
+              sin oscurecerla de más. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/45 to-transparent" />
+          {/* Fundido inferior para separar del contenido siguiente. */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
         </div>
       )}
 
-      <div className="container-content relative z-10 flex min-h-[88vh] flex-col justify-center pb-16 pt-10 sm:pt-16">
+      <div className="container-content relative z-10 flex min-h-[64vh] flex-col justify-center pb-16 pt-10 sm:min-h-[88vh] sm:pt-16">
         <span
           className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] sm:text-sm"
           style={{ animationFillMode: "both" }}
