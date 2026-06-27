@@ -71,7 +71,7 @@ export default function ProductBuyPanel({ product }) {
             <span className="text-lg text-ink-muted line-through">
               {formatPrice(product.compareAt)}
             </span>
-            <span className="rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-xs font-bold text-night">
+            <span className="rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-xs font-bold text-[#1a1306]">
               -{off}% OFF
             </span>
           </>
@@ -87,7 +87,7 @@ export default function ProductBuyPanel({ product }) {
       {s.available ? (
         <>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <div className="flex items-center rounded-[3px] border border-white/15">
+            <div className="flex items-center rounded-[3px] border border-line/15">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
                 className="flex h-11 w-11 items-center justify-center text-lg text-ink-soft transition hover:text-ink active:scale-90"
@@ -138,7 +138,7 @@ export default function ProductBuyPanel({ product }) {
           )}
         </>
       ) : (
-        <div className="mt-6 rounded-[4px] bg-white/5 px-4 py-3 text-sm text-ink-soft">
+        <div className="mt-6 rounded-[4px] bg-fill/5 px-4 py-3 text-sm text-ink-soft">
           Producto sin stock por el momento. Escribinos por WhatsApp para
           avisarte cuando vuelva.
         </div>

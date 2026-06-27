@@ -29,11 +29,11 @@ export default function Modal({ open, onClose, title, children, maxW = "max-w-lg
         className={`card relative flex max-h-[90dvh] w-full ${maxW} flex-col overflow-hidden rounded-[4px] shadow-card animate-scale-in`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-5 py-3.5">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line/10 px-5 py-3.5">
           <h3 className="text-base font-semibold text-ink">{title}</h3>
           <button
             onClick={onClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] text-ink-soft transition hover:bg-white/10 hover:text-ink"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] text-ink-soft transition hover:bg-fill/10 hover:text-ink"
             aria-label="Cerrar"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

@@ -33,7 +33,7 @@ function Ring({ label, value }) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative h-[72px] w-[72px]">
         <svg viewBox="0 0 64 64" className="h-full w-full -rotate-90">
-          <circle cx="32" cy="32" r={R} fill="none" className="text-white/10" stroke="currentColor" strokeWidth="6" />
+          <circle cx="32" cy="32" r={R} fill="none" className="text-line/10" stroke="currentColor" strokeWidth="6" />
           <circle
             cx="32"
             cy="32"

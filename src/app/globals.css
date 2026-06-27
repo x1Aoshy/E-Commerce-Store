@@ -3,8 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* ===== Tema OSCURO (por defecto) ===== */
+  /* `.theme-dark` fuerza el tema oscuro en un subárbol (ej. el panel admin)
+     aunque el resto de la página esté en claro. */
+  :root,
+  .theme-dark {
     color-scheme: dark;
+    --c-night: 10 12 13; /* #0a0c0d fondo de página */
+    --c-surface: 20 24 26; /* #14181a tarjetas */
+    --c-surface-soft: 27 33 37; /* #1b2125 elevado */
+    --c-ink: 241 236 225; /* #f1ece1 texto (crema) */
+    --c-ink-soft: 179 172 159;
+    --c-ink-muted: 131 123 111;
+    --c-line: 255 255 255; /* bordes/líneas: blancos sobre oscuro */
+    --c-fill: 255 255 255; /* rellenos sutiles */
+  }
+
+  /* ===== Tema CLARO ===== */
+  .light {
+    color-scheme: light;
+    --c-night: 246 243 235; /* fondo cálido casi blanco */
+    --c-surface: 255 255 255; /* tarjetas blancas */
+    --c-surface-soft: 240 236 227; /* elevado / hover */
+    --c-ink: 28 25 19; /* texto oscuro cálido */
+    --c-ink-soft: 74 68 59;
+    --c-ink-muted: 122 114 101;
+    --c-line: 23 20 15; /* bordes/líneas: casi negros sobre claro */
+    --c-fill: 23 20 15;
+  }
+
+  :root {
     /* Grano "granizado" reutilizable (mismo ruido que el fondo) para texturar
        botones y superficies. */
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -38,7 +66,7 @@
   /* Firefox */
   html {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgb(var(--c-line) / 0.28) transparent;
   }
 
   /* WebKit (Chrome, Safari, Edge) */
@@ -50,13 +78,13 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: rgb(var(--c-line) / 0.22);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgb(var(--c-line) / 0.38);
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
@@ -75,14 +103,19 @@
   .btn-ghost {
     @apply relative isolate inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:pointer-events-none disabled:opacity-40 sm:min-h-0;
   }
+  /* Primario: en oscuro es claro (ink crema) con texto oscuro; en claro se
+     invierte solo (ink oscuro) con texto claro. */
   .btn-primary {
-    @apply border-night/80 bg-white text-night hover:bg-white/90;
+    @apply border-night/80 bg-ink text-night hover:opacity-90;
   }
+  /* Acento (dorado): SIEMPRE texto oscuro fijo, en ambos temas, para buen
+     contraste sobre el dorado. */
   .btn-accent {
-    @apply border-night/80 bg-accent-500 font-semibold text-night hover:bg-accent-400;
+    @apply border-night/80 bg-accent-500 font-semibold hover:bg-accent-400;
+    color: #1a1306;
   }
   .btn-ghost {
-    @apply border-white/20 text-ink hover:border-white/40 hover:bg-white/5;
+    @apply border-line/20 text-ink hover:border-line/40 hover:bg-fill/5;
   }
   /* El grano va detrás del texto (::before pinta antes que el contenido). */
   .btn-primary::before,
@@ -99,11 +132,11 @@
   }
 
   .card {
-    @apply rounded-[4px] border border-white/10 bg-surface;
+    @apply rounded-[4px] border border-line/10 bg-surface;
   }
   .input {
     /* text-base en mobile (16px) evita el auto-zoom de iOS al enfocar; text-sm en desktop. */
-    @apply min-h-[44px] w-full rounded-[4px] border border-white/15 bg-white/[0.04] px-3.5 py-2.5 text-base text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25 sm:text-sm;
+    @apply min-h-[44px] w-full rounded-[4px] border border-line/15 bg-fill/[0.04] px-3.5 py-2.5 text-base text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25 sm:text-sm;
   }
   .label {
     @apply mb-1.5 block text-xs font-medium text-ink-soft;

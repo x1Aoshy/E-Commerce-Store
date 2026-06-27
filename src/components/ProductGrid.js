@@ -80,7 +80,7 @@ export default function ProductGrid({ products }) {
               onClick={() => setOnlySale((v) => !v)}
               className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
                 onlySale
-                  ? "bg-accent-500 text-night"
+                  ? "bg-accent-500 text-[#1a1306]"
                   : "bg-accent-500/10 text-accent-300 ring-1 ring-accent-500/30 hover:ring-accent-500/50"
               }`}
             >
@@ -93,7 +93,7 @@ export default function ProductGrid({ products }) {
               className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
                 onlyFav
                   ? "bg-red-500 text-white"
-                  : "bg-white/5 text-ink-soft ring-1 ring-white/10 hover:ring-white/30"
+                  : "bg-fill/5 text-ink-soft ring-1 ring-line/10 hover:ring-line/30"
               }`}
             >
               ♥ Favoritos ({favCount})
@@ -105,8 +105,8 @@ export default function ProductGrid({ products }) {
               onClick={() => setActive(c)}
               className={`chip shrink-0 whitespace-nowrap px-3.5 py-1.5 transition active:scale-95 ${
                 active === c
-                  ? "bg-accent-500 text-night"
-                  : "bg-white/5 text-ink-soft ring-1 ring-white/10 hover:ring-white/30"
+                  ? "bg-accent-500 text-[#1a1306]"
+                  : "bg-fill/5 text-ink-soft ring-1 ring-line/10 hover:ring-line/30"
               }`}
             >
               {c}

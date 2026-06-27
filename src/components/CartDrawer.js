@@ -114,19 +114,19 @@ export default function CartDrawer() {
       />
 
       <aside
-        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-[4px] border-t border-white/10 bg-surface shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none md:border-l md:border-t-0 ${
+        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] transform-gpu flex-col rounded-t-[4px] border-t border-line/10 bg-surface shadow-card transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-y-0 md:bottom-auto md:left-auto md:right-0 md:h-full md:max-h-none md:w-full md:max-w-md md:rounded-t-none md:border-l md:border-t-0 ${
           visible
             ? "translate-y-0 md:translate-x-0"
             : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
       >
-        <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-white/15 md:hidden" />
+        <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-fill/15 md:hidden" />
 
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line/10 px-5 py-4">
           <h2 className="text-base font-semibold text-ink">Tu pedido</h2>
           <button
             onClick={closeCart}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition hover:bg-white/10 hover:text-ink active:scale-90"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition hover:bg-fill/10 hover:text-ink active:scale-90"
             aria-label="Cerrar carrito"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -162,7 +162,7 @@ export default function CartDrawer() {
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 py-14 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-ink-muted">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-fill/5 text-ink-muted">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 4h2l2.4 12.3a1 1 0 0 0 1 .7h8.7a1 1 0 0 0 1-.8L21 8H6" />
                 <circle cx="9.5" cy="20" r="1.4" />
@@ -184,7 +184,7 @@ export default function CartDrawer() {
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="flex gap-3 rounded-[4px] border border-white/10 p-3"
+                    className="flex gap-3 rounded-[4px] border border-line/10 p-3"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
@@ -194,7 +194,7 @@ export default function CartDrawer() {
                         {formatPrice(item.price)} c/u
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded-[4px] border border-white/15">
+                        <div className="flex items-center rounded-[4px] border border-line/15">
                           <button
                             onClick={() => updateQty(item.id, item.quantity - 1)}
                             className="flex h-9 w-9 items-center justify-center text-ink-soft transition hover:text-ink active:scale-90"
@@ -274,7 +274,7 @@ export default function CartDrawer() {
             </div>
 
             <div
-              className="border-t border-white/10 px-5 pt-4"
+              className="border-t border-line/10 px-5 pt-4"
               style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
             >
               <div className="flex items-center justify-between text-base">

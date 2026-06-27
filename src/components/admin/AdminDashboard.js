@@ -94,7 +94,7 @@ export default function AdminDashboard({ onLogout }) {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="theme-dark min-h-screen bg-night text-ink">
       <AdminSidebar
         active={activeView}
         onChange={setActiveView}

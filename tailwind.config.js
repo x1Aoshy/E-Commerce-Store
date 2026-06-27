@@ -4,19 +4,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Tema OSCURO premium. `ink` ahora es el TEXTO (claro), así la mayoría
-        // de las clases existentes (text-ink, border-ink/x, bg-ink/5...) se
-        // invierten solas y quedan correctas sobre fondo oscuro.
+        // Tokens semánticos manejados por variables CSS (ver globals.css), para
+        // alternar entre tema OSCURO (por defecto) y CLARO sin reescribir las
+        // clases. `<alpha-value>` conserva la opacidad (text-ink/70, bg-night/55…).
+        // `ink` es el TEXTO; `night` el fondo de página.
         ink: {
-          DEFAULT: "#f1ece1", // blanco cálido (crema), no blanco frío
-          soft: "#b3ac9f",
-          muted: "#837b6f",
+          DEFAULT: "rgb(var(--c-ink) / <alpha-value>)",
+          soft: "rgb(var(--c-ink-soft) / <alpha-value>)",
+          muted: "rgb(var(--c-ink-muted) / <alpha-value>)",
         },
-        night: "#0a0c0d", // fondo de página (casi negro)
+        night: "rgb(var(--c-night) / <alpha-value>)", // fondo de página
         surface: {
-          DEFAULT: "#14181a", // tarjetas / paneles
-          soft: "#1b2125", // elevado / hover
+          DEFAULT: "rgb(var(--c-surface) / <alpha-value>)", // tarjetas / paneles
+          soft: "rgb(var(--c-surface-soft) / <alpha-value>)", // elevado / hover
         },
+        // Líneas/bordes y rellenos sutiles que se invierten con el tema: en
+        // oscuro son blancos (como antes); en claro, casi negros. Reemplazan a
+        // border-white/x, bg-white/x, divide-white/x y ring-white/x.
+        line: "rgb(var(--c-line) / <alpha-value>)",
+        fill: "rgb(var(--c-fill) / <alpha-value>)",
         accent: {
           50: "#fbf5e3",
           100: "#f6e9bd",

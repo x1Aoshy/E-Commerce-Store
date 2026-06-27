@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useCart } from "@/context/CartContext";
 
 function CartIcon() {
@@ -68,8 +69,8 @@ export default function Header({ categories = [] }) {
     <header
       className={`sticky top-0 z-40 border-b transition-all duration-300 ${
         scrolled
-          ? "border-white/10 bg-night shadow-soft"
-          : "border-white/[0.06] bg-night"
+          ? "border-line/10 bg-night shadow-soft"
+          : "border-line/[0.06] bg-night"
       }`}
     >
       <div className="container-content flex h-16 items-center justify-between gap-4">
@@ -77,28 +78,31 @@ export default function Header({ categories = [] }) {
           <Logo />
         </Link>
 
-        <button
-          onClick={openCart}
-          className={`relative inline-flex items-center gap-2 rounded-[4px] border border-white/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-white/35 hover:bg-white/5 active:scale-95 ${
-            bump ? "animate-cart-bump border-accent-500/50" : ""
-          }`}
-          aria-label="Abrir carrito"
-        >
-          <CartIcon />
-          <span className="hidden sm:inline">Carrito</span>
-          {hydrated && count > 0 && (
-            <span
-              key={count}
-              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] animate-pop items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-night"
-            >
-              {count}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={openCart}
+            className={`relative inline-flex items-center gap-2 rounded-[4px] border border-line/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-line/35 hover:bg-fill/5 active:scale-95 ${
+              bump ? "animate-cart-bump border-accent-500/50" : ""
+            }`}
+            aria-label="Abrir carrito"
+          >
+            <CartIcon />
+            <span className="hidden sm:inline">Carrito</span>
+            {hydrated && count > 0 && (
+              <span
+                key={count}
+                className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] animate-pop items-center justify-center rounded-full bg-accent-500 px-1 text-[11px] font-semibold text-[#1a1306]"
+              >
+                {count}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {categories.length > 0 && (
-        <div className="border-t border-white/[0.06]">
+        <div className="border-t border-line/[0.06]">
           <div className="container-content">
             <div className="no-scrollbar -mx-5 flex items-center gap-0.5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
               {navCats.map((c) => (

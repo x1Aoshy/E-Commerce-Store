@@ -16,7 +16,7 @@ function MiniStars({ rating = 5 }) {
         <svg
           key={s}
           viewBox="0 0 24 24"
-          className={`h-3 w-3 ${s < Math.round(rating) ? "" : "text-white/15"}`}
+          className={`h-3 w-3 ${s < Math.round(rating) ? "" : "text-line/15"}`}
           fill="currentColor"
           aria-hidden="true"
         >
@@ -44,7 +44,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-card">
+    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-line/20 hover:shadow-card">
       <div className="relative aspect-[5/4] w-full overflow-hidden">
         <ProductGallery
           product={product}
@@ -53,12 +53,12 @@ export default function ProductCard({ product }) {
         />
         <FavoriteButton id={product.id} variant="overlay" />
         {onSale && (
-          <span className="absolute left-2 top-2 z-10 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-night shadow-soft">
+          <span className="absolute left-2 top-2 z-10 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-[#1a1306] shadow-soft">
             -{off}%
           </span>
         )}
         {lowStock && (
-          <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-night/70 px-1.5 py-0.5 text-[10px] font-semibold text-accent-200 ring-1 ring-white/10 backdrop-blur-sm">
+          <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-accent-200 ring-1 ring-white/15 backdrop-blur-sm">
             ¡Últimas {product.stock}!
           </span>
         )}
@@ -82,7 +82,7 @@ export default function ProductCard({ product }) {
           <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">{product.short}</p>
         )}
 
-        <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-2.5">
+        <div className="mt-3 flex flex-col gap-2 border-t border-line/10 pt-2.5">
           <div className="flex items-baseline gap-2 leading-tight">
             <span className="text-base font-semibold text-ink">
               {formatPrice(product.price)}
@@ -128,7 +128,7 @@ export default function ProductCard({ product }) {
         {product.featuredReview && (
           <Link
             href={`${href}#resenas`}
-            className="mt-2.5 block border-t border-white/10 pt-2.5"
+            className="mt-2.5 block border-t border-line/10 pt-2.5"
           >
             <div className="flex items-center gap-1.5">
               <MiniStars rating={product.featuredReview.rating} />

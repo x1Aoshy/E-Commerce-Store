@@ -181,7 +181,7 @@ function ToastItem({ toast, onDismiss }) {
   const { id, type, message, leaving } = toast;
   return (
     <div
-      className="pointer-events-auto relative flex w-full max-w-sm items-start gap-2.5 overflow-hidden rounded-[4px] border border-white/12 bg-surface px-3.5 py-2.5 shadow-card motion-reduce:!animate-none"
+      className="pointer-events-auto relative flex w-full max-w-sm items-start gap-2.5 overflow-hidden rounded-[4px] border border-line/12 bg-surface px-3.5 py-2.5 shadow-card motion-reduce:!animate-none"
       style={{
         animation: `${leaving ? "toast-out" : "toast-in"} ${EXIT_MS}ms ease forwards`,
       }}

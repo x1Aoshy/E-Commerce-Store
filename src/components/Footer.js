@@ -20,7 +20,7 @@ export default function Footer() {
   return (
     <footer
       id="contacto"
-      className="border-t border-white/10 bg-surface/40 text-ink"
+      className="border-t border-line/10 bg-surface/40 text-ink"
     >
       <div className="container-content py-8">
         <div className="grid gap-7 md:grid-cols-[1.5fr_1fr_1.2fr]">
@@ -76,7 +76,7 @@ export default function Footer() {
           <NewsletterSignup />
         </div>
 
-        <div className="mt-7 flex flex-col items-start justify-between gap-2 border-t border-white/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
+        <div className="mt-7 flex flex-col items-start justify-between gap-2 border-t border-line/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
           <span>
             © {new Date().getFullYear()} {store}. Todos los derechos reservados.
           </span>

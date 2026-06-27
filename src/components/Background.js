@@ -18,14 +18,9 @@ const NOISE_URL = `url("data:image/svg+xml,${NOISE_SVG}")`;
 export default function Background() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* Base grafito casi plana: gradiente muy sutil, casi sólido. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, #0a0c0d 0%, #0b0e0f 58%, #0c1011 100%)",
-        }}
-      />
+      {/* Base: usa el token de fondo (bg-night) para que se invierta con el
+          tema (oscuro por defecto, claro cuando corresponde). */}
+      <div className="absolute inset-0 bg-night" />
 
       {/* Grano fino por encima: el "granizado" da la profundidad. */}
       <div

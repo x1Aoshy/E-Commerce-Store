@@ -22,7 +22,7 @@ function Stars({ value, onChange }) {
           >
             <svg
               viewBox="0 0 24 24"
-              className={`h-7 w-7 transition-colors ${active ? "text-accent-400" : "text-white/20"}`}
+              className={`h-7 w-7 transition-colors ${active ? "text-accent-400" : "text-line/20"}`}
               fill="currentColor"
               aria-hidden="true"
             >

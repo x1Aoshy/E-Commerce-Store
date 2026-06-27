@@ -43,7 +43,7 @@ export default function AdminPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center text-ink-muted">
+      <div className="theme-dark flex min-h-screen items-center justify-center bg-night text-ink-muted">
         Cargando…
       </div>
     );
@@ -54,7 +54,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-5 py-10">
+    <div className="theme-dark flex min-h-screen items-center justify-center bg-night px-5 py-10 text-ink">
       <div className="card w-full max-w-sm p-8 shadow-card">
         <div className="flex flex-col items-center text-center">
           <Logo />

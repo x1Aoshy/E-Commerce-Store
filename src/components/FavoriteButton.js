@@ -19,8 +19,10 @@ export default function FavoriteButton({ id, variant = "overlay", className = ""
 
   const base =
     variant === "overlay"
-      ? "absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-night/55 text-ink backdrop-blur-sm ring-1 ring-white/15 transition hover:bg-night/75 active:scale-90"
-      : "flex h-12 w-12 items-center justify-center rounded-[3px] border border-white/15 text-ink-soft transition hover:border-white/30 hover:text-ink active:scale-95";
+      ? // Sobre la imagen: SIEMPRE oscuro translúcido + ícono claro (no depende del tema).
+        "absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm ring-1 ring-white/20 transition hover:bg-black/65 active:scale-90"
+      : // En la ficha (sobre superficie): se adapta al tema.
+        "flex h-12 w-12 items-center justify-center rounded-[3px] border border-line/15 text-ink-soft transition hover:border-line/30 hover:text-ink active:scale-95";
 
   return (
     <button

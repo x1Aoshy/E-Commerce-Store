@@ -46,7 +46,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="beneficios" className="border-t border-white/10">
+    <section id="beneficios" className="border-t border-line/10">
       <div className="container-content py-10 sm:py-12">
         <div className="grid grid-cols-2 gap-x-6 gap-y-7 lg:grid-cols-4">
           {BENEFITS.map((b, i) => (

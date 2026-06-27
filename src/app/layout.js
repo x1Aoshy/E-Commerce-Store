@@ -3,6 +3,7 @@ import { Nunito_Sans, Fraunces } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { BrandingProvider } from "@/context/BrandingContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
 import BrandFavicon from "@/components/BrandFavicon";
@@ -39,7 +40,11 @@ export const metadata = {
 // viewport-fit=cover hace que env(safe-area-inset-*) funcione en iPhones con
 // notch (lo usan el Modal, los toasts y el carrito para no quedar tapados).
 export const viewport = {
-  themeColor: "#0a0c0d",
+  // El color de la barra del navegador (móvil) se adapta al tema del sistema.
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0c0d" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f3eb" },
+  ],
   viewportFit: "cover",
 };
 
@@ -54,15 +59,25 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="es" className={`${nunito.variable} ${fraunces.variable}`}>
       <body>
+        {/* Aplica el tema (claro/oscuro) ANTES de pintar, para que no haya
+            parpadeo al recargar. Lee la preferencia guardada o la del sistema. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('aosh_theme');var l=t==='light'||(t!=='dark'&&window.matchMedia('(prefers-color-scheme: light)').matches);if(l)document.documentElement.classList.add('light');}catch(e){}})();",
+          }}
+        />
         <Background />
-        <BrandingProvider initial={settings}>
-          <BrandFavicon />
-          <CartProvider>
-            <FavoritesProvider>
-              <ToastProvider>{children}</ToastProvider>
-            </FavoritesProvider>
-          </CartProvider>
-        </BrandingProvider>
+        <ThemeProvider>
+          <BrandingProvider initial={settings}>
+            <BrandFavicon />
+            <CartProvider>
+              <FavoritesProvider>
+                <ToastProvider>{children}</ToastProvider>
+              </FavoritesProvider>
+            </CartProvider>
+          </BrandingProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

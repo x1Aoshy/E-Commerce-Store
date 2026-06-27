@@ -20,7 +20,7 @@ function Stars({ rating = 5, className = "h-4 w-4" }) {
         <svg
           key={s}
           viewBox="0 0 24 24"
-          className={`${className} ${s < Math.round(rating) ? "" : "text-white/15"}`}
+          className={`${className} ${s < Math.round(rating) ? "" : "text-line/15"}`}
           fill="currentColor"
           aria-hidden="true"
         >
@@ -85,7 +85,7 @@ export default function ProductReviews({ productId, reviews = [], ratingAvg = 0,
               <blockquote className="mt-3 text-sm leading-relaxed text-ink-soft">
                 “{r.text}”
               </blockquote>
-              <figcaption className="mt-4 flex items-center gap-2.5 border-t border-white/10 pt-3">
+              <figcaption className="mt-4 flex items-center gap-2.5 border-t border-line/10 pt-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500/15 text-[11px] font-semibold text-accent-300 ring-1 ring-accent-500/25">
                   {initials(r.name)}
                 </span>

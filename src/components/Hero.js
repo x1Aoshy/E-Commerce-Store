@@ -56,9 +56,10 @@ export default function Hero() {
               />
             ))}
           </div>
-          {/* Velo desde la izquierda: oscurece sólo el lado del texto y deja el
-              logo (derecha) limpio. */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0a0c0d_0%,#0a0c0d_24%,transparent_58%)]" />
+          {/* Velo desde la izquierda hacia el lado del texto, usando el color de
+              fondo del tema (se invierte en claro) para que el texto se lea y el
+              logo (derecha) quede limpio. */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(var(--c-night))_0%,rgb(var(--c-night))_24%,transparent_58%)]" />
         </div>
       )}
 
