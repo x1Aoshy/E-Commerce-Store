@@ -36,12 +36,14 @@ export default function Hero() {
       {/* Fondo (gym/productos) configurable desde Ajustes. Si hay varias, rotan
           en carrusel con crossfade. Overlays para fundir con el header y dejar
           el texto legible aun sobre fondos claros. */}
+      {/* DESKTOP: el logo va anclado a la derecha como fondo. En MÓVIL se oculta
+          y, en su lugar, se muestra arriba del texto (apilado). */}
       {hasImage && (
-        <div className="absolute inset-0 z-0 bg-night" aria-hidden="true">
+        <div className="absolute inset-0 z-0 hidden bg-night sm:block" aria-hidden="true">
           {/* La imagen es un LOGO (no un fondo): va contenida y anclada a la
               DERECHA, sin estirarse ni tapar el texto. Ideal: PNG con fondo
               transparente. */}
-          <div className="absolute inset-y-0 right-0 w-[72%] sm:w-1/2">
+          <div className="absolute inset-y-0 right-0 w-1/2">
             {images.map((src, idx) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -60,7 +62,23 @@ export default function Hero() {
         </div>
       )}
 
-      <div className="container-content relative z-10 flex min-h-[64vh] flex-col justify-center pb-16 pt-10 sm:min-h-[88vh] sm:pt-16">
+      <div className="container-content relative z-10 flex min-h-[72vh] flex-col items-center justify-center pb-14 pt-8 text-center sm:min-h-[88vh] sm:items-start sm:pt-16 sm:text-left">
+        {/* Logo arriba SÓLO en móvil (en desktop va de fondo a la derecha). */}
+        {hasImage && (
+          <div className="relative mb-4 h-44 w-full max-w-xs sm:hidden" aria-hidden="true">
+            {images.map((src, idx) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={src}
+                src={src}
+                alt=""
+                className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out ${
+                  idx === active ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
+        )}
         <span
           className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] sm:text-sm"
           style={{ animationFillMode: "both" }}
@@ -78,7 +96,7 @@ export default function Hero() {
         </h1>
 
         <p
-          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] sm:text-lg"
+          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] mx-auto sm:mx-0 sm:text-lg"
           style={{ animationDelay: "160ms", animationFillMode: "both" }}
         >
           Suplementos de alta pureza para entrenar, recuperarte y rendir al
@@ -86,7 +104,7 @@ export default function Hero() {
         </p>
 
         <div
-          className="mt-8 flex flex-wrap items-center gap-3 animate-fade-in"
+          className="mt-8 flex flex-wrap items-center justify-center gap-3 animate-fade-in sm:justify-start"
           style={{ animationDelay: "240ms", animationFillMode: "both" }}
         >
           <a href="#productos" className="btn-accent px-6 py-3 text-[15px]">
