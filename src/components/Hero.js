@@ -38,26 +38,25 @@ export default function Hero() {
           el texto legible aun sobre fondos claros. */}
       {hasImage && (
         <div className="absolute inset-0 z-0 bg-night" aria-hidden="true">
-          {images.map((src, idx) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt=""
-              // object-contain: muestra la imagen COMPLETA (sin recortar ni
-              // agrandar). El relleno que sobra queda en `night`, que combina con
-              // el fondo oscuro de la imagen. Así se ve como tu mockup en vez de
-              // estirarse y tapar todo.
-              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out ${
-                idx === active ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
-          {/* Velo suave a la izquierda para que el texto se lea sobre la imagen,
-              sin oscurecerla de más. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-night via-night/45 to-transparent" />
-          {/* Fundido inferior para separar del contenido siguiente. */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
+          {/* La imagen es un LOGO (no un fondo): va contenida y anclada a la
+              DERECHA, sin estirarse ni tapar el texto. Ideal: PNG con fondo
+              transparente. */}
+          <div className="absolute inset-y-0 right-0 w-[72%] sm:w-1/2">
+            {images.map((src, idx) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={src}
+                src={src}
+                alt=""
+                className={`absolute inset-0 h-full w-full object-contain object-right transition-opacity duration-[1200ms] ease-out ${
+                  idx === active ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
+          {/* Velo desde la izquierda: oscurece sólo el lado del texto y deja el
+              logo (derecha) limpio. */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0a0c0d_0%,#0a0c0d_24%,transparent_58%)]" />
         </div>
       )}
 
