@@ -2,6 +2,7 @@
 
 import Logo from "@/components/Logo";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import CopyNumber from "@/components/CopyNumber";
 import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
@@ -50,6 +51,13 @@ export default function Footer() {
               </svg>
               Escribinos por WhatsApp
             </a>
+            {/* Número copiable: útil en PC, donde el chat puede no abrirse. */}
+            {phone && (
+              <p className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-muted">
+                ¿Desde la compu? Copiá nuestro WhatsApp:
+                <CopyNumber />
+              </p>
+            )}
           </div>
 
           <div>

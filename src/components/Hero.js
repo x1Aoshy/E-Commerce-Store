@@ -81,13 +81,13 @@ export default function Hero() {
           </div>
         )}
         <span
-          className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] sm:text-sm"
+          className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 sm:text-sm"
           style={{ animationFillMode: "both" }}
         >
           Suplementos de alta pureza
         </span>
         <h1
-          className="mt-3 max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink [text-shadow:0_2px_18px_rgba(0,0,0,0.6)] min-[380px]:text-4xl sm:text-6xl md:text-7xl"
+          className="mt-3 max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
           style={{ animationDelay: "80ms", animationFillMode: "both" }}
         >
           Tu mejor versión
@@ -97,7 +97,7 @@ export default function Hero() {
         </h1>
 
         <p
-          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink [text-shadow:0_1px_10px_rgba(0,0,0,0.7)] mx-auto sm:mx-0 sm:text-lg"
+          className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink mx-auto sm:mx-0 sm:text-lg"
           style={{ animationDelay: "160ms", animationFillMode: "both" }}
         >
           Suplementos de alta pureza para entrenar, recuperarte y rendir al
