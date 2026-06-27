@@ -112,6 +112,49 @@ export default function AdminDashboard({ onLogout }) {
                 · {VIEW_TITLES[activeView]}
               </span>
             </div>
+
+            {/* Acciones secundarias en MÓVIL (en desktop viven en el rail
+                lateral). Así la barra inferior queda solo con las secciones y
+                "Salir" siempre se ve. */}
+            <div className="flex items-center gap-1 md:hidden">
+              <button
+                type="button"
+                onClick={() => setActiveView("ajustes")}
+                aria-label="Ajustes"
+                className={`flex h-9 w-9 items-center justify-center rounded-[4px] transition ${
+                  activeView === "ajustes"
+                    ? "bg-accent-500 text-night"
+                    : "text-ink-soft hover:bg-white/5 hover:text-ink"
+                }`}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-1.7-1l-.3-2.6H10.6l-.3 2.6a7.5 7.5 0 0 0-1.7 1l-2.4-1-2 3.4L4.6 11a7.5 7.5 0 0 0 0 2l-2 1.5 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.3 2.6h3.8l.3-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.5z" />
+                </svg>
+              </button>
+              <a
+                href="/"
+                aria-label="Ver tienda"
+                className="flex h-9 w-9 items-center justify-center rounded-[4px] text-ink-soft transition hover:bg-white/5 hover:text-ink"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 9.5V20a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9.5" />
+                  <path d="M3 9.5 4.5 4h15L21 9.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z" />
+                </svg>
+              </a>
+              <button
+                type="button"
+                onClick={logout}
+                aria-label="Salir"
+                className="flex h-9 w-9 items-center justify-center rounded-[4px] text-ink-soft transition hover:bg-red-500/10 hover:text-red-400"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4" />
+                  <path d="M10 8 6 12l4 4" />
+                  <path d="M6 12h11" />
+                </svg>
+              </button>
+            </div>
           </div>
         </header>
 

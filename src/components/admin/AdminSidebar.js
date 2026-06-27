@@ -196,8 +196,9 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
       {/* Separador flexible: empuja las acciones al fondo en desktop. */}
       <div className="hidden md:block md:flex-1" />
 
-      {/* Ajustes (tuerca): branding de la tienda. Usa el mismo active/onChange. */}
-      <div className="group relative">
+      {/* Ajustes (tuerca): branding de la tienda. En MÓVIL va en el header
+          (acá se oculta) para descongestionar la barra inferior. */}
+      <div className="group relative hidden md:block">
         <button
           type="button"
           onClick={() => onChange("ajustes")}
@@ -214,8 +215,8 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
         <HoverLabel>Ajustes</HoverLabel>
       </div>
 
-      {/* Ver tienda */}
-      <div className="group relative">
+      {/* Ver tienda (en MÓVIL va en el header) */}
+      <div className="group relative hidden md:block">
         <a
           href="/"
           aria-label="Ver tienda"
@@ -230,8 +231,8 @@ export default function AdminSidebar({ active, onChange, onLogout, pending = 0 }
         </HoverLabel>
       </div>
 
-      {/* Salir */}
-      <div className="group relative">
+      {/* Salir (en MÓVIL va en el header) */}
+      <div className="group relative hidden md:block">
         <button
           type="button"
           onClick={onLogout}
