@@ -2,7 +2,6 @@
 
 import Logo from "@/components/Logo";
 import NewsletterSignup from "@/components/NewsletterSignup";
-import CopyNumber from "@/components/CopyNumber";
 import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
@@ -19,12 +18,9 @@ export default function Footer() {
     : "https://wa.me/";
 
   return (
-    <footer
-      id="contacto"
-      className="border-t border-line/10 bg-surface/40 text-ink"
-    >
-      <div className="container-content py-8">
-        <div className="grid gap-7 md:grid-cols-[1.5fr_1fr_1.2fr]">
+    <footer id="contacto" className="border-t border-line/10 bg-surface/40 text-ink">
+      <div className="container-content py-7">
+        <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <Logo />
             <p className="mt-2.5 max-w-xs text-[13px] leading-relaxed text-ink-muted">
@@ -51,44 +47,16 @@ export default function Footer() {
               </svg>
               Escribinos por WhatsApp
             </a>
-            {/* Número copiable: útil en PC, donde el chat puede no abrirse. */}
-            {phone && (
-              <p className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-muted">
-                ¿Desde la compu? Copiá nuestro WhatsApp:
-                <CopyNumber />
-              </p>
-            )}
-          </div>
-
-          <div>
-            <h4 className="text-[13px] font-semibold">Tienda</h4>
-            <ul className="mt-2.5 space-y-1.5 text-[13px] text-ink-muted">
-              <li>
-                <a href="/#productos" className="transition hover:text-ink">
-                  Productos
-                </a>
-              </li>
-              <li>
-                <a href="/#beneficios" className="transition hover:text-ink">
-                  Beneficios
-                </a>
-              </li>
-              <li>
-                <a href="/admin" className="transition hover:text-ink">
-                  Panel de administración
-                </a>
-              </li>
-            </ul>
           </div>
 
           <NewsletterSignup />
         </div>
 
-        <div className="mt-7 flex flex-col items-start justify-between gap-2 border-t border-line/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
+        <div className="mt-6 flex flex-col items-start justify-between gap-1 border-t border-line/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
           <span>
             © {new Date().getFullYear()} {store}. Todos los derechos reservados.
           </span>
-          <span>Hecho con cuidado · Pedidos por WhatsApp</span>
+          <span>Pedidos por WhatsApp</span>
         </div>
       </div>
     </footer>

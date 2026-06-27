@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/format";
 import { useToast } from "@/components/Toast";
+import { useBranding } from "@/context/BrandingContext";
+import CopyNumber from "@/components/CopyNumber";
 
 function WhatsAppIcon({ className = "h-5 w-5" }) {
   return (
@@ -28,6 +30,8 @@ export default function CartDrawer() {
     useCart();
   const router = useRouter();
   const toast = useToast();
+  const { whatsappNumber } = useBranding();
+  const phone = (whatsappNumber || "").replace(/[^\d]/g, "");
 
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
@@ -156,6 +160,16 @@ export default function CartDrawer() {
             >
               <WhatsAppIcon className="h-5 w-5" /> Abrir WhatsApp
             </a>
+            {/* Alternativa por si el chat no abre (típico en PC): copiar el
+                número y escribirnos a mano. */}
+            {phone && (
+              <div className="mt-3 w-full">
+                <p className="text-xs text-ink-muted">
+                  ¿No se abre? Copiá el número y escribinos:
+                </p>
+                <CopyNumber className="mt-1.5 w-full justify-center" />
+              </div>
+            )}
             <button onClick={closeCart} className="btn-ghost mt-3 w-full py-3">
               Seguir comprando
             </button>
