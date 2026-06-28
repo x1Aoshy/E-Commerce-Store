@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import Link from "next/link";
 import ProductGallery from "./ProductGallery";
 import StockBadge, { stockStatus } from "./StockBadge";
@@ -27,7 +27,7 @@ function MiniStars({ rating = 5 }) {
   );
 }
 
-export default function ProductCard({ product }) {
+function ProductCard({ product }) {
   const { addItem } = useCart();
   const s = stockStatus(product.stock);
   const [added, setAdded] = useState(false);
@@ -147,3 +147,8 @@ export default function ProductCard({ product }) {
     </article>
   );
 }
+
+// `product` proviene de datos del servidor (referencia estable entre renders),
+// así que memoizamos para no re-renderizar cada tarjeta cuando el grid cambia
+// por búsqueda/orden/favoritos sin afectar a este producto.
+export default memo(ProductCard);

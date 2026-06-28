@@ -50,6 +50,10 @@ export default function Hero() {
                 key={src}
                 src={src}
                 alt=""
+                // El primero es parte del LCP: se carga ansioso. Los demás
+                // (sólo visibles al rotar el carrusel) se difieren.
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className={`absolute inset-0 h-full w-full object-contain object-right transition-opacity duration-[1200ms] ease-out ${
                   idx === active ? "opacity-100" : "opacity-0"
                 }`}
@@ -73,6 +77,10 @@ export default function Hero() {
                 key={src}
                 src={src}
                 alt=""
+                // El primero es parte del LCP en móvil: se carga ansioso. Los
+                // demás (sólo visibles al rotar el carrusel) se difieren.
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out ${
                   idx === active ? "opacity-100" : "opacity-0"
                 }`}
