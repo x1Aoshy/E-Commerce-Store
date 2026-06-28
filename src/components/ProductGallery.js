@@ -15,7 +15,9 @@ export default function ProductGallery({ product, href, className = "", controls
   const count = media.length;
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
 
-  function Slide({ src }) {
+  // `eager` marca el primer medio (visible de entrada) para no diferir el LCP;
+  // el resto del carrusel se carga perezosamente cuando hace falta.
+  function Slide({ src, eager = false }) {
     return isVideo(src) ? (
       <video
         src={src}
@@ -27,7 +29,13 @@ export default function ProductGallery({ product, href, className = "", controls
       />
     ) : (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={product?.name || ""} className={`h-full w-full ${fitClass} ${className}`} />
+      <img
+        src={src}
+        alt={product?.name || ""}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        className={`h-full w-full ${fitClass} ${className}`}
+      />
     );
   }
 
@@ -69,10 +77,10 @@ export default function ProductGallery({ product, href, className = "", controls
           <div key={idx} className="h-full w-full shrink-0 grow-0 basis-full">
             {href ? (
               <Link href={href} aria-label={`Ver ${product?.name || ""}`} className="block h-full w-full">
-                <Slide src={src} />
+                <Slide src={src} eager={idx === 0} />
               </Link>
             ) : (
-              <Slide src={src} />
+              <Slide src={src} eager={idx === 0} />
             )}
           </div>
         ))}
