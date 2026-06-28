@@ -8,13 +8,14 @@ import MobileCartBar from "@/components/MobileCartBar";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import AutoRefresh from "@/components/AutoRefresh";
 import { getProducts } from "@/lib/db";
+import type { Product } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   // Si la base aún no está configurada/poblada, mostramos la tienda igual
   // (sin productos) en vez de romper toda la página.
-  let products = [];
+  let products: Product[] = [];
   try {
     products = await getProducts();
   } catch (err) {

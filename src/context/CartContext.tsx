@@ -13,7 +13,7 @@ const CartContext = createContext(null);
 const STORAGE_KEY = "aosh_cart";
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 

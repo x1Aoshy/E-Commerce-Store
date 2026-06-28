@@ -18,7 +18,7 @@ const QRCode = dynamic(() => import("@/components/QRCode"), {
   ),
 });
 
-function WhatsAppIcon({ className = "h-5 w-5" }) {
+function WhatsAppIcon({ className = "h-5 w-5" }: any) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -46,9 +46,9 @@ export default function CartDrawer() {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [conflicts, setConflicts] = useState([]);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState<any>(null);
+  const [conflicts, setConflicts] = useState<any[]>([]);
+  const [success, setSuccess] = useState<any>(null);
 
   const [render, setRender] = useState(false);
   const [visible, setVisible] = useState(false);

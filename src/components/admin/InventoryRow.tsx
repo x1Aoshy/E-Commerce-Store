@@ -12,7 +12,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
 
   const dirty =
     Number(price) !== Number(product.price) ||

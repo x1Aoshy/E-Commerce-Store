@@ -24,7 +24,7 @@ function formatDate(iso) {
   }
 }
 
-function StatusChip({ status }) {
+function StatusChip({ status }: any) {
   if (status === "confirmada") {
     return (
       <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
@@ -46,7 +46,7 @@ function StatusChip({ status }) {
   );
 }
 
-function PaymentChip({ method }) {
+function PaymentChip({ method }: any) {
   if (method === "efectivo")
     return (
       <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
@@ -62,7 +62,7 @@ function PaymentChip({ method }) {
   return null;
 }
 
-function PaidChip({ paid, confirmed }) {
+function PaidChip({ paid, confirmed }: any) {
   if (paid)
     return (
       <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
@@ -78,7 +78,7 @@ function PaidChip({ paid, confirmed }) {
   return null;
 }
 
-function PaymentForm({ order, onSave, saving, sellers = [] }) {
+function PaymentForm({ order, onSave, saving, sellers = [] }: any) {
   const [method, setMethod] = useState(order.paymentMethod || "efectivo");
   const [extra, setExtra] = useState(order.extra ? String(order.extra) : "");
   const [label, setLabel] = useState(order.extraLabel || "Delivery");
@@ -162,8 +162,8 @@ function PaymentForm({ order, onSave, saving, sellers = [] }) {
 }
 
 export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] }) {
-  const [saving, setSaving] = useState(null);
-  const [err, setErr] = useState(null);
+  const [saving, setSaving] = useState<any>(null);
+  const [err, setErr] = useState<any>(null);
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
   const toast = useToast();

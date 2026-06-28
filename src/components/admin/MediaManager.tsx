@@ -8,16 +8,16 @@ import { isVideo } from "@/lib/images";
 // URLs; `onChange` recibe el arreglo nuevo.
 export default function MediaManager({ value = [], onChange }) {
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
-  const inputRef = useRef(null);
+  const [error, setError] = useState<any>(null);
+  const inputRef = useRef<any>(null);
   const items = Array.isArray(value) ? value : [];
 
-  async function handleFiles(fileList) {
-    const files = Array.from(fileList || []);
+  async function handleFiles(fileList: any) {
+    const files: any[] = Array.from(fileList || []);
     if (files.length === 0) return;
     setBusy(true);
     setError(null);
-    const added = [];
+    const added: any[] = [];
     for (const file of files) {
       const fd = new FormData();
       fd.append("file", file);

@@ -35,7 +35,7 @@ function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {
   ].join(" ");
 }
 
-function DonutChart({ data, total }) {
+function DonutChart({ data, total }: any) {
   const size = 168;
   const cx = size / 2;
   const cy = size / 2;
@@ -133,7 +133,7 @@ function DonutChart({ data, total }) {
   );
 }
 
-function BarChart({ data, formatValue }) {
+function BarChart({ data, formatValue }: any) {
   const max = data.reduce((m, d) => Math.max(m, d.value), 0);
   const niceMax = max > 0 ? max : 1;
 
@@ -167,7 +167,7 @@ function BarChart({ data, formatValue }) {
   );
 }
 
-function ChartCard({ title, subtitle, children }) {
+function ChartCard({ title, subtitle, children }: any) {
   return (
     <div className="card p-5 shadow-soft">
       <div className="mb-4">
@@ -182,7 +182,7 @@ function ChartCard({ title, subtitle, children }) {
 export default function DashboardCharts({ products = [], orders = [] }) {
   // Dona: pedidos por estado.
   const { statusData, totalOrders } = useMemo(() => {
-    const counts = { pendiente: 0, confirmada: 0, cancelada: 0 };
+    const counts: any = { pendiente: 0, confirmada: 0, cancelada: 0 };
     orders.forEach((o) => {
       if (counts[o.status] === undefined) counts[o.status] = 0;
       counts[o.status] += 1;
@@ -255,7 +255,7 @@ export default function DashboardCharts({ products = [], orders = [] }) {
 
 // Mini panel de texto que acompaña a las gráficas: ingresos confirmados vs.
 // pendientes vs. perdidos por cancelación.
-function OrdersSummary({ orders }) {
+function OrdersSummary({ orders }: any) {
   const sums = useMemo(() => {
     const acc = { pendiente: 0, confirmada: 0, cancelada: 0 };
     orders.forEach((o) => {

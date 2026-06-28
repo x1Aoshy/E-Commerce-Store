@@ -16,6 +16,7 @@ import MediaManager from "./MediaManager";
 import StatsEditor from "./StatsEditor";
 import OrderCard from "./OrderCard";
 import BrandingSettings from "./BrandingSettings";
+import type { Product, Order } from "@/lib/types";
 
 const VIEW_TITLES = {
   resumen: "Resumen",
@@ -27,7 +28,7 @@ const VIEW_TITLES = {
   ajustes: "Ajustes",
 };
 
-function Stat({ label, value }) {
+function Stat({ label, value }: { label: any; value: any }) {
   return (
     <div className="card p-4 shadow-soft">
       <div className="text-xs font-medium uppercase tracking-wide text-ink-muted">
@@ -38,12 +39,12 @@ function Stat({ label, value }) {
   );
 }
 
-export default function AdminDashboard({ onLogout }) {
-  const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
+export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [activeView, setActiveView] = useState("resumen");
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -198,7 +199,7 @@ export default function AdminDashboard({ onLogout }) {
   );
 }
 
-function ResumenView({ stats, products, orders }) {
+function ResumenView({ stats, products, orders }: any) {
   return (
     <div className="animate-fade-in">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -218,11 +219,11 @@ function ResumenView({ stats, products, orders }) {
 
 // Formulario de stock (dentro de un modal): AGREGA o QUITA unidades al stock
 // actual (no baja de 0).
-function RestockForm({ product, onDone }) {
+function RestockForm({ product, onDone }: any) {
   const [units, setUnits] = useState("");
   const [mode, setMode] = useState("add"); // add | remove
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
   const amount = Number(units) || 0;
   const delta = mode === "add" ? amount : -amount;
@@ -319,12 +320,12 @@ function RestockForm({ product, onDone }) {
 
 // Editor de medios (dentro de un modal): sube/quita fotos y videos del producto
 // y guarda el arreglo de URLs.
-function ProductMediaForm({ product, onSaved, onClose }) {
+function ProductMediaForm({ product, onSaved, onClose }: any) {
   const [images, setImages] = useState(
     Array.isArray(product.images) ? product.images : []
   );
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   // Persiste apenas se sube o se quita un medio: no hay botón "guardar" que se
@@ -372,12 +373,12 @@ function ProductMediaForm({ product, onSaved, onClose }) {
 
 // Editor de estadísticas (dentro de un modal): edita las métricas del gráfico
 // de anillos del producto y las guarda con el botón. Refleja a ProductMediaForm.
-function ProductStatsForm({ product, onSaved, onClose }) {
+function ProductStatsForm({ product, onSaved, onClose }: any) {
   const [stats, setStats] = useState(
     Array.isArray(product.stats) ? product.stats : []
   );
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   async function save() {
@@ -432,13 +433,13 @@ function ProductStatsForm({ product, onSaved, onClose }) {
 }
 
 // Editor de datos de texto del producto (nombre, categoría, descripciones).
-function ProductEditForm({ product, categories = [], onSaved, onClose }) {
+function ProductEditForm({ product, categories = [], onSaved, onClose }: any) {
   const [name, setName] = useState(product.name || "");
   const [category, setCategory] = useState(product.category || "");
   const [short, setShort] = useState(product.short || "");
   const [description, setDescription] = useState(product.description || "");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   async function save() {
@@ -534,12 +535,12 @@ function ProductEditForm({ product, categories = [], onSaved, onClose }) {
   );
 }
 
-function InventarioView({ products, categories, setProducts }) {
+function InventarioView({ products, categories, setProducts }: any) {
   const [addOpen, setAddOpen] = useState(false);
-  const [restock, setRestock] = useState(null); // producto a reabastecer
-  const [mediaProduct, setMediaProduct] = useState(null); // producto a editar medios
-  const [statsProduct, setStatsProduct] = useState(null); // producto a editar stats
-  const [editProduct, setEditProduct] = useState(null); // producto a editar (texto)
+  const [restock, setRestock] = useState<any>(null); // producto a reabastecer
+  const [mediaProduct, setMediaProduct] = useState<any>(null); // producto a editar medios
+  const [statsProduct, setStatsProduct] = useState<any>(null); // producto a editar stats
+  const [editProduct, setEditProduct] = useState<any>(null); // producto a editar (texto)
   const [query, setQuery] = useState("");
 
   // Avisa a la tienda (otras pestañas) cada vez que cambia el inventario, para
@@ -754,7 +755,7 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function OrdenesView({ orders, setOrders, products }) {
+function OrdenesView({ orders, setOrders, products }: any) {
   const [manualOpen, setManualOpen] = useState(false);
   const [tab, setTab] = useState("todas"); // todas | pendiente | confirmada | cancelada
   const [query, setQuery] = useState("");
@@ -774,8 +775,8 @@ function OrdenesView({ orders, setOrders, products }) {
   const sellers = useMemo(
     () =>
       Array.from(
-        new Set(orders.map((o) => (o.seller || "").trim()).filter(Boolean))
-      ).sort((a, b) => a.localeCompare(b, "es")),
+        new Set(orders.map((o: any) => (o.seller || "").trim()).filter(Boolean))
+      ).sort((a: string, b: string) => a.localeCompare(b, "es")),
     [orders]
   );
 
@@ -914,7 +915,7 @@ function OrdenesView({ orders, setOrders, products }) {
 }
 
 // Tab de Finanzas: cuánto dinero se hizo, cuánto se vendió y por qué método.
-function FinanceView({ orders }) {
+function FinanceView({ orders }: any) {
   const f = useMemo(() => {
     const now = new Date();
     const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -1083,9 +1084,9 @@ function FinanceView({ orders }) {
 // Tab de Contactos: lista de clientes que dejaron su WhatsApp/email para
 // recibir ofertas y avisos de reposición. Permite copiar la lista y borrar.
 function ContactosView() {
-  const [subs, setSubs] = useState([]);
+  const [subs, setSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   const load = useCallback(async () => {
@@ -1202,7 +1203,7 @@ function ContactosView() {
 }
 
 // Estrellas de solo lectura para las tarjetas de reseña del admin.
-function ReviewStars({ rating = 5 }) {
+function ReviewStars({ rating = 5 }: any) {
   return (
     <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (
@@ -1221,12 +1222,12 @@ function ReviewStars({ rating = 5 }) {
 }
 
 // Formulario del admin para cargar una reseña real a mano (nace aprobada).
-function AdminReviewForm({ onCreated, onCancel }) {
+function AdminReviewForm({ onCreated, onCancel }: any) {
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   async function submit(e) {
@@ -1320,9 +1321,9 @@ function AdminReviewForm({ onCreated, onCancel }) {
 // Tab de Reseñas: modera las reseñas de clientes (aprobar/ocultar/eliminar) y
 // permite cargar reseñas reales a mano. Las aprobadas se ven en la tienda.
 function ResenasView() {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [filter, setFilter] = useState("todas"); // todas | pendiente | publicada
   const toast = useToast();

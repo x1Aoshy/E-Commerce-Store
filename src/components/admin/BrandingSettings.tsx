@@ -17,10 +17,10 @@ const ACCEPT = "image/*,image/svg+xml";
 // Subida de UNA sola imagen (logo o ícono). Muestra preview, permite
 // reemplazar y quitar. `value` es la URL actual; `onChange` recibe la nueva
 // (o "" al quitar).
-function ImageUploader({ label, value, onChange }) {
+function ImageUploader({ label, value, onChange }: any) {
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
-  const inputRef = useRef(null);
+  const [error, setError] = useState<any>(null);
+  const inputRef = useRef<any>(null);
   const toast = useToast();
 
   async function handleFile(fileList) {
@@ -102,7 +102,7 @@ export default function BrandingSettings() {
   const [loginIconUrl, setLoginIconUrl] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState("");
-  const [heroImages, setHeroImages] = useState([]);
+  const [heroImages, setHeroImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 

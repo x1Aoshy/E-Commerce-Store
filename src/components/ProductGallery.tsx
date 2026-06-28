@@ -5,19 +5,27 @@ import Link from "next/link";
 import ProductImage from "./ProductImage";
 import { productImages, isVideo } from "@/lib/images";
 
+interface ProductGalleryProps {
+  product: any;
+  href?: string;
+  className?: string;
+  controls?: boolean;
+  fit?: string;
+}
+
 // Galería de medios del producto: flechas suaves, puntitos indicadores y swipe
 // táctil. Si hay 0/1 medio, muestra la imagen (o el placeholder) sin controles.
 // `href` (opcional) hace que tocar la imagen navegue; las flechas/puntos no.
-export default function ProductGallery({ product, href, className = "", controls = false, fit = "cover" }) {
+export default function ProductGallery({ product, href, className = "", controls = false, fit = "cover" }: ProductGalleryProps) {
   const media = productImages(product);
   const [i, setI] = useState(0);
-  const startX = useRef(null);
+  const startX = useRef<number | null>(null);
   const count = media.length;
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
 
   // `eager` marca el primer medio (visible de entrada) para no diferir el LCP;
   // el resto del carrusel se carga perezosamente cuando hace falta.
-  function Slide({ src, eager = false }) {
+  function Slide({ src, eager = false }: any) {
     return isVideo(src) ? (
       <video
         src={src}

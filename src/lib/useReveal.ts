@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 // con un fade-up suave cuando entra en viewport. Respeta prefers-reduced-motion
 // (si el usuario pidió menos movimiento, se muestra de una sin animar).
 export function useReveal({ delay = 0 } = {}) {
-  const ref = useRef(null);
+  const ref = useRef<any>(null);
   const [shown, setShown] = useState(false);
 
   useEffect(() => {

@@ -18,7 +18,7 @@ function valueFor(product, label) {
   return 72 + (hash(`${product.id}-${label}`) % 26);
 }
 
-function Ring({ label, value }) {
+function Ring({ label, value }: any) {
   const [p, setP] = useState(0);
   useEffect(() => {
     const r = requestAnimationFrame(() => setP(value));

@@ -7,7 +7,7 @@ import Logo from "@/components/Logo";
 export default function AdminPage() {
   const [status, setStatus] = useState("loading"); // loading | login | authed
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showPass, setShowPass] = useState(false);
 

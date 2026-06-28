@@ -13,6 +13,14 @@
 // El esquema SQL (y la migración de columnas) está en supabase/schema.sql.
 
 import { getSupabase } from "./supabase";
+import type {
+  Product,
+  Order,
+  OrderItem,
+  Review,
+  Settings,
+  Subscriber,
+} from "./types";
 
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
@@ -97,7 +105,7 @@ function cleanSeller(value) {
 
 /* ------------------------------- Productos ------------------------------- */
 
-export async function getProducts() {
+export async function getProducts(): Promise<Product[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("products")
@@ -160,7 +168,7 @@ function attachReviewSummary(product, list) {
   };
 }
 
-export async function getProductById(id) {
+export async function getProductById(id): Promise<Product | null> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("products")
@@ -171,7 +179,7 @@ export async function getProductById(id) {
   return data || null;
 }
 
-export async function getProductBySlug(slug) {
+export async function getProductBySlug(slug): Promise<Product | null> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("products")
@@ -215,7 +223,7 @@ export async function createProduct(data) {
 
 export async function updateProduct(id, patch) {
   const supabase = getSupabase();
-  const next = {};
+  const next: any = {};
   if (patch.name !== undefined) next.name = patch.name;
   if (patch.category !== undefined) next.category = patch.category;
   if (patch.price !== undefined) next.price = Number(patch.price);
@@ -268,9 +276,9 @@ async function reserveStock(items) {
     .select("id, name, stock")
     .in("id", ids);
   if (error) throw new Error(`No se pudo validar el stock: ${error.message}`);
-  const byId = new Map((rows || []).map((p) => [p.id, p]));
+  const byId: Map<any, any> = new Map((rows || []).map((p: any) => [p.id, p]));
 
-  const conflicts = [];
+  const conflicts: any[] = [];
   for (const it of list) {
     const p = byId.get(it.id);
     const qty = Number(it.quantity) || 0;
@@ -325,7 +333,7 @@ async function restoreStock(items) {
 
 /* -------------------------------- Órdenes -------------------------------- */
 
-export async function getOrders() {
+export async function getOrders(): Promise<Order[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("orders")
@@ -350,7 +358,7 @@ async function buildOrder({
   seller,
   reserve,
   paid,
-}) {
+}: any) {
   const supabase = getSupabase();
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -363,10 +371,10 @@ async function buildOrder({
     .select("id, name, price, stock")
     .in("id", ids);
   if (readErr) throw new Error(`No se pudo leer el catálogo: ${readErr.message}`);
-  const byId = new Map((rows || []).map((p) => [p.id, p]));
+  const byId: Map<any, any> = new Map((rows || []).map((p: any) => [p.id, p]));
 
-  const lineItems = [];
-  const conflicts = [];
+  const lineItems: any[] = [];
+  const conflicts: any[] = [];
 
   for (const item of items) {
     const product = byId.get(item.id);
@@ -444,13 +452,13 @@ async function buildOrder({
 }
 
 // Checkout público: crea la orden como 'pendiente' SIN reservar stock.
-export async function createOrder({ items, customer }) {
+export async function createOrder({ items, customer }: any) {
   return buildOrder({ items, customer, status: "pendiente", reserve: false });
 }
 
 // Busca una orden por su token público (para el recibo por QR). RESILIENTE: si
 // la columna no existe (migración sin correr) o no se encuentra, devuelve null.
-export async function getOrderByToken(token) {
+export async function getOrderByToken(token): Promise<Order | null> {
   const clean = String(token || "").replace(/[^a-z0-9]/gi, "").slice(0, 64);
   if (!clean) return null;
   try {
@@ -477,7 +485,7 @@ export async function createManualOrder({
   extra,
   extraLabel,
   seller,
-}) {
+}: any) {
   const wanted = status === "pendiente" ? "pendiente" : "confirmada";
   // Una venta manual COMPLETADA es una venta ya concretada y cobrada: nace
   // pagada y descuenta stock. Si nace pendiente, no toca stock ni se marca paga.
@@ -504,7 +512,7 @@ export async function createManualOrder({
 //     error con los conflictos).
 //   - cuando DEJA de cumplir ambas: repone stock.
 // Devuelve { order } | { error, conflicts } | null (no existe).
-async function applyOrderState(id, { status, paid } = {}) {
+async function applyOrderState(id, { status, paid }: any = {}) {
   const supabase = getSupabase();
 
   const { data: current, error: readErr } = await supabase
@@ -532,7 +540,7 @@ async function applyOrderState(id, { status, paid } = {}) {
     await restoreStock(current.items);
   }
 
-  const fields = {};
+  const fields: any = {};
   if (status !== undefined) fields.status = status;
   if (paid !== undefined) fields.paid = !!paid;
   if (Object.keys(fields).length === 0) return { order: mapOrder(current) };
@@ -567,7 +575,7 @@ export async function updateOrder(id, patch) {
     if (res.error) return res; // sin stock para descontar
   }
 
-  const fields = {};
+  const fields: any = {};
   if (patch.paymentMethod !== undefined) {
     fields.payment_method = PAYMENT_METHODS.includes(patch.paymentMethod)
       ? patch.paymentMethod
@@ -655,7 +663,7 @@ function mapSettings(row) {
 
 // Lee la única fila de ajustes. RESILIENTE: si la tabla no existe o hay
 // cualquier error, devuelve los valores por defecto sin lanzar.
-export async function getSettings() {
+export async function getSettings(): Promise<Settings> {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
@@ -673,9 +681,9 @@ export async function getSettings() {
 // Upsert de la fila id=1 con los campos provistos en `patch`. Recorta longitudes
 // (nombre 60, URLs 1000) y siempre setea updated_at. Devuelve los ajustes
 // mapeados a camelCase.
-export async function updateSettings(patch = {}) {
+export async function updateSettings(patch: any = {}) {
   const supabase = getSupabase();
-  const next = { id: 1, updated_at: new Date().toISOString() };
+  const next: any = { id: 1, updated_at: new Date().toISOString() };
   if (patch.storeName !== undefined) {
     next.store_name = String(patch.storeName || "").trim().slice(0, 60);
   }
@@ -724,7 +732,7 @@ function mapSubscriber(row) {
 // Da de alta un contacto. Normaliza, evita duplicados (devuelve el existente)
 // y nunca lanza por la restricción única (lo trata como "ya estaba").
 // Devuelve { subscriber } o { error } con un mensaje claro.
-export async function addSubscriber({ contact, name, source } = {}) {
+export async function addSubscriber({ contact, name, source }: any = {}) {
   const clean = String(contact || "").trim().slice(0, 120);
   if (!clean) return { error: "Dejá un WhatsApp o email válido." };
 
@@ -750,7 +758,7 @@ export async function addSubscriber({ contact, name, source } = {}) {
   return { subscriber: mapSubscriber(data) };
 }
 
-export async function getSubscribers() {
+export async function getSubscribers(): Promise<Subscriber[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("subscribers")
@@ -793,7 +801,7 @@ function mapReview(row) {
 
 // Crea una reseña. Desde la tienda nace SIN aprobar (source 'cliente'); desde el
 // admin nace aprobada (source 'admin'). Devuelve { review } o { error }.
-export async function addReview({ productId, name, rating, text, approved, source } = {}) {
+export async function addReview({ productId, name, rating, text, approved, source }: any = {}) {
   const cleanText = String(text || "").trim().slice(0, 600);
   const cleanName = String(name || "").trim().slice(0, 80);
   if (!cleanText) return { error: "Escribí tu reseña." };
@@ -819,7 +827,7 @@ export async function addReview({ productId, name, rating, text, approved, sourc
 }
 
 // Reseñas aprobadas para mostrar en la tienda (más nuevas primero).
-export async function getApprovedReviews(limit = 12) {
+export async function getApprovedReviews(limit = 12): Promise<Review[]> {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
@@ -836,7 +844,7 @@ export async function getApprovedReviews(limit = 12) {
 }
 
 // Todas las reseñas (admin), para moderar.
-export async function getAllReviews() {
+export async function getAllReviews(): Promise<Review[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("reviews")

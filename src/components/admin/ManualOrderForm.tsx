@@ -13,7 +13,7 @@ export default function ManualOrderForm({
   onCreated,
   onCancel,
 }) {
-  const [qtys, setQtys] = useState({});
+  const [qtys, setQtys] = useState<any>({});
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [status, setStatus] = useState("confirmada");
@@ -22,8 +22,8 @@ export default function ManualOrderForm({
   const [extra, setExtra] = useState("");
   const [extraLabel, setExtraLabel] = useState("Delivery");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [conflicts, setConflicts] = useState([]);
+  const [error, setError] = useState<any>(null);
+  const [conflicts, setConflicts] = useState<any[]>([]);
   const toast = useToast();
 
   const setQty = (id, q) => setQtys((m) => ({ ...m, [id]: Math.max(0, q) }));

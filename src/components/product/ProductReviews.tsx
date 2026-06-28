@@ -13,7 +13,7 @@ function initials(name) {
     .toUpperCase();
 }
 
-function Stars({ rating = 5, className = "h-4 w-4" }) {
+function Stars({ rating = 5, className = "h-4 w-4" }: any) {
   return (
     <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (

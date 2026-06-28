@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-function Stars({ value, onChange }) {
+function Stars({ value, onChange }: any) {
   const [hover, setHover] = useState(0);
   return (
     <div className="flex gap-1" role="radiogroup" aria-label="Puntuación">

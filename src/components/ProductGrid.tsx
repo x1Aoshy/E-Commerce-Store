@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 import { useFavorites } from "@/context/FavoritesContext";
+import type { Product } from "@/lib/types";
 
-export default function ProductGrid({ products }) {
+export default function ProductGrid({ products }: { products: Product[] }) {
   const { ids: favIds, count: favCount, hydrated } = useFavorites();
   const categories = useMemo(
     () => ["Todos", ...Array.from(new Set(products.map((p) => p.category)))],

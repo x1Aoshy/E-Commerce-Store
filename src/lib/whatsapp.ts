@@ -14,7 +14,7 @@ export function buildOrderMessage(
   customMessage = "",
   receiptUrl = ""
 ) {
-  const lines = [];
+  const lines: string[] = [];
   lines.push(`*Nuevo pedido — ${storeName}*`);
   lines.push(`Código: ${order.code}`);
   lines.push("");

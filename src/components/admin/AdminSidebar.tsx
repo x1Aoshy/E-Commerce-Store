@@ -18,7 +18,7 @@ const ICON_PROPS = {
   strokeLinecap: "round",
   strokeLinejoin: "round",
   "aria-hidden": true,
-};
+} as const;
 
 function ResumenIcon() {
   return (
@@ -138,7 +138,7 @@ const NAV_ITEMS = [
 
 // Etiqueta que aparece a la derecha del ícono al hacer hover/focus.
 // Usa group-hover/group-focus-within para el fade + slide suave.
-function HoverLabel({ children, tone = "ink" }) {
+function HoverLabel({ children, tone = "ink" }: any) {
   const base =
     "pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 -translate-x-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12px] font-medium opacity-0 shadow-soft ring-1 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:translate-x-0 group-focus-within:opacity-100 md:block";
   const tones = {

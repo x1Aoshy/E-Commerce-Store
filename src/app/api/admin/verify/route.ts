@@ -46,7 +46,7 @@ const cookieOptions = {
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
   path: "/",
-};
+} as const;
 
 export async function GET() {
   return NextResponse.json({ authed: checkAdmin() });

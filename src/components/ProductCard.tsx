@@ -9,7 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 
 // Estrellas compactas para la reseña destacada de la tarjeta.
-function MiniStars({ rating = 5 }) {
+function MiniStars({ rating = 5 }: any) {
   return (
     <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (
@@ -27,7 +27,7 @@ function MiniStars({ rating = 5 }) {
   );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product }: any) {
   const { addItem } = useCart();
   const s = stockStatus(product.stock);
   const [added, setAdded] = useState(false);

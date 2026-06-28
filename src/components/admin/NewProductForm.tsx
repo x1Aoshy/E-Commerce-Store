@@ -19,7 +19,7 @@ const EMPTY = {
 
 // Encabezado de sección: agrupa los campos en bloques claros para que el
 // formulario se lea ordenado en PC y cómodo en mobile.
-function Section({ title, hint, children }) {
+function Section({ title, hint, children }: any) {
   return (
     <section className="border-t border-white/[0.07] pt-5 first:border-0 first:pt-0">
       <div className="mb-3">
@@ -34,7 +34,7 @@ function Section({ title, hint, children }) {
 export default function NewProductForm({ categories = [], onCreated, onCancel }) {
   const [form, setForm] = useState({ ...EMPTY });
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const toast = useToast();
 
   function set(key, value) {

@@ -15,7 +15,7 @@ const FavoritesContext = createContext(null);
 const STORAGE_KEY = "aosh_favs";
 
 export function FavoritesProvider({ children }) {
-  const [ids, setIds] = useState([]);
+  const [ids, setIds] = useState<any[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {

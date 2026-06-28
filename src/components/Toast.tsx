@@ -43,7 +43,7 @@ const noopApi = {
 };
 
 export function ToastProvider({ children }) {
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState<any[]>([]);
   const idRef = useRef(0);
   // Map<id, timeoutId> para los auto-cierres y las salidas pendientes.
   const timers = useRef(new Map());
@@ -117,7 +117,7 @@ export function ToastProvider({ children }) {
   );
 
   // API estable expuesta por el contexto.
-  const apiRef = useRef(null);
+  const apiRef = useRef<any>(null);
   if (!apiRef.current) {
     apiRef.current = {
       success: (m) => push("success", m),
@@ -159,7 +159,7 @@ export function useToast() {
 
 /* ------------------------------- UI interna ------------------------------- */
 
-function ToastViewport({ toasts, onDismiss }) {
+function ToastViewport({ toasts, onDismiss }: any) {
   return (
     <div
       role="status"
@@ -177,7 +177,7 @@ function ToastViewport({ toasts, onDismiss }) {
   );
 }
 
-function ToastItem({ toast, onDismiss }) {
+function ToastItem({ toast, onDismiss }: any) {
   const { id, type, message, leaving } = toast;
   return (
     <div
@@ -212,7 +212,7 @@ function ToastItem({ toast, onDismiss }) {
   );
 }
 
-function ToastIcon({ type }) {
+function ToastIcon({ type }: any) {
   if (type === "success") {
     return (
       <svg className="h-4 w-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

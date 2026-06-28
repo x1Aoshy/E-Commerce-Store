@@ -13,6 +13,7 @@ import ProductBuyPanel from "@/components/product/ProductBuyPanel";
 import ProductProfile from "@/components/product/ProductProfile";
 import ProductReviews from "@/components/product/ProductReviews";
 import { getProductBySlug, getProducts } from "@/lib/db";
+import type { Product } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +35,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  let product = null;
-  let all = [];
+  let product: Product | null = null;
+  let all: Product[] = [];
   try {
     product = await getProductBySlug(params.slug);
     all = await getProducts();
