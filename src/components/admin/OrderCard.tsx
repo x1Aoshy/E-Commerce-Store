@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { printInvoice } from "@/lib/invoice";
 import Modal from "@/components/Modal";
@@ -166,10 +166,34 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const [err, setErr] = useState<any>(null);
   const [showPay, setShowPay] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState("");
   const toast = useToast();
   const { whatsappNumber, storeName, logoUrl, loginIconUrl } = useBranding();
   const phone = (whatsappNumber || "").replace(/[^\d]/g, "") || PHONE;
   const invoiceLogo = logoUrl || loginIconUrl;
+
+  // Pre-genera el QR del recibo (data URL) para incrustarlo en la factura. Se
+  // arma acá para que el botón de imprimir abra la ventana de inmediato (sin
+  // await, que dispararía el bloqueador de pop-ups).
+  useEffect(() => {
+    if (!order.token || typeof window === "undefined") return;
+    let active = true;
+    const url = `${window.location.origin}/recibo/${order.token}`;
+    import("qrcode")
+      .then((m) =>
+        m.default.toDataURL(url, {
+          width: 320,
+          margin: 1,
+          color: { dark: "#16181a", light: "#ffffff" },
+          errorCorrectionLevel: "M",
+        })
+      )
+      .then((dataUrl) => active && setQrDataUrl(dataUrl))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [order.token]);
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
@@ -258,7 +282,14 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           </div>
           <button
             onClick={() =>
-              printInvoice({ order, storeName: storeName || STORE, currency: CURRENCY, phone, logoUrl: invoiceLogo })
+              printInvoice({
+                order,
+                storeName: storeName || STORE,
+                currency: CURRENCY,
+                phone,
+                logoUrl: invoiceLogo,
+                qrDataUrl,
+              })
             }
             className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
             aria-label="Imprimir factura"

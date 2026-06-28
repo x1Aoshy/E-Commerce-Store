@@ -27,6 +27,7 @@ export function buildInvoiceHtml({
   currency = "C$",
   phone = "",
   logoUrl = "",
+  qrDataUrl = "",
 }) {
   // Miles con coma (ej. C$2,500), enteros sin decimales.
   const money = (n) =>
@@ -99,6 +100,10 @@ export function buildInvoiceHtml({
       ? `<div class="nota">${esc(order.customer.note)}</div>`
       : "";
   const tel = phone ? `<div class="tel">WhatsApp: ${esc(phone)}</div>` : "";
+  // QR del recibo privado (si se generó): se escanea para ver el detalle online.
+  const qrHtml = qrDataUrl
+    ? `<div class="qr"><img src="${esc(qrDataUrl)}" alt="QR del recibo" width="132" height="132"/><div class="qrcap">Escaneá para ver tu recibo</div></div>`
+    : "";
 
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"/>
@@ -131,6 +136,9 @@ export function buildInvoiceHtml({
   .estado { text-align: center; margin-top: 8px; font-size: 11px; color: #2b2e30; }
   .nota { margin-top: 8px; font-size: 11px; background: #f3f4f5; padding: 6px 8px; border-radius: 4px; }
   .tel { text-align: center; margin-top: 6px; font-size: 10px; color: #6b7378; }
+  .qr { text-align: center; margin-top: 12px; }
+  .qr img { width: 132px; height: 132px; image-rendering: pixelated; }
+  .qrcap { font-size: 10px; color: #6b7378; margin-top: 3px; }
   .gracias { text-align: center; margin-top: 12px; font-weight: 700; }
   @media print {
     html, body { background: #fff; }
@@ -163,6 +171,7 @@ export function buildInvoiceHtml({
     <div class="estado">Estado: ${esc(STATUS_LABEL[order.status] || order.status || "")}</div>
     ${nota}
     ${tel}
+    ${qrHtml}
     <div class="gracias">¡Gracias por tu compra!</div>
   </div>
 </body></html>`;
