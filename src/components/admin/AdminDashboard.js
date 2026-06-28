@@ -916,36 +916,62 @@ function OrdenesView({ orders, setOrders, products }) {
 // Tab de Finanzas: cuánto dinero se hizo, cuánto se vendió y por qué método.
 function FinanceView({ orders }) {
   const f = useMemo(() => {
-    let confirmedTotal = 0;
-    let pendingTotal = 0;
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+    let cobrado = 0; // dinero que entró (pedidos pagados)
+    let porCobrar = 0; // completadas pero NO pagadas
+    let pendiente = 0; // pedidos pendientes (aún no completados)
     let efectivo = 0;
     let transferencia = 0;
-    let unidades = 0;
-    let confirmadas = 0;
+    let unidades = 0; // unidades de pedidos pagados
+    let pagadas = 0;
+    let hoy = 0;
+    let mes = 0;
+    const bySeller = new Map();
+
     for (const o of orders) {
       const g = (Number(o.total) || 0) + (Number(o.extra) || 0);
-      if (o.status === "confirmada") {
-        confirmedTotal += g;
-        confirmadas += 1;
+      const t = o.createdAt ? new Date(o.createdAt).getTime() : 0;
+      if (o.paid) {
+        cobrado += g;
+        pagadas += 1;
         unidades += (o.items || []).reduce(
           (s, it) => s + (Number(it.quantity) || 0),
           0
         );
         if (o.paymentMethod === "efectivo") efectivo += g;
         else if (o.paymentMethod === "transferencia") transferencia += g;
+        if (t >= startToday) hoy += g;
+        if (t >= startMonth) mes += g;
+        const key = (o.seller || "").trim() || "Sin asignar";
+        const cur = bySeller.get(key) || { total: 0, count: 0 };
+        cur.total += g;
+        cur.count += 1;
+        bySeller.set(key, cur);
+      } else if (o.status === "confirmada") {
+        porCobrar += g;
       } else if (o.status === "pendiente") {
-        pendingTotal += g;
+        pendiente += g;
       }
     }
-    const sinAsignar = Math.max(0, confirmedTotal - efectivo - transferencia);
+    const sinAsignar = Math.max(0, cobrado - efectivo - transferencia);
+    const sellers = Array.from(bySeller.entries())
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => b.total - a.total);
     return {
-      confirmedTotal,
-      pendingTotal,
+      cobrado,
+      porCobrar,
+      pendiente,
       efectivo,
       transferencia,
       sinAsignar,
       unidades,
-      confirmadas,
+      pagadas,
+      hoy,
+      mes,
+      sellers,
     };
   }, [orders]);
 
@@ -955,20 +981,21 @@ function FinanceView({ orders }) {
     { label: "Sin asignar", value: f.sinAsignar, tone: "bg-white/25" },
   ];
   const maxMethod = Math.max(1, ...methodRows.map((r) => r.value));
+  const maxSeller = Math.max(1, ...f.sellers.map((s) => s.total));
 
   return (
     <div className="animate-fade-in">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Ingresos confirmados" value={formatPrice(f.confirmedTotal)} />
-        <Stat label="Pendiente por cobrar" value={formatPrice(f.pendingTotal)} />
-        <Stat label="Unidades vendidas" value={f.unidades} />
-        <Stat label="Pedidos confirmados" value={f.confirmadas} />
+        <Stat label="Cobrado (total)" value={formatPrice(f.cobrado)} />
+        <Stat label="Por cobrar" value={formatPrice(f.porCobrar)} />
+        <Stat label="Cobrado hoy" value={formatPrice(f.hoy)} />
+        <Stat label="Cobrado este mes" value={formatPrice(f.mes)} />
       </div>
 
       <div className="mt-6 grid gap-3 lg:grid-cols-2">
         <div className="card p-5 shadow-soft">
           <h3 className="text-sm font-semibold text-ink">
-            Ingresos por método de pago
+            Cobrado por método de pago
           </h3>
           <div className="mt-4 space-y-3">
             {methodRows.map((r) => (
@@ -994,24 +1021,61 @@ function FinanceView({ orders }) {
           <h3 className="text-sm font-semibold text-ink">Resumen</h3>
           <ul className="mt-4 divide-y divide-white/[0.07] text-sm">
             <li className="flex items-center justify-between py-2.5">
-              <span className="text-ink-soft">Ingresos confirmados</span>
+              <span className="text-ink-soft">Cobrado</span>
               <span className="font-semibold text-green-300">
-                {formatPrice(f.confirmedTotal)}
+                {formatPrice(f.cobrado)}
               </span>
             </li>
             <li className="flex items-center justify-between py-2.5">
-              <span className="text-ink-soft">Pendiente por cobrar</span>
+              <span className="text-ink-soft">Por cobrar (entregado)</span>
               <span className="font-semibold text-amber-300">
-                {formatPrice(f.pendingTotal)}
+                {formatPrice(f.porCobrar)}
+              </span>
+            </li>
+            <li className="flex items-center justify-between py-2.5">
+              <span className="text-ink-soft">Pendiente (sin completar)</span>
+              <span className="font-semibold text-ink-soft">
+                {formatPrice(f.pendiente)}
               </span>
             </li>
             <li className="flex items-center justify-between py-2.5">
               <span className="text-ink-soft">Unidades vendidas</span>
               <span className="font-semibold text-ink">{f.unidades}</span>
             </li>
+            <li className="flex items-center justify-between py-2.5">
+              <span className="text-ink-soft">Pedidos cobrados</span>
+              <span className="font-semibold text-ink">{f.pagadas}</span>
+            </li>
           </ul>
         </div>
       </div>
+
+      {f.sellers.length > 0 && (
+        <div className="card mt-3 p-5 shadow-soft">
+          <h3 className="text-sm font-semibold text-ink">Cobrado por vendedor</h3>
+          <div className="mt-4 space-y-3">
+            {f.sellers.map((s) => (
+              <div key={s.name}>
+                <div className="mb-1 flex items-baseline justify-between text-sm">
+                  <span className="text-ink-soft">
+                    {s.name}{" "}
+                    <span className="text-xs text-ink-muted">
+                      · {s.count} {s.count === 1 ? "pedido" : "pedidos"}
+                    </span>
+                  </span>
+                  <span className="font-medium text-ink">{formatPrice(s.total)}</span>
+                </div>
+                <div className="h-2.5 w-full overflow-hidden rounded-[3px] bg-white/[0.07]">
+                  <div
+                    className="h-full rounded-[3px] bg-accent-500 transition-all duration-500"
+                    style={{ width: `${Math.round((s.total / maxSeller) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

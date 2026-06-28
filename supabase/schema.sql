@@ -43,6 +43,7 @@ create table if not exists public.orders (
   extra_label    text not null default '',             -- nombre del cargo extra
   seller         text not null default '',             -- quién facturó / atendió la venta
   token          text,                                 -- token público para el recibo por QR
+  paid           boolean not null default false,       -- ¿cobrada? (el stock baja sólo si completada Y pagada)
   created_at     timestamptz not null default now()
 );
 
@@ -54,6 +55,8 @@ alter table public.orders add column if not exists seller text not null default 
 -- token público para el recibo por QR (la posesión del QR es la única llave).
 alter table public.orders add column if not exists token text;
 create index if not exists orders_token_idx on public.orders (token);
+-- "pagada": el stock se descuenta sólo cuando está completada Y pagada.
+alter table public.orders add column if not exists paid boolean not null default false;
 alter table public.products add column if not exists compare_at integer not null default 0;
 alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
 alter table public.products add column if not exists stats jsonb not null default '[]'::jsonb;

@@ -62,6 +62,22 @@ function PaymentChip({ method }) {
   return null;
 }
 
+function PaidChip({ paid, confirmed }) {
+  if (paid)
+    return (
+      <span className="chip bg-green-500/15 text-green-300 ring-1 ring-green-500/30">
+        Cobrada
+      </span>
+    );
+  if (confirmed)
+    return (
+      <span className="chip bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30">
+        Sin cobrar
+      </span>
+    );
+  return null;
+}
+
 function PaymentForm({ order, onSave, saving, sellers = [] }) {
   const [method, setMethod] = useState(order.paymentMethod || "efectivo");
   const [extra, setExtra] = useState(order.extra ? String(order.extra) : "");
@@ -157,6 +173,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
+  const paid = !!order.paid;
   const extra = Number(order.extra) || 0;
   const grand = (Number(order.total) || 0) + extra;
 
@@ -218,6 +235,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-semibold text-ink">{order.code}</span>
             <StatusChip status={order.status} />
+            <PaidChip paid={paid} confirmed={confirmed} />
             <PaymentChip method={order.paymentMethod} />
           </div>
           <div className="mt-0.5 text-xs text-ink-muted">
@@ -341,31 +359,51 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
         </div>
       ) : (
         <>
-          <button
-            onClick={async () => {
-              const toCompleted = !confirmed;
-              const ok = await patch(
-                { status: toCompleted ? "confirmada" : "pendiente" },
-                "toggle"
-              );
-              if (ok) {
-                if (toCompleted) toast.success("Pedido completado");
-                else toast.info("Pedido pendiente");
-              }
-            }}
-            disabled={busy}
-            className={`mt-3 w-full rounded-[4px] py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
-              confirmed
-                ? "border border-white/15 text-ink-soft hover:border-white/35"
-                : "bg-accent-500 text-night hover:bg-accent-400"
-            }`}
-          >
-            {saving === "toggle"
-              ? "…"
+          {/* Completada + Cobrada: el stock se descuenta SÓLO cuando ambas están
+              activas. */}
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button
+              onClick={async () => {
+                const toCompleted = !confirmed;
+                const ok = await patch(
+                  { status: toCompleted ? "confirmada" : "pendiente" },
+                  "toggle"
+                );
+                if (ok) toast.success(toCompleted ? "Completada" : "Pendiente");
+              }}
+              disabled={busy}
+              className={`rounded-[4px] py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
+                confirmed
+                  ? "border border-green-500/40 bg-green-500/10 text-green-300"
+                  : "bg-accent-500 text-night hover:bg-accent-400"
+              }`}
+            >
+              {saving === "toggle" ? "…" : confirmed ? "✓ Completada" : "Completar"}
+            </button>
+            <button
+              onClick={async () => {
+                const ok = await patch({ paid: !paid }, "paid");
+                if (ok) toast.success(paid ? "Marcada sin cobrar" : "Cobrada");
+              }}
+              disabled={busy}
+              className={`rounded-[4px] py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
+                paid
+                  ? "border border-green-500/40 bg-green-500/10 text-green-300"
+                  : "border border-white/15 text-ink-soft hover:border-white/35"
+              }`}
+            >
+              {saving === "paid" ? "…" : paid ? "✓ Cobrada" : "Marcar cobrada"}
+            </button>
+          </div>
+          <p className="mt-1.5 text-[11px] text-ink-muted">
+            {confirmed && paid
+              ? "Stock descontado (completada y cobrada)."
               : confirmed
-              ? "Marcar como pendiente"
-              : "Marcar como completada"}
-          </button>
+              ? "Marcá «Cobrada» para descontar el stock."
+              : paid
+              ? "Marcá «Completada» para descontar el stock."
+              : "El stock se descuenta al estar completada y cobrada."}
+          </p>
           <div className="mt-2 flex items-stretch gap-2">
             <button
               onClick={() => setShowPay(true)}

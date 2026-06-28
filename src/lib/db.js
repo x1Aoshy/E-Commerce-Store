@@ -17,7 +17,7 @@ import { getSupabase } from "./supabase";
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
 const ORDER_COLUMNS =
-  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token";
+  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token, paid";
 
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const PAYMENT_METHODS = ["efectivo", "transferencia"];
@@ -72,7 +72,15 @@ function mapOrder(row) {
     extraLabel: row.extra_label || "",
     seller: row.seller || "",
     token: row.token || "",
+    paid: !!row.paid,
   };
+}
+
+// REGLA DE STOCK: el inventario se descuenta sólo cuando una orden está
+// COMPLETADA (confirmada) **y** PAGADA. Mientras falte cualquiera de las dos, el
+// stock no se toca (y se repone si deja de cumplirse).
+function shouldHoldStock(status, paid) {
+  return status === "confirmada" && !!paid;
 }
 
 // Token público largo e IMPOSIBLE de adivinar para el recibo por QR (la
@@ -341,6 +349,7 @@ async function buildOrder({
   paymentMethod,
   seller,
   reserve,
+  paid,
 }) {
   const supabase = getSupabase();
 
@@ -421,6 +430,7 @@ async function buildOrder({
     payment_method: PAYMENT_METHODS.includes(paymentMethod) ? paymentMethod : null,
     seller: cleanSeller(seller),
     token: makeToken(),
+    paid: !!paid,
   };
 
   const { data: inserted, error: insErr } = await supabase
@@ -469,6 +479,9 @@ export async function createManualOrder({
   seller,
 }) {
   const wanted = status === "pendiente" ? "pendiente" : "confirmada";
+  // Una venta manual COMPLETADA es una venta ya concretada y cobrada: nace
+  // pagada y descuenta stock. Si nace pendiente, no toca stock ni se marca paga.
+  const paid = wanted === "confirmada";
   const code = "TS-M" + Math.floor(1000 + Math.random() * 9000);
   return buildOrder({
     items,
@@ -479,19 +492,19 @@ export async function createManualOrder({
     extraLabel,
     paymentMethod,
     seller,
-    reserve: wanted === "confirmada",
+    paid,
+    reserve: shouldHoldStock(wanted, paid),
   });
 }
 
-// Cambia el estado de una orden ajustando stock según la regla "el stock se
-// descuenta sólo en 'confirmada'":
-//   - al ENTRAR a 'confirmada' (desde pendiente/cancelada): descuenta stock
-//     (valida disponibilidad; si falta, NO cambia el estado y devuelve error).
-//   - al SALIR de 'confirmada' (a pendiente/cancelada): repone stock.
-//   - cualquier otra transición no toca stock.
-// Devuelve { order } en éxito, { error, conflicts } si no hay stock para
-// completar, o null si la orden no existe.
-export async function setOrderStatus(id, status) {
+// Aplica cambios de estado y/o de "pagada" ajustando el stock según la regla
+// "el stock se descuenta sólo cuando está COMPLETADA y PAGADA":
+//   - cuando la orden EMPIEZA a cumplir ambas (completada+pagada): descuenta
+//     stock (valida disponibilidad; si falta, NO aplica el cambio y devuelve
+//     error con los conflictos).
+//   - cuando DEJA de cumplir ambas: repone stock.
+// Devuelve { order } | { error, conflicts } | null (no existe).
+async function applyOrderState(id, { status, paid } = {}) {
   const supabase = getSupabase();
 
   const { data: current, error: readErr } = await supabase
@@ -502,14 +515,16 @@ export async function setOrderStatus(id, status) {
   if (readErr) throw new Error(`No se pudo leer la orden: ${readErr.message}`);
   if (!current) return null;
 
-  const wasHolding = current.status === "confirmada";
-  const willHold = status === "confirmada";
+  const newStatus = status !== undefined ? status : current.status;
+  const newPaid = paid !== undefined ? !!paid : !!current.paid;
+  const wasHolding = shouldHoldStock(current.status, current.paid);
+  const willHold = shouldHoldStock(newStatus, newPaid);
 
   if (willHold && !wasHolding) {
     const r = await reserveStock(current.items);
     if (!r.ok) {
       return {
-        error: "No hay stock suficiente para completar el pedido.",
+        error: "No hay stock suficiente para descontar este pedido.",
         conflicts: r.conflicts,
       };
     }
@@ -517,9 +532,14 @@ export async function setOrderStatus(id, status) {
     await restoreStock(current.items);
   }
 
+  const fields = {};
+  if (status !== undefined) fields.status = status;
+  if (paid !== undefined) fields.paid = !!paid;
+  if (Object.keys(fields).length === 0) return { order: mapOrder(current) };
+
   const { data, error } = await supabase
     .from("orders")
-    .update({ status })
+    .update(fields)
     .eq("id", id)
     .select(ORDER_COLUMNS)
     .maybeSingle();
@@ -527,15 +547,24 @@ export async function setOrderStatus(id, status) {
   return { order: mapOrder(data) };
 }
 
+// Compat: cambiar sólo el estado de una orden.
+export async function setOrderStatus(id, status) {
+  return applyOrderState(id, { status });
+}
+
 // Actualiza una orden: estado (ajusta stock) y/o método de pago / cargo extra.
 // Devuelve { order } | { error, conflicts } | null (no existe).
 export async function updateOrder(id, patch) {
   const supabase = getSupabase();
 
-  if (patch.status !== undefined) {
-    const res = await setOrderStatus(id, patch.status);
+  // Estado y/o "pagada" se procesan juntos para ajustar el stock una sola vez.
+  if (patch.status !== undefined || patch.paid !== undefined) {
+    const res = await applyOrderState(id, {
+      status: patch.status,
+      paid: patch.paid,
+    });
     if (res === null) return null;
-    if (res.error) return res; // sin stock para completar
+    if (res.error) return res; // sin stock para descontar
   }
 
   const fields = {};
@@ -569,19 +598,19 @@ export async function updateOrder(id, patch) {
   return { order: mapOrder(data) };
 }
 
-// Elimina una orden del sistema. Si estaba 'confirmada' (tenía stock
-// descontado), lo repone. Pendientes/canceladas no tienen stock reservado.
+// Elimina una orden del sistema. Si tenía stock descontado (completada y
+// pagada), lo repone. El resto no tiene stock reservado.
 export async function deleteOrder(id) {
   const supabase = getSupabase();
   const { data: current, error: readErr } = await supabase
     .from("orders")
-    .select("id, status, items")
+    .select("id, status, items, paid")
     .eq("id", id)
     .maybeSingle();
   if (readErr) throw new Error(`No se pudo leer la orden: ${readErr.message}`);
   if (!current) return false;
 
-  if (current.status === "confirmada") {
+  if (shouldHoldStock(current.status, current.paid)) {
     await restoreStock(current.items);
   }
 
