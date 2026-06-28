@@ -8,7 +8,12 @@ function money(n) {
   return `${CURRENCY}${(Number(n) || 0).toLocaleString("es-AR")}`;
 }
 
-export function buildOrderMessage(order, storeName = "Titan Supplements", customMessage = "") {
+export function buildOrderMessage(
+  order,
+  storeName = "Titan Supplements",
+  customMessage = "",
+  receiptUrl = ""
+) {
   const lines = [];
   lines.push(`*Nuevo pedido — ${storeName}*`);
   lines.push(`Código: ${order.code}`);
@@ -25,6 +30,10 @@ export function buildOrderMessage(order, storeName = "Titan Supplements", custom
   if (order.customer && order.customer.note) {
     lines.push(`Nota: ${order.customer.note}`);
   }
+  if (receiptUrl) {
+    lines.push("");
+    lines.push(`📄 Recibo: ${receiptUrl}`);
+  }
   lines.push("");
   // Cierre configurable desde Ajustes; si no hay, usa el mensaje por defecto.
   lines.push(
@@ -35,9 +44,11 @@ export function buildOrderMessage(order, storeName = "Titan Supplements", custom
   return lines.join("\n");
 }
 
-export function buildWhatsAppUrl({ phone, order, storeName, message }) {
+export function buildWhatsAppUrl({ phone, order, storeName, message, receiptUrl }) {
   const number = String(phone || "").replace(/[^\d]/g, "");
-  const text = encodeURIComponent(buildOrderMessage(order, storeName, message));
+  const text = encodeURIComponent(
+    buildOrderMessage(order, storeName, message, receiptUrl)
+  );
   if (!number) {
     // Sin número configurado: abre WhatsApp para elegir contacto igualmente.
     return `https://wa.me/?text=${text}`;

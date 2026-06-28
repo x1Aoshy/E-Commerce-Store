@@ -253,6 +253,23 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             </svg>
             Factura
           </button>
+          {order.token && (
+            <a
+              href={`/recibo/${order.token}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"
+              title="Ver recibo del cliente (QR)"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <path d="M14 14h3v3M21 14v4M17 21h4" />
+              </svg>
+              Recibo
+            </a>
+          )}
         </div>
       </div>
 

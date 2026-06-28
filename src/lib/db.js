@@ -17,7 +17,7 @@ import { getSupabase } from "./supabase";
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
 const ORDER_COLUMNS =
-  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller";
+  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token";
 
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const PAYMENT_METHODS = ["efectivo", "transferencia"];
@@ -71,7 +71,15 @@ function mapOrder(row) {
     extra: Number(row.extra) || 0,
     extraLabel: row.extra_label || "",
     seller: row.seller || "",
+    token: row.token || "",
   };
+}
+
+// Token público largo e IMPOSIBLE de adivinar para el recibo por QR (la
+// posesión del QR es la única llave; no requiere login).
+function makeToken() {
+  const rnd = () => Math.random().toString(36).slice(2);
+  return (Date.now().toString(36) + rnd() + rnd()).slice(0, 32);
 }
 
 // Limpia el nombre del vendedor: recorta espacios y limita la longitud.
@@ -412,6 +420,7 @@ async function buildOrder({
     extra_label: extraLabel || "",
     payment_method: PAYMENT_METHODS.includes(paymentMethod) ? paymentMethod : null,
     seller: cleanSeller(seller),
+    token: makeToken(),
   };
 
   const { data: inserted, error: insErr } = await supabase
@@ -427,6 +436,25 @@ async function buildOrder({
 // Checkout público: crea la orden como 'pendiente' SIN reservar stock.
 export async function createOrder({ items, customer }) {
   return buildOrder({ items, customer, status: "pendiente", reserve: false });
+}
+
+// Busca una orden por su token público (para el recibo por QR). RESILIENTE: si
+// la columna no existe (migración sin correr) o no se encuentra, devuelve null.
+export async function getOrderByToken(token) {
+  const clean = String(token || "").replace(/[^a-z0-9]/gi, "").slice(0, 64);
+  if (!clean) return null;
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("orders")
+      .select(ORDER_COLUMNS)
+      .eq("token", clean)
+      .maybeSingle();
+    if (error) return null;
+    return data ? mapOrder(data) : null;
+  } catch {
+    return null;
+  }
 }
 
 // Alta manual desde el admin. Si nace 'confirmada' (default) DESCUENTA stock

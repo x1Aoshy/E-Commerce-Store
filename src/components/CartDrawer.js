@@ -5,8 +5,18 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/format";
 import { useToast } from "@/components/Toast";
+import dynamic from "next/dynamic";
 import { useBranding } from "@/context/BrandingContext";
 import CopyNumber from "@/components/CopyNumber";
+
+// El generador de QR (lib `qrcode`) se carga sólo cuando se muestra el recibo,
+// para no pesar en el bundle inicial de todas las páginas.
+const QRCode = dynamic(() => import("@/components/QRCode"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[148px] w-[148px] animate-pulse rounded-[6px] bg-fill/10" />
+  ),
+});
 
 function WhatsAppIcon({ className = "h-5 w-5" }) {
   return (
@@ -94,7 +104,11 @@ export default function CartDrawer() {
       // No abrimos WhatsApp por código (en mobile eso suele caer en la página de
       // descarga). Mostramos la pantalla de éxito con un LINK real que el usuario
       // toca: así el deep-link al chat funciona a la primera.
-      setSuccess({ code: data.order.code, whatsappUrl: data.whatsappUrl });
+      setSuccess({
+        code: data.order.code,
+        whatsappUrl: data.whatsappUrl,
+        token: data.order.token,
+      });
       toast.success("¡Pedido creado!");
       clear();
       setName("");
@@ -152,6 +166,32 @@ export default function CartDrawer() {
               quedó registrado. Tocá el botón para abrirlo en WhatsApp y
               confirmar el pago y la entrega.
             </p>
+
+            {/* Código QR del recibo: privado, lleva al detalle de la compra. */}
+            {success.token && (
+              <div className="mt-5 flex flex-col items-center">
+                <div className="rounded-[8px] bg-white p-2.5 shadow-soft">
+                  <QRCode
+                    value={`${
+                      typeof window !== "undefined" ? window.location.origin : ""
+                    }/recibo/${success.token}`}
+                    size={148}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-ink-muted">
+                  Tu recibo · escaneá o guardá este QR
+                </p>
+                <a
+                  href={`/recibo/${success.token}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 text-xs font-medium text-accent-300 underline-offset-2 hover:underline"
+                >
+                  Ver mi recibo
+                </a>
+              </div>
+            )}
+
             <a
               href={success.whatsappUrl}
               target="_blank"

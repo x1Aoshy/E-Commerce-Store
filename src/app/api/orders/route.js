@@ -56,11 +56,22 @@ export async function POST(req) {
     }
 
     const s = await getSettings();
+    // Origen del sitio para armar el link absoluto del recibo (QR).
+    const origin =
+      req.headers.get("origin") ||
+      (req.headers.get("host")
+        ? `https://${req.headers.get("host")}`
+        : "");
+    const receiptUrl =
+      origin && result.order.token
+        ? `${origin}/recibo/${result.order.token}`
+        : "";
     const whatsappUrl = buildWhatsAppUrl({
       phone: s.whatsappNumber,
       order: result.order,
       storeName: s.storeName,
       message: s.whatsappMessage,
+      receiptUrl,
     });
 
     return NextResponse.json({ order: result.order, whatsappUrl }, { status: 201 });
