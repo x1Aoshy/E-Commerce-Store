@@ -11,7 +11,6 @@ import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
 import ProductBuyPanel from "@/components/product/ProductBuyPanel";
 import ProductProfile from "@/components/product/ProductProfile";
-import Stamp from "@/components/Stamp";
 import ProductReviews from "@/components/product/ProductReviews";
 import { getProductBySlug, getProducts } from "@/lib/db";
 import type { Product } from "@/lib/types";
@@ -72,15 +71,8 @@ export default async function ProductPage({ params }) {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
           <Reveal>
-            {/* Galería con el sello de la casa pegado en la esquina, como una
-                calcomanía sobre el frasco. */}
-            <div className="relative">
-              <div className="etq card aspect-square overflow-hidden bg-surface-soft">
-                <ProductGallery product={product} controls fit="contain" />
-              </div>
-              <div className="pointer-events-none absolute -right-3 -top-3 z-30">
-                <Stamp size={72} />
-              </div>
+            <div className="card aspect-square overflow-hidden bg-surface-soft">
+              <ProductGallery product={product} controls fit="contain" />
             </div>
           </Reveal>
 

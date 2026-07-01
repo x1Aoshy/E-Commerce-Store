@@ -48,17 +48,11 @@ export default function Benefits() {
   return (
     <section id="beneficios" className="border-t border-line/10">
       <div className="container-content py-10 sm:py-12">
-        {/* Rótulo de sección estilo etiqueta. */}
-        <Reveal className="mb-7 flex items-center gap-3">
-          <span className="section-tag">Sección 02 · Garantías de la casa</span>
-          <span className="rule-double" aria-hidden="true" />
-        </Reveal>
-
         <div className="grid grid-cols-2 gap-x-6 gap-y-7 lg:grid-cols-4">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={i * 70}>
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-none bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/25">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/25">
                   <svg
                     viewBox="0 0 24 24"
                     width="16"
@@ -74,9 +68,7 @@ export default function Benefits() {
                   </svg>
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-ink">
-                    {b.title}
-                  </h3>
+                  <h3 className="text-[13px] font-semibold text-ink">{b.title}</h3>
                   <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">
                     {b.text}
                   </p>

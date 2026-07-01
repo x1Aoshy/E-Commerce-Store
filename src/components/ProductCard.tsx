@@ -44,7 +44,7 @@ function ProductCard({ product }: any) {
   };
 
   return (
-    <article className="etq card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-line/60 hover:shadow-card">
+    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-line/20 hover:shadow-card">
       <div className="relative aspect-[5/4] w-full overflow-hidden">
         <ProductGallery
           product={product}
@@ -65,10 +65,9 @@ function ProductCard({ product }: any) {
       </div>
 
       <div className="flex flex-1 flex-col p-3">
-        {/* Línea de "datos de etiqueta": N.º de producto en mono + categoría. */}
-        <div className="mb-1.5 flex items-center justify-between gap-2 border-b border-line/15 pb-1.5">
-          <span className="truncate font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-            N.º {String(product.id).slice(-4).toUpperCase()} · {product.category}
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink-muted">
+            {product.category}
           </span>
           <StockBadge stock={product.stock} />
         </div>
@@ -84,11 +83,12 @@ function ProductCard({ product }: any) {
         )}
 
         <div className="mt-3 flex flex-col gap-2 border-t border-line/10 pt-2.5">
-          {/* Precio estampado: caja invertida (fondo tinta, texto del fondo). */}
           <div className="flex items-baseline gap-2 leading-tight">
-            <span className="price-box text-sm">{formatPrice(product.price)}</span>
+            <span className="text-base font-semibold text-ink">
+              {formatPrice(product.price)}
+            </span>
             {onSale && (
-              <span className="font-mono text-[11px] text-ink-muted line-through">
+              <span className="text-[11px] text-ink-muted line-through">
                 {formatPrice(product.compareAt)}
               </span>
             )}

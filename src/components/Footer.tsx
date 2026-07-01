@@ -52,12 +52,11 @@ export default function Footer() {
           <NewsletterSignup />
         </div>
 
-        {/* Letra chica en mono, como el pie de una etiqueta (doble regla arriba). */}
-        <div className="mt-6 flex flex-col items-start justify-between gap-1 border-t-2 border-line/20 pt-4 font-mono text-[10px] uppercase tracking-wider text-ink-muted sm:flex-row sm:items-center">
+        <div className="mt-6 flex flex-col items-start justify-between gap-1 border-t border-line/10 pt-4 text-[11px] text-ink-muted sm:flex-row sm:items-center">
           <span>
-            © {new Date().getFullYear()} {store} · Todos los derechos reservados
+            © {new Date().getFullYear()} {store}. Todos los derechos reservados.
           </span>
-          <span>★ Pedidos por WhatsApp ★</span>
+          <span>Pedidos por WhatsApp</span>
         </div>
       </div>
     </footer>

@@ -39,12 +39,6 @@ export default function ProductReviews({ productId, reviews = [], ratingAvg = 0,
 
   return (
     <section id="resenas" className="mt-12 scroll-mt-24">
-      {/* Rótulo de sección estilo etiqueta. */}
-      <div className="mb-5 flex items-center gap-3">
-        <span className="section-tag">Registro · Opiniones verificadas</span>
-        <span className="rule-double" aria-hidden="true" />
-      </div>
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold text-ink">Reseñas</h2>

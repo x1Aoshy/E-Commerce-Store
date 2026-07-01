@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Nunito_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
+import { Nunito_Sans, Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
@@ -25,14 +25,6 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
   variable: "--font-fraunces",
-  display: "swap",
-});
-// Mono para los "datos de etiqueta" (números de producto, rótulos de sección,
-// métricas): la firma visual de packaging de suplemento.
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-plexmono",
   display: "swap",
 });
 
@@ -68,7 +60,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="es" className={`${nunito.variable} ${fraunces.variable} ${plexMono.variable}`}>
+    <html lang="es" className={`${nunito.variable} ${fraunces.variable}`}>
       <body>
         {/* Aplica el tema (claro/oscuro) ANTES de pintar, para que no haya
             parpadeo al recargar. Lee la preferencia guardada o la del sistema. */}

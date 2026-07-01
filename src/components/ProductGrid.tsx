@@ -65,12 +65,6 @@ export default function ProductGrid({ products }: { products: Product[] }) {
 
   return (
     <section id="productos" className="container-content py-16 sm:py-20">
-      {/* Rótulo de sección estilo etiqueta: mono + doble regla. */}
-      <Reveal className="mb-6 flex items-center gap-3">
-        <span className="section-tag">Sección 01 · Catálogo</span>
-        <span className="rule-double" aria-hidden="true" />
-      </Reveal>
-
       <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
