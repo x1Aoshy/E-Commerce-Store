@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 
 export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia, onEditStats, onEdit }) {
@@ -13,6 +13,17 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
   const [deleting, setDeleting] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<any>(null);
+
+  // TIEMPO REAL: cuando el producto cambia desde afuera (p. ej. tras usar los
+  // modales de Stock/Editar/Imágenes), re-sincroniza los inputs de la fila.
+  // Sin esto quedaban mostrando los valores viejos hasta recargar. Mientras el
+  // usuario tipea, el prop no cambia, así que no interfiere con la edición.
+  useEffect(() => {
+    setPrice(String(product.price));
+    setCompareAt(String(product.compareAt || ""));
+    setStock(Number(product.stock));
+    setFeatured(Boolean(product.featured));
+  }, [product.id, product.price, product.compareAt, product.stock, product.featured]);
 
   const dirty =
     Number(price) !== Number(product.price) ||
