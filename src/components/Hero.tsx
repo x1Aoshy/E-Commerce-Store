@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useBranding } from "@/context/BrandingContext";
+import Stamp from "@/components/Stamp";
 
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
@@ -88,11 +89,12 @@ export default function Hero() {
             ))}
           </div>
         )}
+        {/* Eyebrow en mono, como el rótulo impreso de una etiqueta. */}
         <span
-          className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 sm:text-sm"
+          className="animate-fade-in font-mono text-[11px] font-semibold uppercase tracking-[0.3em] text-green-400 sm:text-xs"
           style={{ animationFillMode: "both" }}
         >
-          Suplementos de alta pureza
+          ★ Suplementos de alta pureza ★
         </span>
         <h1
           className="mt-3 max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink min-[380px]:text-4xl sm:text-6xl md:text-7xl"
@@ -119,6 +121,10 @@ export default function Hero() {
           <a href="#productos" className="btn-accent px-6 py-3 text-[15px]">
             Ver productos
           </a>
+          {/* Sello de la casa junto a los CTA (sólo desktop, decorativo). */}
+          <span className="order-last ml-1 hidden md:block">
+            <Stamp size={76} className="opacity-90" />
+          </span>
           <a
             href={waUrl}
             target={phone ? "_blank" : undefined}

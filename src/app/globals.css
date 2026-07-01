@@ -96,26 +96,30 @@
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
-  /* Botones planos y cuadrados, con borde fino (outline oscuro) y textura de
-     granizado encima del color. Sin gradientes ni glows. */
+  /* Botones "de etiqueta": rectos (sin redondeo), borde marcado y hover que
+     INVIERTE los colores, como un sello estampado. Sin gradientes ni glows. */
   .btn-primary,
   .btn-accent,
   .btn-ghost {
-    @apply relative isolate inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:pointer-events-none disabled:opacity-40 sm:min-h-0;
+    @apply relative isolate inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-none border px-5 py-2.5 text-sm font-medium transition active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:pointer-events-none disabled:opacity-40 sm:min-h-0;
   }
   /* Primario: en oscuro es claro (ink crema) con texto oscuro; en claro se
      invierte solo (ink oscuro) con texto claro. */
   .btn-primary {
-    @apply border-night/80 bg-ink text-night hover:opacity-90;
+    @apply border-ink/80 bg-ink text-night hover:bg-transparent hover:text-ink;
   }
-  /* Acento (dorado): SIEMPRE texto oscuro fijo, en ambos temas, para buen
-     contraste sobre el dorado. */
+  /* Acento (dorado): texto oscuro fijo sobre dorado; al hover se invierte
+     (fondo tinta oscura, texto dorado). */
   .btn-accent {
-    @apply border-night/80 bg-accent-500 font-semibold hover:bg-accent-400;
+    @apply border-accent-500 bg-accent-500 font-semibold;
     color: #1a1306;
   }
+  .btn-accent:hover {
+    background: #1a1306;
+    color: #dab23a;
+  }
   .btn-ghost {
-    @apply border-line/20 text-ink hover:border-line/40 hover:bg-fill/5;
+    @apply border-line/25 text-ink hover:bg-ink hover:text-night hover:border-ink;
   }
   /* El grano va detrás del texto (::before pinta antes que el contenido). */
   .btn-primary::before,
@@ -132,7 +136,38 @@
   }
 
   .card {
-    @apply rounded-[4px] border border-line/10 bg-surface;
+    @apply rounded-none border border-line/10 bg-surface;
+  }
+
+  /* ===== Firma visual "etiqueta de suplemento" ===== */
+
+  /* Marco doble de etiqueta: borde exterior + línea interior separada 3px
+     (como el marco impreso de un frasco). El ::after va por encima del
+     contenido (imágenes incluidas) sin capturar clics. */
+  .etq {
+    @apply relative border border-line/35;
+  }
+  .etq::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgb(var(--c-line) / 0.14);
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  /* Rótulo de sección: «SECCIÓN 02 · PRODUCTOS» en mono + doble regla. */
+  .section-tag {
+    @apply font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-ink-muted;
+  }
+  .rule-double {
+    @apply h-[5px] flex-1 border-y border-line/30;
+  }
+
+  /* Caja de precio invertida (fondo tinta, texto claro), como el precio
+     estampado en una etiqueta. */
+  .price-box {
+    @apply inline-flex items-center bg-ink px-2 py-0.5 font-mono font-semibold text-night;
   }
   .input {
     /* text-base en mobile (16px) evita el auto-zoom de iOS al enfocar; text-sm en desktop. */
@@ -142,7 +177,7 @@
     @apply mb-1.5 block text-xs font-medium text-ink-soft;
   }
   .chip {
-    @apply inline-flex items-center rounded-[3px] px-2.5 py-0.5 text-[11px] font-medium;
+    @apply inline-flex items-center rounded-none px-2.5 py-0.5 text-[11px] font-medium;
   }
 
   /* Oculta la scrollbar (p. ej. en la fila de filtros deslizable en mobile). */

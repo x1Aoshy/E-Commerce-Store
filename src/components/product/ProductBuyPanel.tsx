@@ -134,23 +134,25 @@ export default function ProductBuyPanel({ product }) {
 
   return (
     <div>
+      {/* Datos de etiqueta: N.º de producto en mono + categoría. */}
       <div className="flex items-center gap-3">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-ink-muted">
-          {product.category}
+        <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">
+          N.º {String(product.id).slice(-4).toUpperCase()} · {product.category}
         </span>
         <StockBadge stock={product.stock} />
       </div>
 
+      {/* Precio estampado en caja invertida, como en la etiqueta. */}
       <div className="mt-4 flex flex-wrap items-baseline gap-3">
-        <span className="text-3xl font-semibold text-ink">
+        <span className="price-box px-3 py-1 text-2xl">
           {formatPrice(product.price)}
         </span>
         {onSale && (
           <>
-            <span className="text-lg text-ink-muted line-through">
+            <span className="font-mono text-lg text-ink-muted line-through">
               {formatPrice(product.compareAt)}
             </span>
-            <span className="rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-xs font-bold text-[#1a1306]">
+            <span className="rounded-none bg-accent-500 px-1.5 py-0.5 font-mono text-xs font-bold text-[#1a1306]">
               -{off}% OFF
             </span>
           </>

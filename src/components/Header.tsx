@@ -105,11 +105,12 @@ export default function Header({ categories = [] }) {
         <div className="border-t border-line/[0.06]">
           <div className="container-content">
             <div className="no-scrollbar -mx-5 flex items-center gap-0.5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+              {/* Categorías en mono uppercase: la "cinta de datos" de la etiqueta. */}
               {navCats.map((c) => (
                 <button
                   key={c}
                   onClick={() => goCategory(c)}
-                  className="shrink-0 whitespace-nowrap rounded-[4px] px-3 py-2.5 text-[13px] font-medium text-ink-soft transition hover:text-accent-300"
+                  className="shrink-0 whitespace-nowrap px-3 py-2.5 font-mono text-[11px] font-medium uppercase tracking-wider text-ink-soft transition hover:text-accent-300"
                 >
                   {c}
                 </button>

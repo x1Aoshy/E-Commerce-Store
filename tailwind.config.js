@@ -56,6 +56,8 @@ module.exports = {
         ],
         // Títulos: serif suave y natural.
         display: ["var(--font-fraunces)", "Georgia", "Cambria", "serif"],
+        // Datos "de etiqueta": números de producto, rótulos, métricas.
+        mono: ["var(--font-plexmono)", "ui-monospace", "SF Mono", "Menlo", "monospace"],
       },
       maxWidth: {
         content: "1180px",
