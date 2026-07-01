@@ -9,6 +9,81 @@ import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
 import { formatPrice } from "@/lib/format";
 
+// Producto agotado → captura "avisame cuando vuelva": guarda el contacto en la
+// lista de suscriptores (con el producto como origen) en vez de perder la venta.
+function NotifyMe({ product }: any) {
+  const [contact, setContact] = useState("");
+  const [state, setState] = useState("idle"); // idle | loading | done | error
+  const [msg, setMsg] = useState("");
+
+  async function submit(e: any) {
+    e.preventDefault();
+    const value = contact.trim();
+    if (!value) {
+      setState("error");
+      setMsg("Dejá tu WhatsApp o email.");
+      return;
+    }
+    setState("loading");
+    setMsg("");
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contact: value,
+          source: `repo:${String(product.name || product.slug || "").slice(0, 24)}`,
+        }),
+      });
+      if (res.ok) {
+        setState("done");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setState("error");
+        setMsg(data.error || "No se pudo registrar. Probá de nuevo.");
+      }
+    } catch {
+      setState("error");
+      setMsg("Error de conexión. Probá de nuevo.");
+    }
+  }
+
+  if (state === "done") {
+    return (
+      <div className="mt-6 rounded-[4px] border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300">
+        ¡Listo! Te avisamos apenas vuelva a estar disponible. 💪
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 rounded-[4px] border border-line/15 bg-fill/5 px-4 py-3.5">
+      <p className="text-sm font-medium text-ink">Producto agotado por ahora</p>
+      <p className="mt-0.5 text-xs text-ink-muted">
+        Dejanos tu WhatsApp o email y te avisamos apenas vuelva.
+      </p>
+      <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <input
+          type="text"
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+          placeholder="Tu WhatsApp o email"
+          aria-label="WhatsApp o email"
+          className="input flex-1"
+        />
+        <button
+          type="submit"
+          disabled={state === "loading"}
+          className="btn-accent shrink-0 px-4 py-2.5 text-sm"
+        >
+          {state === "loading" ? "Enviando…" : "Avisame"}
+        </button>
+      </form>
+      {state === "error" && <p className="mt-2 text-xs text-red-400">{msg}</p>}
+    </div>
+  );
+}
+
 export default function ProductBuyPanel({ product }) {
   const { addItem, openCart } = useCart();
   const toast = useToast();
@@ -150,10 +225,7 @@ export default function ProductBuyPanel({ product }) {
           )}
         </>
       ) : (
-        <div className="mt-6 rounded-[4px] bg-fill/5 px-4 py-3 text-sm text-ink-soft">
-          Producto sin stock por el momento. Escribinos por WhatsApp para
-          avisarte cuando vuelva.
-        </div>
+        <NotifyMe product={product} />
       )}
     </div>
   );

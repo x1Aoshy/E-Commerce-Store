@@ -75,11 +75,24 @@ export default async function ReceiptPage({ params }) {
             </p>
             <p className="mt-1 text-2xl font-bold text-ink">{order.code}</p>
             <p className="mt-1 text-xs text-ink-muted">{date}</p>
-            <span
-              className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${st.cls}`}
-            >
-              {st.label}
-            </span>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${st.cls}`}
+              >
+                {st.label}
+              </span>
+              {order.status !== "cancelada" && (
+                <span
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${
+                    order.paid
+                      ? "bg-green-500/15 text-green-300 ring-green-500/30"
+                      : "bg-fill/5 text-ink-muted ring-line/15"
+                  }`}
+                >
+                  {order.paid ? "✓ Pagado" : "Pago pendiente"}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Productos */}
@@ -138,6 +151,18 @@ export default async function ReceiptPage({ params }) {
                   <span className="text-right text-ink">{order.customer.note}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ¿Cómo pagar? Sólo mientras el pedido siga sin cobrarse. */}
+          {!order.paid && order.status !== "cancelada" && settings?.paymentInfo && (
+            <div className="border-t border-line/10 px-6 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-accent-300">
+                ¿Cómo pagar?
+              </p>
+              <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
+                {settings.paymentInfo}
+              </p>
             </div>
           )}
 

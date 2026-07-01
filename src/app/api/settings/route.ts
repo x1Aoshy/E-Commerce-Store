@@ -23,6 +23,7 @@ export async function PATCH(req) {
       whatsappNumber: body.whatsappNumber,
       whatsappMessage: body.whatsappMessage,
       heroImages: body.heroImages,
+      paymentInfo: body.paymentInfo,
     });
     return NextResponse.json({ settings });
   } catch (err) {

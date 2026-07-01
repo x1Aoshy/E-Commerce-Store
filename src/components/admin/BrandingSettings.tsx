@@ -103,6 +103,7 @@ export default function BrandingSettings() {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [heroImages, setHeroImages] = useState<any[]>([]);
+  const [paymentInfo, setPaymentInfo] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -122,6 +123,7 @@ export default function BrandingSettings() {
           setHeroImages(
             Array.isArray(data.settings.heroImages) ? data.settings.heroImages : []
           );
+          setPaymentInfo(data.settings.paymentInfo || "");
         }
       } catch {
         /* deja los campos vacíos */
@@ -147,6 +149,7 @@ export default function BrandingSettings() {
           whatsappNumber,
           whatsappMessage,
           heroImages,
+          paymentInfo,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -232,6 +235,23 @@ export default function BrandingSettings() {
             placeholder="¡Quiero confirmar este pedido!"
           />
         </div>
+      </div>
+
+      <div className="card space-y-3 p-5 shadow-soft">
+        <div>
+          <h3 className="text-sm font-semibold text-ink">Datos de pago</h3>
+          <p className="mt-0.5 text-[11px] text-ink-muted">
+            Se le muestran al cliente al confirmar su pedido y en el recibo QR.
+            Ej: banco, número de cuenta, a nombre de quién, transferencia móvil.
+          </p>
+        </div>
+        <textarea
+          className="input min-h-[100px] resize-y"
+          value={paymentInfo}
+          onChange={(e) => setPaymentInfo(e.target.value.slice(0, 600))}
+          placeholder={"BAC córdobas: 123456789\nA nombre de: Juan Pérez\nTambién aceptamos efectivo contra entrega."}
+          maxLength={600}
+        />
       </div>
 
       <div className="card space-y-3 p-5 shadow-soft">

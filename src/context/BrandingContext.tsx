@@ -20,6 +20,7 @@ const DEFAULTS = {
   whatsappNumber: "",
   whatsappMessage: "",
   heroImages: [],
+  paymentInfo: "",
 };
 
 const BrandingContext = createContext(null);
@@ -45,6 +46,7 @@ export function BrandingProvider({ children, initial }) {
           heroImages: Array.isArray(data.settings.heroImages)
             ? data.settings.heroImages
             : [],
+          paymentInfo: data.settings.paymentInfo || "",
         });
       }
     } catch {

@@ -642,6 +642,7 @@ function defaultSettings() {
     whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
     whatsappMessage: "",
     heroImages: [],
+    paymentInfo: "",
   };
 }
 
@@ -658,6 +659,9 @@ function mapSettings(row) {
     whatsappNumber: row.whatsapp_number || def.whatsappNumber,
     whatsappMessage: row.whatsapp_message || "",
     heroImages: Array.isArray(row.hero_images) ? row.hero_images : [],
+    // Datos de pago (banco/cuenta/transferencia móvil) que se le muestran al
+    // cliente al confirmar el pedido y en el recibo.
+    paymentInfo: row.payment_info || "",
   };
 }
 
@@ -668,7 +672,7 @@ export async function getSettings(): Promise<Settings> {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("settings")
-      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images")
+      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images, payment_info")
       .eq("id", 1)
       .maybeSingle();
     if (error) return defaultSettings();
@@ -704,11 +708,15 @@ export async function updateSettings(patch: any = {}) {
     // Fondo del hero: arreglo de URLs (reusa el saneador de medios).
     next.hero_images = sanitizeMedia(patch.heroImages);
   }
+  if (patch.paymentInfo !== undefined) {
+    // Datos de pago (texto libre multilínea: banco, cuenta, a nombre de quién).
+    next.payment_info = String(patch.paymentInfo || "").trim().slice(0, 600);
+  }
 
   const { data, error } = await supabase
     .from("settings")
     .upsert(next, { onConflict: "id" })
-    .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images")
+    .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images, payment_info")
     .maybeSingle();
   if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
   return mapSettings(data);

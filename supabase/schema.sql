@@ -71,6 +71,7 @@ create table if not exists public.settings (
   whatsapp_number  text not null default '',   -- número del chat (solo dígitos)
   whatsapp_message text not null default '',   -- mensaje/cierre automatizado
   hero_images      jsonb not null default '[]'::jsonb,  -- fondo(s) del inicio (carrusel)
+  payment_info     text not null default '',    -- datos de pago (banco/cuenta) para el cliente
   updated_at       timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );
@@ -79,6 +80,7 @@ insert into public.settings (id) values (1) on conflict (id) do nothing;
 alter table public.settings add column if not exists whatsapp_number text not null default '';
 alter table public.settings add column if not exists whatsapp_message text not null default '';
 alter table public.settings add column if not exists hero_images jsonb not null default '[]'::jsonb;
+alter table public.settings add column if not exists payment_info text not null default '';
 alter table public.settings enable row level security;
 
 -- 2.d) Suscriptores / contactos (lista para ofertas y avisos de reposición). --

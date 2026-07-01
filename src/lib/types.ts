@@ -111,6 +111,8 @@ export interface Settings {
   whatsappNumber: string;
   whatsappMessage: string;
   heroImages: string[];
+  /** Datos de pago (banco/cuenta/transferencia) mostrados al cliente. */
+  paymentInfo: string;
 }
 
 /* ----------------------------- Suscriptores ------------------------------ */

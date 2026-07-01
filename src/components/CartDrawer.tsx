@@ -40,7 +40,7 @@ export default function CartDrawer() {
     useCart();
   const router = useRouter();
   const toast = useToast();
-  const { whatsappNumber } = useBranding();
+  const { whatsappNumber, paymentInfo } = useBranding();
   const phone = (whatsappNumber || "").replace(/[^\d]/g, "");
 
   const [name, setName] = useState("");
@@ -154,7 +154,7 @@ export default function CartDrawer() {
         </div>
 
         {success ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-8 py-10 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-8 py-10 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
               <WhatsAppIcon className="h-7 w-7" />
             </div>
@@ -189,6 +189,19 @@ export default function CartDrawer() {
                 >
                   Ver mi recibo
                 </a>
+              </div>
+            )}
+
+            {/* ¿Cómo pagar? Datos de pago configurados en Ajustes: el cliente
+                los ve al instante, sin tener que preguntarlos por chat. */}
+            {paymentInfo && (
+              <div className="mt-4 w-full rounded-[4px] border border-accent-500/25 bg-accent-500/[0.07] px-4 py-3 text-left">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-accent-300">
+                  ¿Cómo pagar?
+                </p>
+                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
+                  {paymentInfo}
+                </p>
               </div>
             )}
 
@@ -353,6 +366,30 @@ export default function CartDrawer() {
               </button>
               <p className="mt-2 text-center text-xs text-ink-muted">
                 Se abrirá WhatsApp con el resumen de tu pedido listo para enviar.
+              </p>
+              {/* Métodos de pago visibles ANTES de confirmar: menos dudas, más
+                  pedidos terminados. */}
+              <p className="mt-1.5 flex items-center justify-center gap-3 text-[11px] text-ink-muted">
+                <span className="inline-flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <circle cx="12" cy="12" r="2.5" />
+                  </svg>
+                  Efectivo
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 10h16M4 10l3-6h10l3 6M6 10v9h12v-9" />
+                  </svg>
+                  Transferencia
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  Pago al confirmar
+                </span>
               </p>
             </div>
           </>
