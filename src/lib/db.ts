@@ -25,7 +25,7 @@ import type {
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
 const ORDER_COLUMNS =
-  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token, paid";
+  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token, paid, shipped";
 
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const PAYMENT_METHODS = ["efectivo", "transferencia"];
@@ -81,6 +81,8 @@ function mapOrder(row) {
     seller: row.seller || "",
     token: row.token || "",
     paid: !!row.paid,
+    // Despachada / en camino: puramente informativa, no toca stock.
+    shipped: !!row.shipped,
   };
 }
 
@@ -432,6 +434,8 @@ async function buildOrder({
     customer: {
       name: (customer && customer.name) || "",
       note: (customer && customer.note) || "",
+      // Teléfono opcional para coordinar la entrega (con tope de longitud).
+      phone: String((customer && customer.phone) || "").trim().slice(0, 30),
     },
     extra: Math.max(0, Number(extra) || 0),
     extra_label: extraLabel || "",
@@ -584,6 +588,9 @@ export async function updateOrder(id, patch) {
   if (patch.extra !== undefined) fields.extra = Math.max(0, Number(patch.extra) || 0);
   if (patch.extraLabel !== undefined) fields.extra_label = patch.extraLabel || "";
   if (patch.seller !== undefined) fields.seller = cleanSeller(patch.seller);
+  // "En camino" es informativo: NO pasa por applyOrderState porque no afecta
+  // el stock (la regla de stock depende sólo de completada + pagada).
+  if (patch.shipped !== undefined) fields.shipped = !!patch.shipped;
 
   if (Object.keys(fields).length > 0) {
     const { data, error } = await supabase

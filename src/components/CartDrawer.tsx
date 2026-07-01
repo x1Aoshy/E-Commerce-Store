@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/format";
+import { productImages, isVideo } from "@/lib/images";
 import { useToast } from "@/components/Toast";
 import dynamic from "next/dynamic";
 import { useBranding } from "@/context/BrandingContext";
@@ -36,7 +37,7 @@ function WhatsAppIcon({ className = "h-5 w-5" }: any) {
 }
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, updateQty, removeItem, total, clear } =
+  const { items, isOpen, closeCart, updateQty, removeItem, addItem, total, clear } =
     useCart();
   const router = useRouter();
   const toast = useToast();
@@ -45,6 +46,8 @@ export default function CartDrawer() {
 
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
+  // Teléfono del CLIENTE (opcional); distinto de `phone`, que es el de la tienda.
+  const [custPhone, setCustPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [conflicts, setConflicts] = useState<any[]>([]);
@@ -73,6 +76,43 @@ export default function CartDrawer() {
     document.body.style.overflow = "";
   }, []);
 
+  /* --------------------- Cross-sell: "Completá tu pedido" -------------------
+     Trae el catálogo UNA sola vez (guardado con un ref) recién cuando el drawer
+     se abre con productos, para sugerir hasta 2 complementos sin pegarle a la
+     API en cada render. Si falla, no se muestra nada (no bloquea el checkout). */
+  const [catalog, setCatalog] = useState<any[]>([]);
+  const catalogFetched = useRef(false);
+
+  useEffect(() => {
+    if (!isOpen || items.length === 0 || catalogFetched.current) return;
+    catalogFetched.current = true;
+    fetch("/api/products")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.products)) setCatalog(data.products);
+      })
+      .catch(() => {
+        /* silencio: el bloque simplemente no aparece */
+      });
+  }, [isOpen, items.length]);
+
+  const suggestions = useMemo(() => {
+    if (catalog.length === 0 || items.length === 0) return [];
+    const inCart = new Set(items.map((i) => i.id));
+    const cartCategories = new Set(items.map((i) => i.category).filter(Boolean));
+    // Sólo productos con stock que NO estén ya en el carrito.
+    const available = catalog.filter(
+      (p) => p && (Number(p.stock) || 0) > 0 && !inCart.has(p.id)
+    );
+    // Preferimos la misma categoría de lo que ya lleva (complementos naturales);
+    // como respaldo, los destacados primero y después el resto.
+    const sameCat = available.filter((p) => cartCategories.has(p.category));
+    const rest = available
+      .filter((p) => !cartCategories.has(p.category))
+      .sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+    return [...sameCat, ...rest].slice(0, 2);
+  }, [catalog, items]);
+
   if (!render) return null;
 
   async function checkout() {
@@ -87,7 +127,7 @@ export default function CartDrawer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
-          customer: { name, note },
+          customer: { name, note, phone: custPhone },
         }),
       });
       const data = await res.json();
@@ -113,6 +153,7 @@ export default function CartDrawer() {
       clear();
       setName("");
       setNote("");
+      setCustPhone("");
       router.refresh();
     } catch {
       setError("Error de conexión. Intentá de nuevo.");
@@ -296,6 +337,52 @@ export default function CartDrawer() {
                 ))}
               </ul>
 
+              {/* Cross-sell: hasta 2 complementos con stock que todavía no están
+                  en el carrito (misma categoría primero). Sube el ticket promedio
+                  sin estorbar: si no hay sugerencias, no aparece nada. */}
+              {suggestions.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                    Completá tu pedido
+                  </p>
+                  <ul className="mt-2 space-y-2">
+                    {suggestions.map((p) => {
+                      const thumb = productImages(p).find((u) => !isVideo(u));
+                      return (
+                        <li
+                          key={p.id}
+                          className="flex items-center gap-2.5 rounded-[4px] border border-line/10 p-2.5 text-sm"
+                        >
+                          {thumb && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={thumb}
+                              alt=""
+                              loading="lazy"
+                              className="h-10 w-10 shrink-0 rounded-[3px] object-cover"
+                            />
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium text-ink">
+                              {p.name || p.category || "Producto"}
+                            </p>
+                            <p className="mt-0.5 text-xs text-ink-muted">
+                              {formatPrice(p.price)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => addItem(p)}
+                            className="shrink-0 rounded-[3px] border border-line/15 px-2.5 py-1.5 text-xs font-medium text-ink-soft transition hover:border-accent-500/50 hover:text-accent-300 active:scale-95"
+                          >
+                            + Agregar
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+
               {error && (
                 <div className="mt-4 rounded-[4px] border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
                   <p className="font-medium">{error}</p>
@@ -323,6 +410,19 @@ export default function CartDrawer() {
                     placeholder="¿A nombre de quién es el pedido?"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="label" htmlFor="cart-phone">
+                    WhatsApp / Teléfono (opcional)
+                  </label>
+                  <input
+                    id="cart-phone"
+                    className="input"
+                    inputMode="tel"
+                    placeholder="Ej: 8888 8888 (para coordinar la entrega)"
+                    value={custPhone}
+                    onChange={(e) => setCustPhone(e.target.value)}
                   />
                 </div>
                 <div>

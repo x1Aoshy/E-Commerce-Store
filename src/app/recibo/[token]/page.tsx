@@ -92,6 +92,12 @@ export default async function ReceiptPage({ params }) {
                   {order.paid ? "✓ Pagado" : "Pago pendiente"}
                 </span>
               )}
+              {/* Pedido despachado: el cliente que escanea su QR ve que ya va en camino. */}
+              {order.shipped && order.status !== "cancelada" && (
+                <span className="inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-medium text-accent-300 ring-1 ring-accent-500/30">
+                  🚚 En camino
+                </span>
+              )}
             </div>
           </div>
 
@@ -131,7 +137,7 @@ export default async function ReceiptPage({ params }) {
           </div>
 
           {/* Detalles */}
-          {(order.paymentMethod || order.customer?.name || order.customer?.note) && (
+          {(order.paymentMethod || order.customer?.name || order.customer?.phone || order.customer?.note) && (
             <div className="space-y-1.5 border-t border-line/10 px-6 py-4 text-sm">
               {order.paymentMethod && (
                 <div className="flex justify-between">
@@ -143,6 +149,12 @@ export default async function ReceiptPage({ params }) {
                 <div className="flex justify-between">
                   <span className="text-ink-muted">A nombre de</span>
                   <span className="text-ink">{order.customer.name}</span>
+                </div>
+              )}
+              {order.customer?.phone && (
+                <div className="flex justify-between">
+                  <span className="text-ink-muted">Teléfono</span>
+                  <span className="text-ink">{order.customer.phone}</span>
                 </div>
               )}
               {order.customer?.note && (

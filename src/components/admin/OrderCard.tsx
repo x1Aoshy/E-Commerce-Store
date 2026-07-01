@@ -62,6 +62,17 @@ function PaymentChip({ method }: any) {
   return null;
 }
 
+// Pedido despachado / en camino. Sólo informativo (no toca stock) y no se
+// muestra en pedidos cancelados.
+function ShippedChip({ shipped, cancelled }: any) {
+  if (!shipped || cancelled) return null;
+  return (
+    <span className="chip bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/30">
+      🚚 En camino
+    </span>
+  );
+}
+
 function PaidChip({ paid, confirmed }: any) {
   if (paid)
     return (
@@ -260,11 +271,13 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             <span className="text-sm font-semibold text-ink">{order.code}</span>
             <StatusChip status={order.status} />
             <PaidChip paid={paid} confirmed={confirmed} />
+            <ShippedChip shipped={order.shipped} cancelled={cancelled} />
             <PaymentChip method={order.paymentMethod} />
           </div>
           <div className="mt-0.5 text-xs text-ink-muted">
             {formatDate(order.createdAt)}
             {order.customer?.name ? ` · ${order.customer.name}` : ""}
+            {order.customer?.phone ? ` · ${order.customer.phone}` : ""}
           </div>
           {order.seller && (
             <div className="mt-0.5 text-xs text-ink-muted">
@@ -435,14 +448,36 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
               ? "Marcá «Completada» para descontar el stock."
               : "El stock se descuenta al estar completada y cobrada."}
           </p>
-          <div className="mt-2 flex items-stretch gap-2">
+          <div className="mt-2 grid grid-cols-2 gap-2">
             <button
               onClick={() => setShowPay(true)}
               disabled={busy}
-              className="flex-1 rounded-[4px] border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:opacity-40"
+              className="rounded-[4px] border border-white/15 py-2 text-[13px] font-medium text-ink-soft transition hover:border-white/35 disabled:opacity-40"
             >
               Pago / Extra
             </button>
+            {/* "En camino" NO toca stock: es sólo un aviso para el cliente
+                (se refleja en su recibo por QR). */}
+            <button
+              onClick={async () => {
+                const toShipped = !order.shipped;
+                const ok = await patch({ shipped: toShipped }, "ship");
+                if (ok)
+                  toast.success(
+                    toShipped ? "Marcado en camino" : "Ya no está en camino"
+                  );
+              }}
+              disabled={busy}
+              className={`rounded-[4px] py-2 text-[13px] font-medium transition disabled:pointer-events-none disabled:opacity-40 ${
+                order.shipped
+                  ? "border border-accent-500/40 bg-accent-500/10 text-accent-300"
+                  : "border border-white/15 text-ink-soft hover:border-white/35"
+              }`}
+            >
+              {saving === "ship" ? "…" : order.shipped ? "🚚 En camino" : "Marcar en camino"}
+            </button>
+          </div>
+          <div className="mt-2 flex items-stretch justify-end gap-2">
             <button
               onClick={async () => {
                 const ok = await patch({ status: "cancelada" }, "cancel");

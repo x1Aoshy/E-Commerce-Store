@@ -77,6 +77,13 @@ export function buildInvoiceHtml({
           order.customer.name
         )}</span></div>`
       : "";
+  // Teléfono del CLIENTE (distinto de `tel`, que es el WhatsApp de la tienda).
+  const telCliente =
+    order.customer && order.customer.phone
+      ? `<div class="row"><span>Tel</span><span>${esc(
+          order.customer.phone
+        )}</span></div>`
+      : "";
   const vendedor = order.seller
     ? `<div class="row"><span>Atendió</span><span>${esc(order.seller)}</span></div>`
     : "";
@@ -157,6 +164,7 @@ export function buildInvoiceHtml({
       <div class="row"><span>Código</span><span>${esc(order.code || "")}</span></div>
       <div class="row"><span>Fecha</span><span>${esc(fecha)}</span></div>
       ${cliente}
+      ${telCliente}
       ${vendedor}
     </div>
 

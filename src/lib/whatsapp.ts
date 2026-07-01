@@ -27,6 +27,11 @@ export function buildOrderMessage(
     lines.push("");
     lines.push(`Nombre: ${order.customer.name}`);
   }
+  if (order.customer && order.customer.phone) {
+    // Si no hubo nombre, la línea en blanco separadora todavía no se agregó.
+    if (!order.customer.name) lines.push("");
+    lines.push(`Tel: ${order.customer.phone}`);
+  }
   if (order.customer && order.customer.note) {
     lines.push(`Nota: ${order.customer.note}`);
   }

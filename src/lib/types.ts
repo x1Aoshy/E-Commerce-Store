@@ -71,6 +71,8 @@ export interface OrderItem {
 export interface OrderCustomer {
   name: string;
   note: string;
+  /** WhatsApp/teléfono opcional del cliente (para coordinar la entrega). */
+  phone?: string;
 }
 
 export type OrderStatus = "pendiente" | "confirmada" | "cancelada";
@@ -90,6 +92,8 @@ export interface Order {
   seller: string;
   token: string;
   paid: boolean;
+  /** Pedido despachado / en camino. Informativo: NO afecta el stock. */
+  shipped: boolean;
 }
 
 // Producto en el carrito (CartContext). Es un subconjunto de Product + cantidad.
