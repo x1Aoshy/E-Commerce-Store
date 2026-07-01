@@ -57,7 +57,13 @@ export async function POST(req) {
 
     const s = await getSettings();
     // Origen del sitio para armar el link absoluto del recibo (QR).
+    // Preferimos NEXT_PUBLIC_SITE_URL (dominio propio): así los links del
+    // recibo salen con la URL canónica aunque el request llegue por otro host
+    // (p. ej. el dominio *.vercel.app o un preview). Si no está definida,
+    // caemos a los headers del request como antes.
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "").trim().replace(/\/+$/, "");
     const origin =
+      siteUrl ||
       req.headers.get("origin") ||
       (req.headers.get("host")
         ? `https://${req.headers.get("host")}`

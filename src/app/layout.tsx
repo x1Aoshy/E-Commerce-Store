@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Nunito_Sans, Fraunces } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { BrandingProvider } from "@/context/BrandingContext";
@@ -32,6 +33,8 @@ const fraunces = Fraunces({
 export const dynamic = "force-dynamic";
 
 export const metadata = {
+  // Base para URLs absolutas en metadatos (og:image, canonical, etc.).
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: `${STORE} — Suplementos premium para tu rendimiento`,
   description:
     "Proteínas, creatina, pre-entrenos y más, de alta pureza. Elegí tu suplemento y hacé tu pedido en segundos por WhatsApp.",
@@ -78,6 +81,9 @@ export default async function RootLayout({ children }) {
             </CartProvider>
           </BrandingProvider>
         </ThemeProvider>
+        {/* Vercel Analytics: mide visitas y conversión en el panel de Vercel
+            sin configuración extra (no hace nada fuera de Vercel). */}
+        <Analytics />
       </body>
     </html>
   );
