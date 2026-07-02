@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { BrandingProvider } from "@/context/BrandingContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
 import BrandFavicon from "@/components/BrandFavicon";
@@ -95,6 +96,7 @@ export default async function RootLayout({ children }) {
         />
         <Background />
         <ThemeProvider>
+          <LanguageProvider>
           <BrandingProvider initial={settings}>
             <BrandFavicon />
             <CartProvider>
@@ -103,6 +105,7 @@ export default async function RootLayout({ children }) {
               </FavoritesProvider>
             </CartProvider>
           </BrandingProvider>
+          </LanguageProvider>
         </ThemeProvider>
         {/* Vercel Analytics: mide visitas y conversión en el panel de Vercel
             sin configuración extra (no hace nada fuera de Vercel). */}

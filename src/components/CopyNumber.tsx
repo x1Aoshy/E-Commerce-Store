@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useBranding } from "@/context/BrandingContext";
+import { useLang } from "@/context/LanguageContext";
 
 // Muestra el número de WhatsApp como texto COPIABLE. Útil en PC, donde el chat
 // puede no abrirse: el cliente copia el número y te escribe desde su teléfono.
 export default function CopyNumber({ className = "" }) {
   const { whatsappNumber } = useBranding();
   const number = (whatsappNumber || "").replace(/[^\d]/g, "");
+  const { t } = useLang();
   const [copied, setCopied] = useState(false);
   if (!number) return null;
 
@@ -36,7 +38,7 @@ export default function CopyNumber({ className = "" }) {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12l5 5L20 6" />
           </svg>
-          Copiado
+          {t("copy.copied")}
         </span>
       ) : (
         <span className="inline-flex items-center gap-1 text-ink-muted">
@@ -44,7 +46,7 @@ export default function CopyNumber({ className = "" }) {
             <rect x="9" y="9" width="11" height="11" rx="2" />
             <path d="M5 15V5a2 2 0 0 1 2-2h10" />
           </svg>
-          Copiar
+          {t("copy.copy")}
         </span>
       )}
     </button>

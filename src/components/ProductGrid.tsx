@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 import { useFavorites } from "@/context/FavoritesContext";
+import { useLang } from "@/context/LanguageContext";
 import type { Product } from "@/lib/types";
 
 export default function ProductGrid({ products }: { products: Product[] }) {
   const { ids: favIds, count: favCount, hydrated } = useFavorites();
+  const { t } = useLang();
   const categories = useMemo(
     () => ["Todos", ...Array.from(new Set(products.map((p) => p.category)))],
     [products]
@@ -71,14 +73,14 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           <div className="mb-3 flex items-center gap-3 text-accent-300">
             <span className="h-px w-8 bg-accent-400/70" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
-              Catálogo
+              {t("grid.eyebrow")}
             </span>
           </div>
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
-            Nuestros productos
+            {t("grid.heading")}
           </h2>
           <p className="mt-2 text-ink-soft">
-            Elegí tu suplemento y sumalo al carrito. Confirmás por WhatsApp.
+            {t("grid.sub")}
           </p>
         </div>
 
@@ -92,7 +94,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                   : "bg-accent-500/10 text-accent-300 ring-1 ring-accent-500/30 hover:ring-accent-500/50"
               }`}
             >
-              🔥 Ofertas
+              {t("grid.offers")}
             </button>
           )}
           {hydrated && favCount > 0 && (
@@ -104,7 +106,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                   : "bg-fill/5 text-ink-soft ring-1 ring-line/10 hover:ring-line/30"
               }`}
             >
-              ♥ Favoritos ({favCount})
+              {t("grid.favorites")} ({favCount})
             </button>
           )}
           {categories.map((c) => (
@@ -117,7 +119,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                   : "bg-fill/5 text-ink-soft ring-1 ring-line/10 hover:ring-line/30"
               }`}
             >
-              {c}
+              {c === "Todos" ? t("grid.all") : c}
             </button>
           ))}
         </div>
@@ -145,7 +147,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar productos…"
+            placeholder={t("grid.search")}
             aria-label="Buscar productos"
             className="input pl-10"
           />
@@ -156,9 +158,9 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           aria-label="Ordenar productos"
           className="input sm:w-52"
         >
-          <option value="destacados">Más relevantes</option>
-          <option value="precio-asc">Precio: menor a mayor</option>
-          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="destacados">{t("grid.sortRelevant")}</option>
+          <option value="precio-asc">{t("grid.sortAsc")}</option>
+          <option value="precio-desc">{t("grid.sortDesc")}</option>
         </select>
       </Reveal>
 
@@ -172,9 +174,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
 
       {filtered.length === 0 && (
         <p className="mt-12 text-center text-ink-muted">
-          {onlyFav
-            ? "Todavía no guardaste favoritos. Tocá el corazón ♥ en los productos que te gusten."
-            : "No hay productos que coincidan con tu búsqueda."}
+          {onlyFav ? t("grid.emptyFav") : t("grid.empty")}
         </p>
       )}
     </section>

@@ -8,6 +8,7 @@ import { productImages, isVideo } from "@/lib/images";
 import { useToast } from "@/components/Toast";
 import dynamic from "next/dynamic";
 import { useBranding } from "@/context/BrandingContext";
+import { useLang } from "@/context/LanguageContext";
 import CopyNumber from "@/components/CopyNumber";
 
 // El generador de QR (lib `qrcode`) se carga sólo cuando se muestra el recibo,
@@ -42,6 +43,7 @@ export default function CartDrawer() {
   const router = useRouter();
   const toast = useToast();
   const { whatsappNumber, paymentInfo } = useBranding();
+  const { t } = useLang();
   const phone = (whatsappNumber || "").replace(/[^\d]/g, "");
 
   const [name, setName] = useState("");
@@ -237,7 +239,7 @@ export default function CartDrawer() {
         <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-fill/15 md:hidden" />
 
         <div className="flex items-center justify-between border-b border-line/10 px-5 py-4">
-          <h2 className="text-base font-semibold text-ink">Tu pedido</h2>
+          <h2 className="text-base font-semibold text-ink">{t("cart.title")}</h2>
           <button
             onClick={closeCart}
             className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition hover:bg-fill/10 hover:text-ink active:scale-90"
@@ -255,12 +257,10 @@ export default function CartDrawer() {
               <WhatsAppIcon className="h-7 w-7" />
             </div>
             <h3 className="mt-5 text-lg font-semibold text-ink">
-              ¡Pedido registrado!
+              {t("cart.okTitle")}
             </h3>
             <p className="mt-2 text-sm text-ink-soft">
-              Tu pedido <span className="font-medium text-ink">{success.code}</span>{" "}
-              quedó registrado. Tocá el botón para abrirlo en WhatsApp y
-              confirmar el pago y la entrega.
+              {t("cart.okBody", { code: success.code })}
             </p>
 
             {/* Código QR del recibo: privado, lleva al detalle de la compra. */}
@@ -275,7 +275,7 @@ export default function CartDrawer() {
                   />
                 </div>
                 <p className="mt-2 text-xs text-ink-muted">
-                  Tu recibo · escaneá o guardá este QR
+                  {t("cart.receipt")}
                 </p>
                 <a
                   href={`/recibo/${success.token}`}
@@ -283,7 +283,7 @@ export default function CartDrawer() {
                   rel="noopener noreferrer"
                   className="mt-1 text-xs font-medium text-accent-300 underline-offset-2 hover:underline"
                 >
-                  Ver mi recibo
+                  {t("cart.viewReceipt")}
                 </a>
               </div>
             )}
@@ -293,7 +293,7 @@ export default function CartDrawer() {
             {paymentInfo && (
               <div className="mt-4 w-full rounded-[4px] border border-accent-500/25 bg-accent-500/[0.07] px-4 py-3 text-left">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-accent-300">
-                  ¿Cómo pagar?
+                  {t("cart.howPay")}
                 </p>
                 <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
                   {paymentInfo}
@@ -307,20 +307,20 @@ export default function CartDrawer() {
               rel="noopener noreferrer"
               className="btn-accent mt-6 w-full py-3.5 text-[15px]"
             >
-              <WhatsAppIcon className="h-5 w-5" /> Abrir WhatsApp
+              <WhatsAppIcon className="h-5 w-5" /> {t("cart.openWa")}
             </a>
             {/* Alternativa por si el chat no abre (típico en PC): copiar el
                 número y escribirnos a mano. */}
             {phone && (
               <div className="mt-3 w-full">
                 <p className="text-xs text-ink-muted">
-                  ¿No se abre? Copiá el número y escribinos:
+                  {t("cart.copyHint")}
                 </p>
                 <CopyNumber className="mt-1.5 w-full justify-center" />
               </div>
             )}
             <button onClick={closeCart} className="btn-ghost mt-3 w-full py-3">
-              Seguir comprando
+              {t("cart.keep")}
             </button>
           </div>
         ) : items.length === 0 ? (
@@ -332,12 +332,12 @@ export default function CartDrawer() {
                 <circle cx="17.5" cy="20" r="1.4" />
               </svg>
             </div>
-            <p className="mt-4 font-medium text-ink">Tu carrito está vacío</p>
+            <p className="mt-4 font-medium text-ink">{t("cart.emptyTitle")}</p>
             <p className="mt-1 text-sm text-ink-muted">
-              Agregá productos para hacer tu pedido.
+              {t("cart.emptySub")}
             </p>
             <button onClick={closeCart} className="btn-ghost mt-6 px-6 py-2.5">
-              Ver productos
+              {t("cart.seeProducts")}
             </button>
           </div>
         ) : (
@@ -354,7 +354,7 @@ export default function CartDrawer() {
                         {item.name || "Producto"}
                       </p>
                       <p className="mt-0.5 text-xs text-ink-muted">
-                        {formatPrice(item.price)} c/u
+                        {formatPrice(item.price)} {t("cart.each")}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <div className="flex items-center rounded-[4px] border border-line/15">
@@ -381,7 +381,7 @@ export default function CartDrawer() {
                           onClick={() => removeItem(item.id)}
                           className="text-xs text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
                         >
-                          Quitar
+                          {t("cart.remove")}
                         </button>
                       </div>
                     </div>
@@ -398,7 +398,7 @@ export default function CartDrawer() {
               {suggestions.length > 0 && (
                 <div className="mt-4">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
-                    Completá tu pedido
+                    {t("cart.crossSell")}
                   </p>
                   <ul className="mt-2 space-y-2">
                     {suggestions.map((p) => {
@@ -429,7 +429,7 @@ export default function CartDrawer() {
                             onClick={() => addItem(p)}
                             className="shrink-0 rounded-[3px] border border-line/15 px-2.5 py-1.5 text-xs font-medium text-ink-soft transition hover:border-accent-500/50 hover:text-accent-300 active:scale-95"
                           >
-                            + Agregar
+                            {t("cart.addShort")}
                           </button>
                         </li>
                       );
@@ -457,37 +457,37 @@ export default function CartDrawer() {
               <div className="mt-4 space-y-3">
                 <div>
                   <label className="label" htmlFor="cart-name">
-                    Nombre (opcional)
+                    {t("cart.name")}
                   </label>
                   <input
                     id="cart-name"
                     className="input"
-                    placeholder="¿A nombre de quién es el pedido?"
+                    placeholder={t("cart.namePh")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="label" htmlFor="cart-phone">
-                    WhatsApp / Teléfono (opcional)
+                    {t("cart.phone")}
                   </label>
                   <input
                     id="cart-phone"
                     className="input"
                     inputMode="tel"
-                    placeholder="Ej: 8888 8888 (para coordinar la entrega)"
+                    placeholder={t("cart.phonePh")}
                     value={custPhone}
                     onChange={(e) => setCustPhone(e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="label" htmlFor="cart-note">
-                    Nota (opcional)
+                    {t("cart.note")}
                   </label>
                   <textarea
                     id="cart-note"
                     className="input min-h-[64px] resize-none"
-                    placeholder="Dirección, horario, aclaraciones..."
+                    placeholder={t("cart.notePh")}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                   />
@@ -506,9 +506,7 @@ export default function CartDrawer() {
                 {appliedCoupon ? (
                   <div className="flex items-center justify-between gap-3 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-[13px] text-green-300">
                     <span className="min-w-0 truncate">
-                      Cupón{" "}
-                      <span className="font-semibold">{appliedCoupon.code}</span>{" "}
-                      aplicado: −{appliedCoupon.percent}%
+                      {t("cart.couponOn", { code: appliedCoupon.code, p: appliedCoupon.percent })}
                     </span>
                     <button
                       type="button"
@@ -518,7 +516,7 @@ export default function CartDrawer() {
                       }}
                       className="shrink-0 text-xs text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
                     >
-                      Quitar
+                      {t("cart.remove")}
                     </button>
                   </div>
                 ) : (
@@ -526,7 +524,7 @@ export default function CartDrawer() {
                     <div className="flex gap-2">
                       <input
                         className="input flex-1"
-                        placeholder="¿Tenés un cupón?"
+                        placeholder={t("cart.couponPh")}
                         autoComplete="off"
                         value={couponInput}
                         // Mayúsculas al tipear: los códigos se guardan así y
@@ -549,7 +547,7 @@ export default function CartDrawer() {
                         disabled={couponLoading || !couponInput.trim()}
                         className="btn-ghost shrink-0 px-4 text-[13px]"
                       >
-                        {couponLoading ? "Validando…" : "Aplicar"}
+                        {couponLoading ? t("cart.validating") : t("cart.apply")}
                       </button>
                     </div>
                     {couponError && (
@@ -563,17 +561,17 @@ export default function CartDrawer() {
                    ahorro se vea explícito (el mismo cálculo que hará el server). */
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-ink-soft">Subtotal</span>
+                    <span className="text-ink-soft">{t("cart.subtotal")}</span>
                     <span className="font-medium text-ink-soft">
                       {formatPrice(total)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm text-green-300">
-                    <span>Descuento ({appliedCoupon.code})</span>
+                    <span>{t("cart.discount", { code: appliedCoupon.code })}</span>
                     <span className="font-medium">−{formatPrice(discount)}</span>
                   </div>
                   <div className="flex items-center justify-between text-base">
-                    <span className="text-ink-soft">Total</span>
+                    <span className="text-ink-soft">{t("cart.total")}</span>
                     <span className="text-xl font-semibold text-ink">
                       {formatPrice(Math.max(0, total - discount))}
                     </span>
@@ -581,7 +579,7 @@ export default function CartDrawer() {
                 </div>
               ) : (
                 <div className="flex items-center justify-between text-base">
-                  <span className="text-ink-soft">Total</span>
+                  <span className="text-ink-soft">{t("cart.total")}</span>
                   <span className="text-xl font-semibold text-ink">
                     {formatPrice(total)}
                   </span>
@@ -593,16 +591,15 @@ export default function CartDrawer() {
                 className="btn-accent mt-3 w-full py-3.5 text-[15px]"
               >
                 {loading ? (
-                  "Procesando..."
+                  t("cart.processing")
                 ) : (
                   <>
-                    <WhatsAppIcon className="h-5 w-5" /> Finalizar pedido por
-                    WhatsApp
+                    <WhatsAppIcon className="h-5 w-5" /> {t("cart.checkout")}
                   </>
                 )}
               </button>
               <p className="mt-2 text-center text-xs text-ink-muted">
-                Se abrirá WhatsApp con el resumen de tu pedido listo para enviar.
+                {t("cart.willOpen")}
               </p>
               {/* Métodos de pago visibles ANTES de confirmar: menos dudas, más
                   pedidos terminados. */}
@@ -612,20 +609,20 @@ export default function CartDrawer() {
                     <rect x="2" y="6" width="20" height="12" rx="2" />
                     <circle cx="12" cy="12" r="2.5" />
                   </svg>
-                  Efectivo
+                  {t("cart.cash")}
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M4 10h16M4 10l3-6h10l3 6M6 10v9h12v-9" />
                   </svg>
-                  Transferencia
+                  {t("cart.transfer")}
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
                     <path d="m9 12 2 2 4-4" />
                   </svg>
-                  Pago al confirmar
+                  {t("cart.payConfirm")}
                 </span>
               </p>
             </div>

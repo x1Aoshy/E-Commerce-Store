@@ -1,9 +1,13 @@
-import Reveal from "./Reveal";
+"use client";
 
+import Reveal from "./Reveal";
+import { useLang } from "@/context/LanguageContext";
+
+// Garantías de la casa, compactas (ícono + título + una línea). Cliente para
+// poder traducirse en vivo con el selector de idioma del footer.
 const BENEFITS = [
   {
-    title: "Calidad certificada",
-    text: "Controles de pureza en cada lote.",
+    k: "b1",
     icon: (
       <>
         <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
@@ -12,8 +16,7 @@ const BENEFITS = [
     ),
   },
   {
-    title: "Asesoramiento real",
-    text: "Te ayudamos a elegir según tu objetivo.",
+    k: "b2",
     icon: (
       <>
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -21,8 +24,7 @@ const BENEFITS = [
     ),
   },
   {
-    title: "Despacho rápido",
-    text: "Despachamos dentro de las 24h hábiles.",
+    k: "b3",
     icon: (
       <>
         <path d="M3 7h11v8H3z" />
@@ -33,8 +35,7 @@ const BENEFITS = [
     ),
   },
   {
-    title: "Pedido por WhatsApp",
-    text: "Confirmás tu compra por chat en segundos.",
+    k: "b4",
     icon: (
       <>
         <path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z" />
@@ -45,12 +46,13 @@ const BENEFITS = [
 ];
 
 export default function Benefits() {
+  const { t } = useLang();
   return (
     <section id="beneficios" className="border-t border-line/10">
       <div className="container-content py-10 sm:py-12">
         <div className="grid grid-cols-2 gap-x-6 gap-y-7 lg:grid-cols-4">
           {BENEFITS.map((b, i) => (
-            <Reveal key={b.title} delay={i * 70}>
+            <Reveal key={b.k} delay={i * 70}>
               <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/25">
                   <svg
@@ -68,9 +70,11 @@ export default function Benefits() {
                   </svg>
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-[13px] font-semibold text-ink">{b.title}</h3>
+                  <h3 className="text-[13px] font-semibold text-ink">
+                    {t(`${b.k}t`)}
+                  </h3>
                   <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">
-                    {b.text}
+                    {t(`${b.k}x`)}
                   </p>
                 </div>
               </div>

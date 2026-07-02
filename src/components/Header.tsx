@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import ThemeToggle from "@/components/ThemeToggle";
 import { useCart } from "@/context/CartContext";
+import { useLang } from "@/context/LanguageContext";
 
 function CartIcon() {
   return (
@@ -41,6 +41,7 @@ function goCategory(cat) {
 
 export default function Header({ categories = [] }) {
   const { count, openCart, hydrated } = useCart();
+  const { t } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [bump, setBump] = useState(false);
   const prevCount = useRef(count);
@@ -63,7 +64,12 @@ export default function Header({ categories = [] }) {
     prevCount.current = count;
   }, [count]);
 
-  const navCats = ["Todos", ...categories];
+  // "Todos" es un VALOR interno (ProductGrid lo compara literal); sólo se
+  // traduce la etiqueta visible.
+  const navCats = [
+    { value: "Todos", label: t("grid.all") },
+    ...categories.map((c) => ({ value: c, label: c })),
+  ];
 
   return (
     <header
@@ -79,7 +85,7 @@ export default function Header({ categories = [] }) {
         </Link>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          {/* El toggle de tema vive ahora en el footer (discreto). */}
           <button
             onClick={openCart}
             className={`relative inline-flex items-center gap-2 rounded-[4px] border border-line/15 px-4 py-2 text-sm font-medium text-ink transition hover:border-line/35 hover:bg-fill/5 active:scale-95 ${
@@ -88,7 +94,7 @@ export default function Header({ categories = [] }) {
             aria-label="Abrir carrito"
           >
             <CartIcon />
-            <span className="hidden sm:inline">Carrito</span>
+            <span className="hidden sm:inline">{t("header.cart")}</span>
             {hydrated && count > 0 && (
               <span
                 key={count}
@@ -107,11 +113,11 @@ export default function Header({ categories = [] }) {
             <div className="no-scrollbar -mx-5 flex items-center gap-0.5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
               {navCats.map((c) => (
                 <button
-                  key={c}
-                  onClick={() => goCategory(c)}
+                  key={c.value}
+                  onClick={() => goCategory(c.value)}
                   className="shrink-0 whitespace-nowrap rounded-[4px] px-3 py-2.5 text-[13px] font-medium text-ink-soft transition hover:text-accent-300"
                 >
-                  {c}
+                  {c.label}
                 </button>
               ))}
             </div>

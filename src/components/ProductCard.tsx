@@ -7,6 +7,7 @@ import StockBadge, { stockStatus } from "./StockBadge";
 import FavoriteButton from "./FavoriteButton";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
+import { useLang } from "@/context/LanguageContext";
 
 // Estrellas compactas para la reseña destacada de la tarjeta.
 function MiniStars({ rating = 5 }: any) {
@@ -29,6 +30,7 @@ function MiniStars({ rating = 5 }: any) {
 
 function ProductCard({ product }: any) {
   const { addItem } = useCart();
+  const { t } = useLang();
   const s = stockStatus(product.stock);
   const [added, setAdded] = useState(false);
   const href = `/producto/${product.slug}`;
@@ -59,7 +61,7 @@ function ProductCard({ product }: any) {
         )}
         {lowStock && (
           <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-accent-200 ring-1 ring-white/15 backdrop-blur-sm">
-            ¡Últimas {product.stock}!
+            {t("card.last", { n: product.stock })}
           </span>
         )}
       </div>
@@ -100,7 +102,7 @@ function ProductCard({ product }: any) {
             className={`btn-accent w-full px-3 py-2 text-xs ${added ? "!bg-accent-400" : ""}`}
           >
             {!s.available ? (
-              "Agotado"
+              t("card.soldout")
             ) : added ? (
               <>
                 <svg
@@ -115,10 +117,10 @@ function ProductCard({ product }: any) {
                 >
                   <path d="M5 12l5 5L20 6" />
                 </svg>
-                Agregado
+                {t("card.added")}
               </>
             ) : (
-              "Agregar"
+              t("card.add")
             )}
           </button>
         </div>

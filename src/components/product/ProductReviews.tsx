@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ReviewForm from "@/components/ReviewForm";
+import { useLang } from "@/context/LanguageContext";
 
 function initials(name) {
   return (name || "Cliente")
@@ -35,24 +36,25 @@ function Stars({ rating = 5, className = "h-4 w-4" }: any) {
 // reseñas aprobadas y un formulario para dejar la propia (queda pendiente de
 // aprobación). `reviews` y los agregados vienen del servidor.
 export default function ProductReviews({ productId, reviews = [], ratingAvg = 0, reviewCount = 0 }) {
+  const { t } = useLang();
   const [showForm, setShowForm] = useState(false);
 
   return (
     <section id="resenas" className="mt-12 scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-ink">Reseñas</h2>
+          <h2 className="text-xl font-semibold text-ink">{t("rev.title")}</h2>
           {reviewCount > 0 ? (
             <div className="mt-1.5 flex items-center gap-2">
               <Stars rating={ratingAvg} />
               <span className="text-sm text-ink-soft">
                 {ratingAvg.toFixed(1)} · {reviewCount}{" "}
-                {reviewCount === 1 ? "reseña" : "reseñas"}
+                {reviewCount === 1 ? t("rev.one") : t("rev.many")}
               </span>
             </div>
           ) : (
             <p className="mt-1 text-sm text-ink-muted">
-              Todavía no hay reseñas de este producto. ¡Sé el primero!
+              {t("rev.empty")}
             </p>
           )}
         </div>
@@ -60,7 +62,7 @@ export default function ProductReviews({ productId, reviews = [], ratingAvg = 0,
           onClick={() => setShowForm((v) => !v)}
           className="btn-ghost shrink-0 px-4 py-2.5 text-sm"
         >
-          {showForm ? "Cerrar" : "✍️ Escribir reseña"}
+          {showForm ? t("rev.closeBtn") : t("rev.write")}
         </button>
       </div>
 

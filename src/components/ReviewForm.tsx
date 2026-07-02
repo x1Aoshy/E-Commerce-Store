@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/context/LanguageContext";
 
 function Stars({ value, onChange }: any) {
   const [hover, setHover] = useState(0);
@@ -38,6 +39,7 @@ function Stars({ value, onChange }: any) {
 // Formulario para que el cliente deje su reseña. Queda pendiente de aprobación
 // del admin antes de mostrarse en la tienda (evita spam/reseñas falsas).
 export default function ReviewForm({ productId = null, onClose }) {
+  const { t } = useLang();
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
@@ -91,36 +93,36 @@ export default function ReviewForm({ productId = null, onClose }) {
 
   return (
     <form onSubmit={submit} className="card p-5 shadow-soft sm:p-6">
-      <h3 className="text-base font-semibold text-ink">Dejá tu reseña</h3>
+      <h3 className="text-base font-semibold text-ink">{t("rev.formTitle")}</h3>
       <p className="mt-1 text-sm text-ink-muted">
-        Contanos tu experiencia. La revisamos y la publicamos.
+        {t("rev.formSub")}
       </p>
 
       <div className="mt-4">
-        <span className="label">Tu puntuación</span>
+        <span className="label">{t("rev.rating")}</span>
         <Stars value={rating} onChange={setRating} />
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="label">Tu nombre (opcional)</label>
+          <label className="label">{t("rev.name")}</label>
           <input
             className="input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Ej: María G."
+            placeholder={t("rev.namePh")}
             maxLength={80}
           />
         </div>
       </div>
 
       <div className="mt-3">
-        <label className="label">Tu reseña</label>
+        <label className="label">{t("rev.text")}</label>
         <textarea
           className="input min-h-[90px] resize-y"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="¿Qué te pareció el producto y la atención?"
+          placeholder={t("rev.textPh")}
           maxLength={600}
         />
       </div>
@@ -130,11 +132,11 @@ export default function ReviewForm({ productId = null, onClose }) {
       <div className="mt-4 flex items-center justify-end gap-2">
         {onClose && (
           <button type="button" onClick={onClose} className="btn-ghost px-4 py-2 text-[13px]">
-            Cancelar
+            {t("rev.cancel")}
           </button>
         )}
         <button type="submit" disabled={state === "loading"} className="btn-accent px-5 py-2.5 text-sm">
-          {state === "loading" ? "Enviando…" : "Enviar reseña"}
+          {state === "loading" ? t("rev.sending") : t("rev.send")}
         </button>
       </div>
     </form>
