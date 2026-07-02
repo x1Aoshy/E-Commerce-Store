@@ -85,6 +85,9 @@ function mapOrder(row) {
     paid: !!row.paid,
     // Despachada / en camino: puramente informativa, no toca stock.
     shipped: !!row.shipped,
+    // Cupón aplicado y monto descontado (total a cobrar = total - discount + extra).
+    coupon: row.coupon || "",
+    discount: Number(row.discount) || 0,
   };
 }
 
@@ -362,11 +365,24 @@ async function buildOrder({
   seller,
   reserve,
   paid,
+  couponCode,
 }: any) {
   const supabase = getSupabase();
 
   if (!Array.isArray(items) || items.length === 0) {
     return { error: "El carrito está vacío." };
+  }
+
+  // Cupón (opcional): se valida SIEMPRE en el servidor (el % que vio el
+  // cliente en el carrito es solo un preview). Si el código no es válido, el
+  // pedido NO se crea: mejor avisar que cobrar de más en silencio.
+  let coupon: any = null;
+  if (couponCode) {
+    const res = await findValidCoupon(couponCode);
+    if (!res.coupon) {
+      return { error: res.error || "El cupón no es válido." };
+    }
+    coupon = res.coupon;
   }
 
   const ids = items.map((it) => it.id);
@@ -427,7 +443,12 @@ async function buildOrder({
   }
 
   const total = lineItems.reduce((sum, li) => sum + li.subtotal, 0);
-  const order = {
+  // Descuento del cupón sobre el subtotal de productos (no sobre el extra).
+  const discount = coupon
+    ? Math.min(total, Math.round((total * coupon.percent) / 100))
+    : 0;
+
+  const order: any = {
     id: "o" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
     code: code || "TS-" + Math.floor(1000 + Math.random() * 9000),
     items: lineItems,
@@ -446,6 +467,12 @@ async function buildOrder({
     token: makeToken(),
     paid: !!paid,
   };
+  // Las columnas de cupón se incluyen SÓLO si hay cupón: así un pedido normal
+  // sigue funcionando aunque la migración de cupones no se haya corrido.
+  if (coupon) {
+    order.coupon = coupon.code;
+    order.discount = discount;
+  }
 
   const { data: inserted, error: insErr } = await supabase
     .from("orders")
@@ -454,12 +481,24 @@ async function buildOrder({
     .single();
   if (insErr) throw new Error(`No se pudo guardar la orden: ${insErr.message}`);
 
+  // Cuenta el uso del cupón (después del insert exitoso; si falla, no bloquea).
+  if (coupon) {
+    try {
+      await supabase
+        .from("coupons")
+        .update({ uses: (Number(coupon.uses) || 0) + 1 })
+        .eq("id", coupon.id);
+    } catch {
+      /* el pedido ya está creado; el conteo es informativo */
+    }
+  }
+
   return { order: mapOrder(inserted) };
 }
 
 // Checkout público: crea la orden como 'pendiente' SIN reservar stock.
-export async function createOrder({ items, customer }: any) {
-  return buildOrder({ items, customer, status: "pendiente", reserve: false });
+export async function createOrder({ items, customer, couponCode }: any) {
+  return buildOrder({ items, customer, couponCode, status: "pendiente", reserve: false });
 }
 
 // Busca una orden por su token público (para el recibo por QR). RESILIENTE: si
@@ -891,5 +930,124 @@ export async function deleteReview(id) {
     .eq("id", id)
     .select("id");
   if (error) throw new Error(`No se pudo eliminar la reseña: ${error.message}`);
+  return Array.isArray(data) && data.length > 0;
+}
+
+/* -------------------------------- Cupones -------------------------------- */
+// Cupones de descuento por porcentaje. El admin los crea/pausa; el cliente los
+// escribe en el checkout. La validez SIEMPRE se decide en el servidor.
+
+function mapCoupon(row: any) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    code: row.code || "",
+    percent: Math.max(1, Math.min(90, Number(row.percent) || 0)),
+    active: !!row.active,
+    maxUses: row.max_uses === null || row.max_uses === undefined ? null : Number(row.max_uses),
+    uses: Number(row.uses) || 0,
+    createdAt: row.created_at,
+  };
+}
+
+function cleanCouponCode(code: any) {
+  // Mayúsculas, solo letras/números/guiones, tope de largo.
+  return String(code || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g, "")
+    .slice(0, 24);
+}
+
+// Busca un cupón USABLE por código: activo y con usos disponibles. RESILIENTE:
+// si la tabla no existe (migración sin correr) devuelve un error claro, nunca
+// lanza. Devuelve { coupon } o { error }.
+export async function findValidCoupon(code: any) {
+  const clean = cleanCouponCode(code);
+  if (!clean) return { coupon: null, error: "Escribí un código de cupón." };
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("*")
+      .ilike("code", clean)
+      .maybeSingle();
+    if (error) return { coupon: null, error: "Los cupones no están disponibles." };
+    const c = mapCoupon(data);
+    if (!c) return { coupon: null, error: "Ese cupón no existe." };
+    if (!c.active) return { coupon: null, error: "Ese cupón ya no está activo." };
+    if (c.maxUses !== null && c.uses >= c.maxUses) {
+      return { coupon: null, error: "Ese cupón ya se agotó." };
+    }
+    return { coupon: c };
+  } catch {
+    return { coupon: null, error: "Los cupones no están disponibles." };
+  }
+}
+
+export async function getCoupons() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("coupons")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer los cupones: ${error.message}`);
+  return (data || []).map(mapCoupon);
+}
+
+// Crea un cupón. Devuelve { coupon } o { error } (código repetido/invalido).
+export async function createCoupon({ code, percent, maxUses }: any) {
+  const clean = cleanCouponCode(code);
+  if (!clean) return { error: "El código no puede estar vacío." };
+  const pct = Math.round(Number(percent) || 0);
+  if (pct < 1 || pct > 90) {
+    return { error: "El porcentaje debe estar entre 1 y 90." };
+  }
+  const supabase = getSupabase();
+  const row = {
+    id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    code: clean,
+    percent: pct,
+    active: true,
+    max_uses:
+      maxUses === null || maxUses === undefined || maxUses === ""
+        ? null
+        : Math.max(1, Number(maxUses) || 1),
+  };
+  const { data, error } = await supabase
+    .from("coupons")
+    .insert(row)
+    .select("*")
+    .single();
+  if (error) {
+    if ((error as any).code === "23505") {
+      return { error: "Ya existe un cupón con ese código." };
+    }
+    throw new Error(`No se pudo crear el cupón: ${error.message}`);
+  }
+  return { coupon: mapCoupon(data) };
+}
+
+// Activa/pausa un cupón.
+export async function setCouponActive(id: any, active: any) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("coupons")
+    .update({ active: !!active })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+  if (error) throw new Error(`No se pudo actualizar el cupón: ${error.message}`);
+  return data ? mapCoupon(data) : null;
+}
+
+export async function deleteCoupon(id: any) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("coupons")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) throw new Error(`No se pudo eliminar el cupón: ${error.message}`);
   return Array.isArray(data) && data.length > 0;
 }

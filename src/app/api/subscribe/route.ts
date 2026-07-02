@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addSubscriber, getSubscribers } from "@/lib/db";
 import { checkAdmin } from "@/lib/auth";
+import { rateLimitOk, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,13 @@ export async function GET() {
 // Alta pública: el cliente deja su WhatsApp/email desde la tienda.
 export async function POST(req) {
   try {
+    // Anti-spam: 5 altas / 5 min por IP (suficiente para uso real).
+    if (!rateLimitOk(`${clientIp(req)}:subscribe`, 5, 300_000)) {
+      return NextResponse.json(
+        { error: "Demasiados intentos. Esperá unos minutos." },
+        { status: 429 }
+      );
+    }
     const body = await req.json().catch(() => ({}));
     const result = await addSubscriber({
       contact: body.contact,

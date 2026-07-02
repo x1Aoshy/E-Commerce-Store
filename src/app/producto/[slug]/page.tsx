@@ -18,14 +18,42 @@ import type { Product } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "").trim().replace(/\/+$/, "");
+
+// Primera imagen del producto (si es foto, no video) para OG/schema.
+function firstImage(product: any): string {
+  const list = Array.isArray(product?.images) ? product.images : [];
+  const img = list.find(
+    (u: any) => typeof u === "string" && !/\.(mp4|webm|mov)(\?|$)/i.test(u)
+  );
+  return img || "";
+}
 
 export async function generateMetadata({ params }) {
   try {
     const product = await getProductBySlug(params.slug);
     if (product) {
+      const title = `${product.name || "Producto"} — ${STORE}`;
+      const description =
+        product.short || (product.description || "").slice(0, 150);
+      const img = firstImage(product);
       return {
-        title: `${product.name || "Producto"} — ${STORE}`,
-        description: product.short || (product.description || "").slice(0, 150),
+        title,
+        description,
+        // Open Graph: al compartir el link por WhatsApp/redes sale la foto,
+        // el nombre y la descripción del producto (clave para vender por chat).
+        openGraph: {
+          title,
+          description,
+          type: "website",
+          ...(img ? { images: [{ url: img }] } : {}),
+        },
+        twitter: {
+          card: img ? "summary_large_image" : "summary",
+          title,
+          description,
+          ...(img ? { images: [img] } : {}),
+        },
       };
     }
   } catch {
@@ -52,8 +80,48 @@ export default async function ProductPage({ params }) {
 
   const categories = Array.from(new Set(all.map((p) => p.category)));
 
+  // Datos estructurados (schema.org/Product): Google puede mostrar precio,
+  // stock y estrellas directo en los resultados de búsqueda. El JSON se
+  // escapa (`<` → <) para que texto malicioso en nombre/descripción no
+  // pueda cerrar el <script>.
+  const img = firstImage(product);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name || "Producto",
+    description: product.short || (product.description || "").slice(0, 300),
+    ...(img ? { image: [img] } : {}),
+    sku: product.id,
+    brand: { "@type": "Brand", name: STORE },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "NIO",
+      price: Number(product.price) || 0,
+      availability:
+        Number(product.stock) > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      ...(SITE ? { url: `${SITE}/producto/${product.slug}` } : {}),
+    },
+    ...((product.reviewCount || 0) > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: product.ratingAvg,
+            reviewCount: product.reviewCount,
+          },
+        }
+      : {}),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <AutoRefresh />
       <Header categories={categories} />
       <main className="container-content py-8 sm:py-12">

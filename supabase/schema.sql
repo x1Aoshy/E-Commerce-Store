@@ -60,6 +60,9 @@ create index if not exists orders_token_idx on public.orders (token);
 alter table public.orders add column if not exists paid boolean not null default false;
 -- pedido despachado / en camino (informativo, no afecta stock).
 alter table public.orders add column if not exists shipped boolean not null default false;
+-- cupón aplicado y monto descontado (el total del pedido = total - discount + extra).
+alter table public.orders add column if not exists coupon text not null default '';
+alter table public.orders add column if not exists discount integer not null default 0;
 alter table public.products add column if not exists compare_at integer not null default 0;
 alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
 alter table public.products add column if not exists stats jsonb not null default '[]'::jsonb;
@@ -100,7 +103,21 @@ create unique index if not exists subscribers_contact_uniq
   on public.subscribers (lower(contact));
 alter table public.subscribers enable row level security;
 
--- 2.e) Reseñas de clientes (prueba social). El cliente la deja desde la tienda
+-- 2.e) Cupones de descuento (porcentaje). Se validan en el checkout; `uses`
+--      lleva la cuenta y `max_uses` (opcional) los agota. Idempotente.
+create table if not exists public.coupons (
+  id         text primary key,
+  code       text not null,                     -- lo que escribe el cliente (ej. TITAN10)
+  percent    integer not null default 10,       -- % de descuento sobre el subtotal (1-90)
+  active     boolean not null default true,
+  max_uses   integer,                           -- null = ilimitado
+  uses       integer not null default 0,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists coupons_code_uniq on public.coupons (lower(code));
+alter table public.coupons enable row level security;
+
+-- 2.f) Reseñas de clientes (prueba social). El cliente la deja desde la tienda
 --      y el admin la APRUEBA antes de publicarla; el admin también puede cargar
 --      reseñas reales a mano. Idempotente.
 create table if not exists public.reviews (

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createOrder, createManualOrder, getOrders, getSettings } from "@/lib/db";
 import { checkAdmin } from "@/lib/auth";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { rateLimitOk, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -45,8 +46,21 @@ export async function POST(req) {
       return NextResponse.json({ order: result.order }, { status: 201 });
     }
 
-    // Camino público (checkout): crea la orden y arma la URL de WhatsApp.
-    const result = await createOrder({ items: body.items, customer: body.customer });
+    // Camino público (checkout): anti-spam por IP (5 pedidos por minuto es de
+    // sobra para un humano; corta bots que martillan el endpoint).
+    if (!rateLimitOk(`${clientIp(req)}:orders`, 5, 60_000)) {
+      return NextResponse.json(
+        { error: "Demasiados intentos. Esperá un momento y probá de nuevo." },
+        { status: 429 }
+      );
+    }
+
+    // Crea la orden y arma la URL de WhatsApp.
+    const result = await createOrder({
+      items: body.items,
+      customer: body.customer,
+      couponCode: body.couponCode,
+    });
 
     if (result.error) {
       return NextResponse.json(

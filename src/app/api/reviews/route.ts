@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addReview, getApprovedReviews, getAllReviews } from "@/lib/db";
 import { checkAdmin } from "@/lib/auth";
+import { rateLimitOk, clientIp } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,13 @@ export async function POST(req) {
     const body = await req.json().catch(() => ({}));
     const isAdmin = checkAdmin();
     const asAdmin = isAdmin && body.manual === true;
+    // Anti-spam para el público (el admin no se limita): 3 reseñas / 5 min.
+    if (!asAdmin && !rateLimitOk(`${clientIp(req)}:reviews`, 3, 300_000)) {
+      return NextResponse.json(
+        { error: "Demasiadas reseñas seguidas. Esperá unos minutos." },
+        { status: 429 }
+      );
+    }
     const result = await addReview({
       productId: body.productId,
       name: body.name,

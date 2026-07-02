@@ -94,6 +94,22 @@ export interface Order {
   paid: boolean;
   /** Pedido despachado / en camino. Informativo: NO afecta el stock. */
   shipped: boolean;
+  /** Código de cupón aplicado ("" si no hubo). */
+  coupon: string;
+  /** Monto descontado por el cupón (total a cobrar = total - discount + extra). */
+  discount: number;
+}
+
+/* -------------------------------- Cupones -------------------------------- */
+
+export interface Coupon {
+  id: string;
+  code: string;
+  percent: number;
+  active: boolean;
+  maxUses: number | null;
+  uses: number;
+  createdAt: string;
 }
 
 // Producto en el carrito (CartContext). Es un subconjunto de Product + cantidad.

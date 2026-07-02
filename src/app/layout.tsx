@@ -38,6 +38,15 @@ export const metadata = {
   title: `${STORE} — Suplementos premium para tu rendimiento`,
   description:
     "Proteínas, creatina, pre-entrenos y más, de alta pureza. Elegí tu suplemento y hacé tu pedido en segundos por WhatsApp.",
+  // Open Graph por defecto (las fichas de producto definen el suyo con foto).
+  openGraph: {
+    title: `${STORE} — Suplementos premium para tu rendimiento`,
+    description:
+      "Proteínas, creatina, pre-entrenos y más, de alta pureza. Pedidos por WhatsApp.",
+    type: "website",
+    locale: "es_NI",
+    siteName: STORE,
+  },
 };
 
 // viewport-fit=cover hace que env(safe-area-inset-*) funcione en iPhones con
