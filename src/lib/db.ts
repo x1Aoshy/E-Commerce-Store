@@ -24,8 +24,10 @@ import type {
 
 const PRODUCT_COLUMNS =
   "id, slug, name, category, price, stock, featured, short, description, compareAt:compare_at, images, stats";
-const ORDER_COLUMNS =
-  "id, code, items, total, status, customer, created_at, payment_method, extra, extra_label, seller, token, paid, shipped";
+// "*" A PROPÓSITO: si pedimos columnas por nombre y alguna migración nueva no
+// se corrió todavía (p. ej. `shipped`), TODA la consulta falla y se rompen los
+// pedidos. Con "*" traemos lo que exista y mapOrder() completa lo que falte.
+const ORDER_COLUMNS = "*";
 
 const ORDER_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const PAYMENT_METHODS = ["efectivo", "transferencia"];
@@ -619,7 +621,7 @@ export async function deleteOrder(id) {
   const supabase = getSupabase();
   const { data: current, error: readErr } = await supabase
     .from("orders")
-    .select("id, status, items, paid")
+    .select("*")
     .eq("id", id)
     .maybeSingle();
   if (readErr) throw new Error(`No se pudo leer la orden: ${readErr.message}`);
@@ -679,7 +681,7 @@ export async function getSettings(): Promise<Settings> {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("settings")
-      .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images, payment_info")
+      .select("*")
       .eq("id", 1)
       .maybeSingle();
     if (error) return defaultSettings();
@@ -723,7 +725,7 @@ export async function updateSettings(patch: any = {}) {
   const { data, error } = await supabase
     .from("settings")
     .upsert(next, { onConflict: "id" })
-    .select("store_name, logo_url, login_icon_url, whatsapp_number, whatsapp_message, hero_images, payment_info")
+    .select("*")
     .maybeSingle();
   if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
   return mapSettings(data);

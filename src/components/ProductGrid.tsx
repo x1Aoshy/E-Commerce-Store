@@ -67,6 +67,13 @@ export default function ProductGrid({ products }: { products: Product[] }) {
     <section id="productos" className="container-content py-16 sm:py-20">
       <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          {/* Eyebrow del estilo propio de la tienda (línea + versalitas). */}
+          <div className="mb-3 flex items-center gap-3 text-accent-300">
+            <span className="h-px w-8 bg-accent-400/70" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+              Catálogo
+            </span>
+          </div>
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
             Nuestros productos
           </h2>
