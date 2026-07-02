@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import { downloadOrdersCsv } from "@/lib/csv";
 import { notifyDataChanged } from "@/lib/sync";
 import Logo from "@/components/Logo";
 import Modal from "@/components/Modal";
@@ -809,12 +810,25 @@ function OrdenesView({ orders, setOrders, products }: any) {
         <h2 className="text-base font-semibold text-ink">
           Órdenes ({orders.length})
         </h2>
-        <button
-          onClick={() => setManualOpen(true)}
-          className="btn-primary shrink-0 px-4 py-2 text-[13px]"
-        >
-          + Pedido manual
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          {/* Respaldo/contabilidad: descarga las órdenes tal como están
+              cargadas, sin pegarle de nuevo a la base. Sin órdenes no hay
+              nada que exportar, así que el botón ni aparece. */}
+          {orders.length > 0 && (
+            <button
+              onClick={() => downloadOrdersCsv(orders)}
+              className="btn-ghost px-4 py-2 text-[13px]"
+            >
+              Exportar CSV
+            </button>
+          )}
+          <button
+            onClick={() => setManualOpen(true)}
+            className="btn-primary px-4 py-2 text-[13px]"
+          >
+            + Pedido manual
+          </button>
+        </div>
       </div>
 
       {orders.length === 0 ? (
@@ -933,7 +947,11 @@ function FinanceView({ orders }: any) {
     const bySeller = new Map();
 
     for (const o of orders) {
-      const g = (Number(o.total) || 0) + (Number(o.extra) || 0);
+      // Lo realmente cobrado: total menos el descuento del cupón (nunca
+      // negativo) más el extra (envío, etc.). Espeja el cálculo del recibo.
+      const g =
+        Math.max(0, (Number(o.total) || 0) - (Number(o.discount) || 0)) +
+        (Number(o.extra) || 0);
       const t = o.createdAt ? new Date(o.createdAt).getTime() : 0;
       if (o.paid) {
         cobrado += g;
@@ -986,6 +1004,20 @@ function FinanceView({ orders }: any) {
 
   return (
     <div className="animate-fade-in">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-ink">Finanzas</h2>
+        {/* Misma exportación que en Órdenes: acá vive porque quien revisa
+            los números suele necesitar el detalle en Excel. */}
+        {orders.length > 0 && (
+          <button
+            onClick={() => downloadOrdersCsv(orders)}
+            className="btn-ghost shrink-0 px-4 py-2 text-[13px]"
+          >
+            Exportar CSV
+          </button>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Cobrado (total)" value={formatPrice(f.cobrado)} />
         <Stat label="Por cobrar" value={formatPrice(f.porCobrar)} />
@@ -1076,6 +1108,228 @@ function FinanceView({ orders }: any) {
             ))}
           </div>
         </div>
+      )}
+
+      <CouponsManager />
+    </div>
+  );
+}
+
+// Gestor de cupones de descuento (al pie de Finanzas, porque los cupones
+// pegan directo en lo cobrado): crear, pausar/activar y eliminar códigos.
+// La validación fuerte vive en el servidor; acá solo se administra la lista.
+function CouponsManager() {
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [code, setCode] = useState("");
+  const [percent, setPercent] = useState("");
+  const [maxUses, setMaxUses] = useState("");
+  const [saving, setSaving] = useState(false);
+  const toast = useToast();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const res = await fetch("/api/coupons");
+      // Si la tabla no existe todavía (migración pendiente) la API responde
+      // 500: lo mostramos como aviso, no como pantalla rota.
+      if (!res.ok) throw new Error("No disponible");
+      const data = await res.json();
+      setCoupons(data.coupons || []);
+    } catch {
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function create(e) {
+    e.preventDefault();
+    const pct = Number(percent) || 0;
+    // Chequeo mínimo para ahorrar el viaje; el servidor revalida igual.
+    if (!code.trim() || pct < 1 || pct > 90) {
+      toast.error("Completá el código y un % entre 1 y 90.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/coupons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: code.trim(),
+          percent: pct,
+          maxUses: maxUses ? Number(maxUses) : null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.coupon) {
+        setCoupons((prev) => [data.coupon, ...prev]);
+        setCode("");
+        setPercent("");
+        setMaxUses("");
+        toast.success("Cupón creado");
+      } else {
+        toast.error(data.error || "No se pudo crear el cupón.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggle(c) {
+    try {
+      const res = await fetch(`/api/coupons/${c.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: !c.active }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.coupon) {
+        setCoupons((prev) =>
+          prev.map((x) => (x.id === c.id ? data.coupon : x))
+        );
+        toast.success(data.coupon.active ? "Cupón activado" : "Cupón pausado");
+      } else {
+        toast.error(data.error || "No se pudo actualizar el cupón.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    }
+  }
+
+  async function remove(id) {
+    // Eliminar es definitivo (pausar alcanza para frenarlo), por eso se confirma.
+    if (!confirm("¿Eliminar este cupón? Si querés frenarlo, mejor pausalo.")) return;
+    try {
+      const res = await fetch(`/api/coupons/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setCoupons((prev) => prev.filter((x) => x.id !== id));
+        toast.success("Cupón eliminado");
+      } else {
+        toast.error("No se pudo eliminar.");
+      }
+    } catch {
+      toast.error("Error de conexión.");
+    }
+  }
+
+  return (
+    <div className="card mt-3 p-5 shadow-soft">
+      <h3 className="text-sm font-semibold text-ink">Cupones de descuento</h3>
+      <p className="mt-1 text-xs text-ink-muted">
+        El cliente escribe el código en el checkout y el descuento se aplica
+        sobre el subtotal. Pausá un cupón para frenarlo sin borrarlo.
+      </p>
+
+      {/* Alta inline: crear un cupón es una acción de 5 segundos, no amerita modal. */}
+      <form onSubmit={create} className="mt-4 flex flex-wrap items-end gap-2">
+        <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[140px]">
+          <label className="label">Código</label>
+          <input
+            className="input"
+            value={code}
+            // Mayúsculas al tipear para que quede igual que como se comparte
+            // (TITAN10) y no haya dudas de cómo escribirlo en el checkout.
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="TITAN10"
+            maxLength={24}
+          />
+        </div>
+        <div className="w-24">
+          <label className="label">%</label>
+          <input
+            className="input"
+            inputMode="numeric"
+            value={percent}
+            onChange={(e) => setPercent(e.target.value.replace(/[^\d]/g, ""))}
+            placeholder="10"
+          />
+        </div>
+        <div className="w-40">
+          <label className="label">Usos máx. (opcional)</label>
+          <input
+            className="input"
+            inputMode="numeric"
+            value={maxUses}
+            onChange={(e) => setMaxUses(e.target.value.replace(/[^\d]/g, ""))}
+            placeholder="Sin límite"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          className="btn-accent px-4 py-2.5 text-[13px]"
+        >
+          {saving ? "Creando…" : "Crear cupón"}
+        </button>
+      </form>
+
+      {loading ? (
+        <p className="mt-4 text-sm text-ink-muted">Cargando cupones…</p>
+      ) : loadError ? (
+        <p className="mt-4 rounded-[4px] border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-200">
+          No se pudieron cargar los cupones. ¿Corriste la migración en Supabase?
+        </p>
+      ) : coupons.length === 0 ? (
+        <p className="mt-4 text-sm text-ink-muted">
+          Todavía no hay cupones. Creá el primero (ej. TITAN10 · 10%).
+        </p>
+      ) : (
+        <ul className="mt-4 text-sm">
+          {coupons.map((c) => (
+            <li
+              key={c.id}
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.06] py-2.5 last:border-0"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-semibold text-ink">{c.code}</span>
+                <span className="chip bg-accent-500/15 px-2 py-0.5 text-[10px] text-accent-300">
+                  {c.percent}% OFF
+                </span>
+                <span className="text-xs text-ink-muted">
+                  usos: {c.uses}
+                  {c.maxUses ? `/${c.maxUses}` : ""}
+                </span>
+                <span
+                  className={`chip px-2 py-0.5 text-[10px] ${
+                    c.active
+                      ? "bg-green-500/15 text-green-300"
+                      : "bg-white/5 text-ink-muted"
+                  }`}
+                >
+                  {c.active ? "Activo" : "Pausado"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => toggle(c)}
+                  className={`rounded-[4px] border px-3 py-1.5 text-[13px] font-medium transition ${
+                    c.active
+                      ? "border-white/15 text-ink-soft hover:border-white/30"
+                      : "border-green-500/40 bg-green-500/10 text-green-300 hover:bg-green-500/20"
+                  }`}
+                >
+                  {c.active ? "Pausar" : "Activar"}
+                </button>
+                <button
+                  onClick={() => remove(c.id)}
+                  className="rounded-[4px] border border-white/15 px-3 py-1.5 text-[13px] text-ink-soft transition hover:border-red-400/40 hover:text-red-400"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
