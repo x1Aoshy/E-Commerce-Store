@@ -2,12 +2,18 @@
 
 // Exportación a CSV (abre directo en Excel) de las órdenes del panel.
 // Todo del lado del cliente: arma el texto desde los datos ya cargados y
-// dispara la descarga. Con BOM (﻿) para que Excel respete las tildes.
+// dispara la descarga.
+//
+// IMPORTANTE: el Excel en español usa PUNTO Y COMA (;) como separador — con
+// comas mete todo en una sola columna y "queda mal". Por eso separamos con ;
+// y anteponemos el BOM (﻿) para que respete las tildes/ñ.
+
+const SEP = ";";
 
 function esc(v: any): string {
   const s = String(v ?? "");
   // Comillas dobles escapadas y celda entre comillas si tiene separadores.
-  if (/[",\n;]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  if (/[";,\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
 
@@ -73,10 +79,11 @@ export function downloadOrdersCsv(orders: any[], filename?: string) {
       o.customer?.note || "",
     ]
       .map(esc)
-      .join(",");
+      .join(SEP);
   });
 
-  const csv = "﻿" + [headers.map(esc).join(","), ...rows].join("\n");
+  // BOM explícito (﻿): sin él, Excel muestra "Ã³" en vez de "ó".
+  const csv = "\uFEFF" + [headers.map(esc).join(SEP), ...rows].join("\r\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

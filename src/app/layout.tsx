@@ -32,22 +32,36 @@ const fraunces = Fraunces({
 // correctos salgan en el primer render (sin parpadeo del default al recargar).
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  // Base para URLs absolutas en metadatos (og:image, canonical, etc.).
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: `${STORE} — Suplementos premium para tu rendimiento`,
-  description:
-    "Proteínas, creatina, pre-entrenos y más, de alta pureza. Elegí tu suplemento y hacé tu pedido en segundos por WhatsApp.",
-  // Open Graph por defecto (las fichas de producto definen el suyo con foto).
-  openGraph: {
+// Metadatos DINÁMICOS: el favicon sale de Ajustes (el Icon subido) ya desde el
+// servidor, así la pestaña nunca muestra el ícono viejo por defecto mientras
+// carga. Fallback: /icon-default.svg (en public/, fuera de la convención
+// mágica app/icon.svg que lo auto-inyectaba y competía con el subido).
+export async function generateMetadata() {
+  let iconUrl = "/icon-default.svg";
+  try {
+    const s = await getSettings();
+    iconUrl = s.loginIconUrl || s.logoUrl || iconUrl;
+  } catch {
+    /* fallback al ícono por defecto */
+  }
+  return {
+    // Base para URLs absolutas en metadatos (og:image, canonical, etc.).
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
     title: `${STORE} — Suplementos premium para tu rendimiento`,
     description:
-      "Proteínas, creatina, pre-entrenos y más, de alta pureza. Pedidos por WhatsApp.",
-    type: "website",
-    locale: "es_NI",
-    siteName: STORE,
-  },
-};
+      "Proteínas, creatina, pre-entrenos y más, de alta pureza. Elegí tu suplemento y hacé tu pedido en segundos por WhatsApp.",
+    icons: { icon: iconUrl },
+    // Open Graph por defecto (las fichas de producto definen el suyo con foto).
+    openGraph: {
+      title: `${STORE} — Suplementos premium para tu rendimiento`,
+      description:
+        "Proteínas, creatina, pre-entrenos y más, de alta pureza. Pedidos por WhatsApp.",
+      type: "website",
+      locale: "es_NI",
+      siteName: STORE,
+    },
+  };
+}
 
 // viewport-fit=cover hace que env(safe-area-inset-*) funcione en iPhones con
 // notch (lo usan el Modal, los toasts y el carrito para no quedar tapados).

@@ -493,65 +493,6 @@ export default function CartDrawer() {
                   />
                 </div>
 
-                {/* Cupón de descuento: validación inmediata contra la API para
-                    que el cliente vea el desglose ANTES de confirmar. Con cupón
-                    aplicado, el input se reemplaza por la confirmación. */}
-                <div>
-                  {appliedCoupon ? (
-                    <div className="flex items-center justify-between gap-3 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-[13px] text-green-300">
-                      <span className="min-w-0 truncate">
-                        Cupón{" "}
-                        <span className="font-semibold">{appliedCoupon.code}</span>{" "}
-                        aplicado: −{appliedCoupon.percent}%
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAppliedCoupon(null);
-                          setCouponError(null);
-                        }}
-                        className="shrink-0 text-xs text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
-                      >
-                        Quitar
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex gap-2">
-                        <input
-                          className="input flex-1"
-                          placeholder="¿Tenés un cupón?"
-                          autoComplete="off"
-                          value={couponInput}
-                          // Mayúsculas al tipear: los códigos se guardan así y
-                          // evita rechazos por "titan10" vs "TITAN10".
-                          onChange={(e) => {
-                            setCouponInput(e.target.value.toUpperCase());
-                            if (couponError) setCouponError(null);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              applyCoupon();
-                            }
-                          }}
-                          aria-label="Código de cupón"
-                        />
-                        <button
-                          type="button"
-                          onClick={applyCoupon}
-                          disabled={couponLoading || !couponInput.trim()}
-                          className="btn-ghost shrink-0 px-4 text-[13px]"
-                        >
-                          {couponLoading ? "Validando…" : "Aplicar"}
-                        </button>
-                      </div>
-                      {couponError && (
-                        <p className="mt-1.5 text-xs text-red-400">{couponError}</p>
-                      )}
-                    </>
-                  )}
-                </div>
               </div>
             </div>
 
@@ -559,6 +500,64 @@ export default function CartDrawer() {
               className="border-t border-line/10 px-5 pt-4"
               style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
             >
+              {/* Cupón SIEMPRE visible (pie fijo, no scrollea): antes vivía al
+                  final del formulario y en PC quedaba fuera de vista. */}
+              <div className="mb-3">
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between gap-3 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-[13px] text-green-300">
+                    <span className="min-w-0 truncate">
+                      Cupón{" "}
+                      <span className="font-semibold">{appliedCoupon.code}</span>{" "}
+                      aplicado: −{appliedCoupon.percent}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAppliedCoupon(null);
+                        setCouponError(null);
+                      }}
+                      className="shrink-0 text-xs text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <input
+                        className="input flex-1"
+                        placeholder="¿Tenés un cupón?"
+                        autoComplete="off"
+                        value={couponInput}
+                        // Mayúsculas al tipear: los códigos se guardan así y
+                        // evita rechazos por "titan10" vs "TITAN10".
+                        onChange={(e) => {
+                          setCouponInput(e.target.value.toUpperCase());
+                          if (couponError) setCouponError(null);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            applyCoupon();
+                          }
+                        }}
+                        aria-label="Código de cupón"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyCoupon}
+                        disabled={couponLoading || !couponInput.trim()}
+                        className="btn-ghost shrink-0 px-4 text-[13px]"
+                      >
+                        {couponLoading ? "Validando…" : "Aplicar"}
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="mt-1.5 text-xs text-red-400">{couponError}</p>
+                    )}
+                  </>
+                )}
+              </div>
               {appliedCoupon ? (
                 /* Con cupón: desglose Subtotal → Descuento → Total para que el
                    ahorro se vea explícito (el mismo cálculo que hará el server). */

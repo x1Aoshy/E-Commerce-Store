@@ -3,28 +3,26 @@
 import { useEffect } from "react";
 import { useBranding } from "@/context/BrandingContext";
 
-// Reemplaza el favicon del sitio por el ícono subido en Ajustes (preferimos el
-// ícono de login; si no, el logo). Si no hay ninguno, queda el icon.svg por
-// defecto. Actualiza el <link rel="icon"> en el head del documento.
+// Mantiene el favicon = ícono subido en Ajustes (preferimos el Icon de login;
+// si no, el logo; si no hay ninguno, /icon-default.svg). El layout ya lo
+// renderiza correcto desde el servidor; este componente sólo lo actualiza EN
+// VIVO si el admin lo cambia sin recargar. Purga cualquier <link rel=icon>
+// previo para que no compita un ícono viejo cacheado.
 export default function BrandFavicon() {
   const { loginIconUrl, logoUrl } = useBranding();
-  const icon = loginIconUrl || logoUrl;
+  const icon = loginIconUrl || logoUrl || "/icon-default.svg";
 
   useEffect(() => {
-    if (!icon || typeof document === "undefined") return;
-    let link = document.querySelector("link[rel~='icon']");
-    const created = !link;
-    if (!link) {
-      link = document.createElement("link");
-      link.setAttribute("rel", "icon");
-      document.head.appendChild(link);
-    }
-    const prev = link.getAttribute("href");
+    if (typeof document === "undefined") return;
+    // Elimina TODOS los links de ícono existentes (los inyectados por Next y
+    // los nuestros anteriores) y deja uno solo con el ícono correcto.
+    document
+      .querySelectorAll("link[rel~='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']")
+      .forEach((el) => el.remove());
+    const link = document.createElement("link");
+    link.setAttribute("rel", "icon");
     link.setAttribute("href", icon);
-    return () => {
-      if (created) link.remove();
-      else if (prev) link.setAttribute("href", prev);
-    };
+    document.head.appendChild(link);
   }, [icon]);
 
   return null;
