@@ -22,7 +22,18 @@ export function buildOrderMessage(
     lines.push(`• ${item.quantity}× ${item.name || "Producto"} — ${money(item.subtotal)}`);
   }
   lines.push("");
-  lines.push(`*Total: ${money(order.total)}*`);
+  // Pedidos anteriores a la migración de cupones no traen discount/coupon:
+  // caen a 0 y conservan la línea de total única de siempre.
+  const discount = Math.max(0, Number(order.discount) || 0);
+  if (discount > 0) {
+    // Con cupón: desglose para que el total del chat coincida con lo que el
+    // cliente vio en el checkout (y quede constancia del código usado).
+    lines.push(`Subtotal: ${money(order.total)}`);
+    lines.push(`Descuento (${order.coupon || "cupón"}): -${money(discount)}`);
+    lines.push(`*Total: ${money(Math.max(0, (Number(order.total) || 0) - discount))}*`);
+  } else {
+    lines.push(`*Total: ${money(order.total)}*`);
+  }
   if (order.customer && order.customer.name) {
     lines.push("");
     lines.push(`Nombre: ${order.customer.name}`);

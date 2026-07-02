@@ -210,7 +210,10 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   const cancelled = order.status === "cancelada";
   const paid = !!order.paid;
   const extra = Number(order.extra) || 0;
-  const grand = (Number(order.total) || 0) + extra;
+  // Cupón: pedidos anteriores a la migración no traen discount → cae a 0.
+  // El total mostrado nunca baja de 0 aunque el descuento supere al subtotal.
+  const discount = Math.max(0, Number(order.discount) || 0);
+  const grand = Math.max(0, (Number(order.total) || 0) - discount) + extra;
 
   async function patch(body, action) {
     setSaving(action);
@@ -344,6 +347,14 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
             <span className="text-ink-muted">{formatPrice(it.subtotal)}</span>
           </li>
         ))}
+        {/* Descuento por cupón: mismo formato que el cargo extra, con el monto
+            en verde para leer de un vistazo por qué el total es menor. */}
+        {discount > 0 && (
+          <li className="flex justify-between gap-3 text-ink-muted">
+            <span>Descuento ({order.coupon})</span>
+            <span className="text-green-300">−{formatPrice(discount)}</span>
+          </li>
+        )}
         {extra > 0 && (
           <li className="flex justify-between gap-3 text-ink-muted">
             <span>{order.extraLabel || "Cargo extra"}</span>

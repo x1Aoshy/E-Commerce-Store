@@ -68,7 +68,10 @@ export function buildInvoiceHtml({
     .join("");
 
   const extra = Math.max(0, Number(order.extra) || 0);
-  const grand = (Number(order.total) || 0) + extra;
+  // Cupón: pedidos anteriores a la migración no traen discount → cae a 0.
+  // El total cobrado nunca baja de 0 aunque el descuento supere al subtotal.
+  const discount = Math.max(0, Number(order.discount) || 0);
+  const grand = Math.max(0, (Number(order.total) || 0) - discount) + extra;
   const payment = PAYMENT_LABEL[order.paymentMethod] || null;
 
   const cliente =
@@ -87,16 +90,28 @@ export function buildInvoiceHtml({
   const vendedor = order.seller
     ? `<div class="row"><span>Atendió</span><span>${esc(order.seller)}</span></div>`
     : "";
-  // Desglose de montos: si hay cargo extra mostramos Subtotal + concepto;
-  // si no, sólo el TOTAL (= order.total).
-  const desglose =
+  // Desglose de montos: con descuento y/o cargo extra mostramos Subtotal más
+  // las líneas que apliquen; sin ninguno, sólo el TOTAL (= order.total), como
+  // siempre. El código del cupón pasa por esc(): viene de datos del pedido.
+  const discountRow =
+    discount > 0
+      ? `<div class="srow"><span>Descuento${
+          order.coupon ? ` (${esc(order.coupon)})` : ""
+        }</span><span>-${money(discount)}</span></div>`
+      : "";
+  const extraRow =
     extra > 0
+      ? `<div class="srow"><span>${esc(
+          order.extraLabel || "Cargo extra"
+        )}</span><span>${money(extra)}</span></div>`
+      : "";
+  const desglose =
+    discount > 0 || extra > 0
       ? `<div class="srow"><span>Subtotal</span><span>${money(
           order.total
         )}</span></div>
-        <div class="srow"><span>${esc(
-          order.extraLabel || "Cargo extra"
-        )}</span><span>${money(extra)}</span></div>`
+        ${discountRow}
+        ${extraRow}`
       : "";
   // Pago siempre visible y prolijo; si no hay método, mostramos "—".
   const pagoRow = `<div class="pago"><span>Pago</span><span>${esc(

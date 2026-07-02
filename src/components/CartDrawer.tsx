@@ -53,6 +53,15 @@ export default function CartDrawer() {
   const [conflicts, setConflicts] = useState<any[]>([]);
   const [success, setSuccess] = useState<any>(null);
 
+  /* Cupón de descuento. Guardamos { code, percent } tras validarlo contra la
+     API pública para mostrar el desglose al instante; el monto REAL lo
+     recalcula el servidor al crear el pedido (acá es sólo informativo).
+     OJO: estos hooks deben vivir ANTES del `if (!render) return null`. */
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState<any>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
   const [render, setRender] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -61,6 +70,9 @@ export default function CartDrawer() {
       setError(null);
       setConflicts([]);
       setSuccess(null);
+      // El cupón aplicado se conserva (igual que el carrito); sólo limpiamos
+      // el mensaje de error para no arrastrar avisos viejos al reabrir.
+      setCouponError(null);
       setRender(true);
       document.body.style.overflow = "hidden";
       const raf = requestAnimationFrame(() => setVisible(true));
@@ -115,6 +127,42 @@ export default function CartDrawer() {
 
   if (!render) return null;
 
+  // Descuento ESTIMADO en el cliente (misma fórmula que el servidor). Sirve
+  // para el desglose visual; el cobro final siempre sale del recálculo server.
+  const discount = appliedCoupon
+    ? Math.round((total * (Number(appliedCoupon.percent) || 0)) / 100)
+    : 0;
+
+  async function applyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    if (!code || couponLoading) return;
+    setCouponLoading(true);
+    setCouponError(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      // El 429 del rate limit puede venir sin JSON: no rompemos el flujo.
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.valid) {
+        setAppliedCoupon({ code: data.code, percent: Number(data.percent) || 0 });
+        setCouponInput("");
+      } else {
+        // Cupón inválido/vencido: soltamos el que estuviera aplicado para que
+        // el total mostrado nunca prometa un descuento que el server rechazará.
+        setAppliedCoupon(null);
+        setCouponError(data.error || "No se pudo validar el cupón. Intentá de nuevo.");
+      }
+    } catch {
+      setAppliedCoupon(null);
+      setCouponError("Error de conexión. Intentá de nuevo.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
   async function checkout() {
     if (items.length === 0) return;
     setLoading(true);
@@ -128,6 +176,8 @@ export default function CartDrawer() {
         body: JSON.stringify({
           items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
           customer: { name, note, phone: custPhone },
+          // El server revalida el código y calcula el descuento por su cuenta.
+          couponCode: appliedCoupon?.code,
         }),
       });
       const data = await res.json();
@@ -154,6 +204,11 @@ export default function CartDrawer() {
       setName("");
       setNote("");
       setCustPhone("");
+      // El cupón ya quedó registrado en el pedido: lo soltamos para que no se
+      // reutilice sin querer en la próxima compra.
+      setAppliedCoupon(null);
+      setCouponInput("");
+      setCouponError(null);
       router.refresh();
     } catch {
       setError("Error de conexión. Intentá de nuevo.");
@@ -437,6 +492,66 @@ export default function CartDrawer() {
                     onChange={(e) => setNote(e.target.value)}
                   />
                 </div>
+
+                {/* Cupón de descuento: validación inmediata contra la API para
+                    que el cliente vea el desglose ANTES de confirmar. Con cupón
+                    aplicado, el input se reemplaza por la confirmación. */}
+                <div>
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between gap-3 rounded-[4px] border border-green-500/30 bg-green-500/10 px-3 py-2.5 text-[13px] text-green-300">
+                      <span className="min-w-0 truncate">
+                        Cupón{" "}
+                        <span className="font-semibold">{appliedCoupon.code}</span>{" "}
+                        aplicado: −{appliedCoupon.percent}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponError(null);
+                        }}
+                        className="shrink-0 text-xs text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex gap-2">
+                        <input
+                          className="input flex-1"
+                          placeholder="¿Tenés un cupón?"
+                          autoComplete="off"
+                          value={couponInput}
+                          // Mayúsculas al tipear: los códigos se guardan así y
+                          // evita rechazos por "titan10" vs "TITAN10".
+                          onChange={(e) => {
+                            setCouponInput(e.target.value.toUpperCase());
+                            if (couponError) setCouponError(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              applyCoupon();
+                            }
+                          }}
+                          aria-label="Código de cupón"
+                        />
+                        <button
+                          type="button"
+                          onClick={applyCoupon}
+                          disabled={couponLoading || !couponInput.trim()}
+                          className="btn-ghost shrink-0 px-4 text-[13px]"
+                        >
+                          {couponLoading ? "Validando…" : "Aplicar"}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="mt-1.5 text-xs text-red-400">{couponError}</p>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -444,12 +559,35 @@ export default function CartDrawer() {
               className="border-t border-line/10 px-5 pt-4"
               style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
             >
-              <div className="flex items-center justify-between text-base">
-                <span className="text-ink-soft">Total</span>
-                <span className="text-xl font-semibold text-ink">
-                  {formatPrice(total)}
-                </span>
-              </div>
+              {appliedCoupon ? (
+                /* Con cupón: desglose Subtotal → Descuento → Total para que el
+                   ahorro se vea explícito (el mismo cálculo que hará el server). */
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-soft">Subtotal</span>
+                    <span className="font-medium text-ink-soft">
+                      {formatPrice(total)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-green-300">
+                    <span>Descuento ({appliedCoupon.code})</span>
+                    <span className="font-medium">−{formatPrice(discount)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-base">
+                    <span className="text-ink-soft">Total</span>
+                    <span className="text-xl font-semibold text-ink">
+                      {formatPrice(Math.max(0, total - discount))}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between text-base">
+                  <span className="text-ink-soft">Total</span>
+                  <span className="text-xl font-semibold text-ink">
+                    {formatPrice(total)}
+                  </span>
+                </div>
+              )}
               <button
                 onClick={checkout}
                 disabled={loading}

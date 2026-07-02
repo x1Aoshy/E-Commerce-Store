@@ -52,7 +52,13 @@ export default async function ReceiptPage({ params }) {
       })
     : "";
   const units = (order.items || []).reduce((s, it) => s + (Number(it.quantity) || 0), 0);
-  const grand = (Number(order.total) || 0) + (Number(order.extra) || 0);
+  // Cupón: pedidos previos a la migración no traen discount → cae a 0. El
+  // total a pagar nunca baja de 0 aunque el descuento supere al subtotal.
+  // (cast a any: el tipo Order de db.ts todavía no declara coupon/discount)
+  const coupon = String((order as any).coupon || "");
+  const discount = Math.max(0, Number((order as any).discount) || 0);
+  const grand =
+    Math.max(0, (Number(order.total) || 0) - discount) + (Number(order.extra) || 0);
 
   return (
     <main className="min-h-screen px-4 py-8 sm:py-12">
@@ -120,6 +126,17 @@ export default async function ReceiptPage({ params }) {
                 </li>
               ))}
             </ul>
+
+            {/* Descuento por cupón: en verde y con el código, para que el
+                cliente vea reflejado el ahorro que se le prometió al comprar. */}
+            {discount > 0 && (
+              <div className="flex items-center justify-between border-t border-line/10 pt-3 text-sm">
+                <span className="text-ink-soft">Descuento ({coupon})</span>
+                <span className="font-medium text-green-300">
+                  −{formatPrice(discount)}
+                </span>
+              </div>
+            )}
 
             {order.extra > 0 && (
               <div className="flex items-center justify-between border-t border-line/10 pt-3 text-sm">
