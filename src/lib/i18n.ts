@@ -18,6 +18,9 @@ const es: Record<string, string> = {
     "Suplementos de alta pureza para entrenar, recuperarte y rendir al máximo. Elegí el tuyo y hacé tu pedido en segundos por WhatsApp.",
   "hero.ctaProducts": "Ver productos",
   "hero.ctaWhatsApp": "Pedir por WhatsApp",
+  "hero.trust1": "Envío en 24h",
+  "hero.trust2": "Pago contra entrega",
+  "hero.trust3": "Atención por WhatsApp",
 
   // Grid / catálogo
   "grid.heading": "Nuestros productos",
@@ -107,16 +110,6 @@ const es: Record<string, string> = {
   "ctrl.theme.light": "Claro",
   "ctrl.theme.dark": "Oscuro",
 
-  // Beneficios
-  "b1t": "Calidad certificada",
-  "b1x": "Controles de pureza en cada lote.",
-  "b2t": "Asesoramiento real",
-  "b2x": "Te ayudamos a elegir según tu objetivo.",
-  "b3t": "Despacho rápido",
-  "b3x": "Despachamos dentro de las 24h hábiles.",
-  "b4t": "Pedido por WhatsApp",
-  "b4x": "Confirmás tu compra por chat en segundos.",
-
   // Flotante / copiar
   "float.tip": "¿Dudas? Escribinos",
   "copy.copy": "Copiar",
@@ -152,6 +145,9 @@ const en: Record<string, string> = {
     "High-purity supplements to train, recover and perform at your peak. Pick yours and order in seconds via WhatsApp.",
   "hero.ctaProducts": "Shop products",
   "hero.ctaWhatsApp": "Order on WhatsApp",
+  "hero.trust1": "24h delivery",
+  "hero.trust2": "Cash on delivery",
+  "hero.trust3": "WhatsApp support",
 
   "grid.heading": "Our products",
   "grid.eyebrow": "Catalog",
@@ -233,15 +229,6 @@ const en: Record<string, string> = {
   "ctrl.theme.auto": "Auto",
   "ctrl.theme.light": "Light",
   "ctrl.theme.dark": "Dark",
-
-  "b1t": "Certified quality",
-  "b1x": "Purity checks on every batch.",
-  "b2t": "Real guidance",
-  "b2x": "We help you choose for your goal.",
-  "b3t": "Fast dispatch",
-  "b3x": "Shipped within 24 business hours.",
-  "b4t": "Order via WhatsApp",
-  "b4x": "Confirm your purchase by chat in seconds.",
 
   "float.tip": "Questions? Text us",
   "copy.copy": "Copy",

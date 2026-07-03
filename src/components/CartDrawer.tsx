@@ -127,6 +127,18 @@ export default function CartDrawer() {
     return [...sameCat, ...rest].slice(0, 2);
   }, [catalog, items]);
 
+  // Miniaturas para las filas del carrito: el carrito guarda sólo id/nombre/
+  // precio, así que la foto se busca en el catálogo ya traído (misma carga que
+  // el cross-sell; si no llegó, la fila se ve igual que antes, sin foto).
+  const thumbById = useMemo(() => {
+    const m = new Map();
+    for (const p of catalog) {
+      const img = productImages(p).find((u) => !isVideo(u));
+      if (img) m.set(p.id, img);
+    }
+    return m;
+  }, [catalog]);
+
   if (!render) return null;
 
   // Descuento ESTIMADO en el cliente (misma fórmula que el servidor). Sirve
@@ -349,6 +361,24 @@ export default function CartDrawer() {
                     key={item.id}
                     className="flex gap-3 rounded-[4px] border border-line/10 p-3"
                   >
+                    {thumbById.get(item.id) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={thumbById.get(item.id)}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="h-14 w-14 shrink-0 rounded-[4px] border border-line/10 bg-surface-soft object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[4px] border border-line/10 bg-surface-soft text-ink-muted">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <rect x="3" y="5" width="18" height="14" rx="2" />
+                          <circle cx="8.5" cy="10" r="1.5" />
+                          <path d="M21 16l-5-5L5 19" />
+                        </svg>
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
                         {item.name || "Producto"}

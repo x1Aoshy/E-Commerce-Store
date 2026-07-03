@@ -103,7 +103,18 @@ export default function Hero() {
           {t("hero.title1")}
           <br />
           {t("hero.title2")}{" "}
-          <span className="text-accent-400">{t("hero.title3")}</span>
+          <span className="relative inline-block text-accent-400">
+            {t("hero.title3")}
+            {/* Subrayado "a mano": remate cálido, sin gradientes ni glow. */}
+            <svg
+              className="absolute -bottom-1.5 left-0 h-2 w-full text-accent-500/70 sm:-bottom-2.5 sm:h-3"
+              viewBox="0 0 100 10"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d="M2 8 Q 50 2 98 6" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
         </h1>
 
         <p
@@ -136,6 +147,25 @@ export default function Hero() {
             </svg>
             {t("hero.ctaWhatsApp")}
           </a>
+        </div>
+
+        {/* Línea de confianza compacta (reemplaza a la vieja sección de
+            beneficios sin ocupar una sección entera). */}
+        <div
+          className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 animate-fade-in sm:justify-start"
+          style={{ animationDelay: "320ms", animationFillMode: "both" }}
+        >
+          {["hero.trust1", "hero.trust2", "hero.trust3"].map((k) => (
+            <span
+              key={k}
+              className="inline-flex items-center gap-1.5 text-[13px] text-ink-soft"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-accent-400" aria-hidden="true">
+                <path d="M5 12l5 5L20 6" />
+              </svg>
+              {t(k)}
+            </span>
+          ))}
         </div>
       </div>
     </section>

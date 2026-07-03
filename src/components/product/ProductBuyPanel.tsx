@@ -145,7 +145,7 @@ export default function ProductBuyPanel({ product }) {
       </div>
 
       <div className="mt-4 flex flex-wrap items-baseline gap-3">
-        <span className="text-3xl font-semibold text-ink">
+        <span className="text-4xl font-bold tracking-tight text-ink">
           {formatPrice(product.price)}
         </span>
         {onSale && (
@@ -169,7 +169,7 @@ export default function ProductBuyPanel({ product }) {
       {s.available ? (
         <>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <div className="flex items-center rounded-[3px] border border-line/15">
+            <div className="flex items-center rounded-[4px] border border-line/15 bg-fill/[0.03]">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
                 className="flex h-11 w-11 items-center justify-center text-lg text-ink-soft transition hover:text-ink active:scale-90"

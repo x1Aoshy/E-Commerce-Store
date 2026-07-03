@@ -46,8 +46,8 @@ function ProductCard({ product }: any) {
   };
 
   return (
-    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-line/20 hover:shadow-card">
-      <div className="relative aspect-[5/4] w-full overflow-hidden">
+    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-accent-500/30 hover:shadow-card">
+      <div className="relative aspect-[5/4] w-full overflow-hidden bg-surface-soft">
         <ProductGallery
           product={product}
           href={href}
@@ -66,7 +66,7 @@ function ProductCard({ product }: any) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3">
+      <div className="flex flex-1 flex-col p-3.5">
         <div className="mb-1 flex items-center justify-between gap-2">
           <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink-muted">
             {product.category}
@@ -74,7 +74,7 @@ function ProductCard({ product }: any) {
           <StockBadge stock={product.stock} />
         </div>
         {product.name && (
-          <h3 className="text-[13px] font-semibold leading-snug text-ink">
+          <h3 className="text-sm font-semibold leading-snug text-ink">
             <Link href={href} className="transition-colors hover:text-accent-300">
               {product.name}
             </Link>
@@ -86,7 +86,7 @@ function ProductCard({ product }: any) {
 
         <div className="mt-3 flex flex-col gap-2 border-t border-line/10 pt-2.5">
           <div className="flex items-baseline gap-2 leading-tight">
-            <span className="text-base font-semibold text-ink">
+            <span className="text-lg font-bold tracking-tight text-ink">
               {formatPrice(product.price)}
             </span>
             {onSale && (

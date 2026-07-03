@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
-import Benefits from "@/components/Benefits";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileCartBar from "@/components/MobileCartBar";
@@ -31,7 +30,6 @@ export default async function HomePage() {
       <main>
         <Hero />
         <ProductGrid products={products} />
-        <Benefits />
       </main>
       <Footer />
       <CartDrawer />
