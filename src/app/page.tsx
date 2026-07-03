@@ -28,7 +28,7 @@ export default async function HomePage() {
       <AutoRefresh />
       <Header categories={categories} />
       <main>
-        <Hero />
+        <Hero products={products} />
         <ProductGrid products={products} />
       </main>
       <Footer />

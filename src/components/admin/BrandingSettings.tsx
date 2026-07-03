@@ -104,6 +104,8 @@ export default function BrandingSettings() {
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [heroImages, setHeroImages] = useState<any[]>([]);
   const [paymentInfo, setPaymentInfo] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -124,6 +126,8 @@ export default function BrandingSettings() {
             Array.isArray(data.settings.heroImages) ? data.settings.heroImages : []
           );
           setPaymentInfo(data.settings.paymentInfo || "");
+          setInstagramUrl(data.settings.instagramUrl || "");
+          setFacebookUrl(data.settings.facebookUrl || "");
         }
       } catch {
         /* deja los campos vacíos */
@@ -150,6 +154,8 @@ export default function BrandingSettings() {
           whatsappMessage,
           heroImages,
           paymentInfo,
+          instagramUrl,
+          facebookUrl,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -235,6 +241,33 @@ export default function BrandingSettings() {
             placeholder="¡Quiero confirmar este pedido!"
           />
         </div>
+      </div>
+
+      <div className="card space-y-4 p-5 shadow-soft">
+        <h3 className="text-sm font-semibold text-ink">Redes sociales</h3>
+        <div>
+          <label className="label" htmlFor="ig-url">Instagram (link)</label>
+          <input
+            id="ig-url"
+            className="input mt-2"
+            value={instagramUrl}
+            onChange={(e) => setInstagramUrl(e.target.value)}
+            placeholder="https://instagram.com/tu_tienda"
+          />
+        </div>
+        <div>
+          <label className="label" htmlFor="fb-url">Facebook (link)</label>
+          <input
+            id="fb-url"
+            className="input mt-2"
+            value={facebookUrl}
+            onChange={(e) => setFacebookUrl(e.target.value)}
+            placeholder="https://facebook.com/tu_tienda"
+          />
+        </div>
+        <p className="text-[11px] text-ink-muted">
+          Aparecen como íconos en el pie de la tienda. Dejá vacío para ocultar.
+        </p>
       </div>
 
       <div className="card space-y-3 p-5 shadow-soft">

@@ -78,6 +78,8 @@ create table if not exists public.settings (
   whatsapp_message text not null default '',   -- mensaje/cierre automatizado
   hero_images      jsonb not null default '[]'::jsonb,  -- fondo(s) del inicio (carrusel)
   payment_info     text not null default '',    -- datos de pago (banco/cuenta) para el cliente
+  instagram_url    text not null default '',    -- link de Instagram (footer)
+  facebook_url     text not null default '',    -- link de Facebook (footer)
   updated_at       timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );
@@ -87,6 +89,8 @@ alter table public.settings add column if not exists whatsapp_number text not nu
 alter table public.settings add column if not exists whatsapp_message text not null default '';
 alter table public.settings add column if not exists hero_images jsonb not null default '[]'::jsonb;
 alter table public.settings add column if not exists payment_info text not null default '';
+alter table public.settings add column if not exists instagram_url text not null default '';
+alter table public.settings add column if not exists facebook_url text not null default '';
 alter table public.settings enable row level security;
 
 -- 2.d) Suscriptores / contactos (lista para ofertas y avisos de reposición). --

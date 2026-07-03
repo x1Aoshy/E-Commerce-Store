@@ -24,6 +24,8 @@ export async function PATCH(req) {
       whatsappMessage: body.whatsappMessage,
       heroImages: body.heroImages,
       paymentInfo: body.paymentInfo,
+      instagramUrl: body.instagramUrl,
+      facebookUrl: body.facebookUrl,
     });
     return NextResponse.json({ settings });
   } catch (err) {

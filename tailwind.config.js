@@ -87,6 +87,11 @@ module.exports = {
           "30%": { transform: "scale(1.18) rotate(-7deg)" },
           "60%": { transform: "scale(0.94) rotate(5deg)" },
         },
+        // Ondulación suave (flotar): el producto del hero "levita" despacio.
+        float: {
+          "0%, 100%": { transform: "translateY(-6px)" },
+          "50%": { transform: "translateY(8px)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.5s ease forwards",
@@ -94,6 +99,7 @@ module.exports = {
         pop: "pop 0.32s cubic-bezier(0.22,1,0.36,1)",
         "scale-in": "scale-in 0.24s ease forwards",
         "cart-bump": "cart-bump 0.45s ease",
+        float: "float 6s ease-in-out infinite",
       },
     },
   },

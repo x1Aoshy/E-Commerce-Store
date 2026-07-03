@@ -133,6 +133,9 @@ export interface Settings {
   heroImages: string[];
   /** Datos de pago (banco/cuenta/transferencia) mostrados al cliente. */
   paymentInfo: string;
+  /** Links de redes (footer); vacíos = ícono oculto. */
+  instagramUrl: string;
+  facebookUrl: string;
 }
 
 /* ----------------------------- Suscriptores ------------------------------ */

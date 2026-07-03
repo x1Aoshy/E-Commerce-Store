@@ -691,6 +691,8 @@ function defaultSettings() {
     whatsappMessage: "",
     heroImages: [],
     paymentInfo: "",
+    instagramUrl: "",
+    facebookUrl: "",
   };
 }
 
@@ -710,6 +712,8 @@ function mapSettings(row) {
     // Datos de pago (banco/cuenta/transferencia móvil) que se le muestran al
     // cliente al confirmar el pedido y en el recibo.
     paymentInfo: row.payment_info || "",
+    instagramUrl: row.instagram_url || "",
+    facebookUrl: row.facebook_url || "",
   };
 }
 
@@ -759,6 +763,12 @@ export async function updateSettings(patch: any = {}) {
   if (patch.paymentInfo !== undefined) {
     // Datos de pago (texto libre multilínea: banco, cuenta, a nombre de quién).
     next.payment_info = String(patch.paymentInfo || "").trim().slice(0, 600);
+  }
+  if (patch.instagramUrl !== undefined) {
+    next.instagram_url = String(patch.instagramUrl || "").trim().slice(0, 300);
+  }
+  if (patch.facebookUrl !== undefined) {
+    next.facebook_url = String(patch.facebookUrl || "").trim().slice(0, 300);
   }
 
   const { data, error } = await supabase

@@ -21,6 +21,8 @@ const DEFAULTS = {
   whatsappMessage: "",
   heroImages: [],
   paymentInfo: "",
+  instagramUrl: "",
+  facebookUrl: "",
 };
 
 const BrandingContext = createContext(null);
@@ -47,6 +49,8 @@ export function BrandingProvider({ children, initial }) {
             ? data.settings.heroImages
             : [],
           paymentInfo: data.settings.paymentInfo || "",
+          instagramUrl: data.settings.instagramUrl || "",
+          facebookUrl: data.settings.facebookUrl || "",
         });
       }
     } catch {
