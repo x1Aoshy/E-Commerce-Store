@@ -45,7 +45,12 @@ export default function Hero({ products = [] }: any) {
   // Carrusel de productos (4.5s) o, si no hay vitrina, del fondo/logo (5s).
   useEffect(() => {
     if (showcase.length < 2) return;
-    const id = setInterval(() => setPIdx((i) => (i + 1) % showcase.length), 4500);
+    // No rota con la pestaña oculta: cero trabajo de fondo.
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        setPIdx((i) => (i + 1) % showcase.length);
+      }
+    }, 4500);
     return () => clearInterval(id);
   }, [showcase.length]);
 
@@ -62,30 +67,41 @@ export default function Hero({ products = [] }: any) {
   // Carrusel de producto reutilizable (desktop derecha / móvil arriba).
   const productCarousel = (compact: boolean) => (
     <div className={`relative flex w-full flex-col items-center ${compact ? "" : "h-full justify-center"}`}>
-      {/* Fotos apiladas con crossfade + ondulación (animate-float). */}
-      <div className={`relative w-full ${compact ? "h-52" : "h-[min(52vh,420px)] max-w-md"}`}>
-        {showcase.map(({ p, img }: any, idx: number) => (
-          <Link
-            key={p.id}
-            href={`/producto/${p.slug}`}
-            aria-hidden={idx !== sel}
-            tabIndex={idx === sel ? 0 : -1}
-            className={`absolute inset-0 transition-opacity duration-700 ease-out ${
-              idx === sel ? "opacity-100" : "pointer-events-none opacity-0"
-            }`}
-          >
-            <div className="h-full w-full animate-float">
+      {/* RENDIMIENTO: se anima UNA sola capa (este contenedor flota entero,
+          transform-only en el compositor) en vez de animar cada foto; y la
+          sombra es un óvalo ESTÁTICO en el piso (nada de drop-shadow por frame,
+          que obligaba a re-rasterizar la imagen en cada cuadro). */}
+      <div className={`relative w-full ${compact ? "h-56" : "h-[min(52vh,440px)] max-w-md"}`}>
+        {/* Sombra de piso fija: el producto flota, la sombra queda abajo. */}
+        <div
+          className="absolute bottom-1 left-1/2 h-5 w-3/5 -translate-x-1/2 rounded-full bg-black/35 blur-md"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-x-0 top-0 bottom-6 animate-float"
+          style={{ willChange: "transform" }}
+        >
+          {showcase.map(({ p, img }: any, idx: number) => (
+            <Link
+              key={p.id}
+              href={`/producto/${p.slug}`}
+              aria-hidden={idx !== sel}
+              tabIndex={idx === sel ? 0 : -1}
+              className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+                idx === sel ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img}
                 alt={p.name || ""}
                 loading={idx === 0 ? "eager" : "lazy"}
                 decoding="async"
-                className="h-full w-full object-contain [filter:drop-shadow(0_24px_28px_rgba(0,0,0,0.35))]"
+                className="h-full w-full object-contain"
               />
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Nombre + precio del producto visible: invita a tocar. */}
