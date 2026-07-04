@@ -3,13 +3,13 @@
 import { memo, useState } from "react";
 import Link from "next/link";
 import ProductGallery from "./ProductGallery";
-import StockBadge, { stockStatus } from "./StockBadge";
+import { stockStatus } from "./StockBadge";
 import FavoriteButton from "./FavoriteButton";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
 
-// Estrellas compactas para la reseña destacada de la tarjeta.
+// Estrellas compactas (rating promedio del producto).
 function MiniStars({ rating = 5 }: any) {
   return (
     <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
@@ -28,6 +28,9 @@ function MiniStars({ rating = 5 }: any) {
   );
 }
 
+// Tarjeta al estilo ecommerce clásico: la foto manda, y abajo solo lo que se
+// necesita para decidir — nombre, estrellas, precio y agregar. La descripción
+// y la reseña completa viven en la ficha del producto.
 function ProductCard({ product }: any) {
   const { addItem } = useCart();
   const { t } = useLang();
@@ -46,47 +49,57 @@ function ProductCard({ product }: any) {
   };
 
   return (
-    <article className="card group flex h-full flex-col overflow-hidden shadow-soft transition duration-300 hover:-translate-y-1 hover:border-accent-500/30 hover:shadow-card">
-      <div className="relative aspect-[5/4] w-full overflow-hidden bg-surface-soft">
+    <article className="card group flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-0.5 hover:shadow-card">
+      <div className="relative aspect-square w-full overflow-hidden bg-surface-soft">
         <ProductGallery
           product={product}
           href={href}
-          className="transition-transform duration-500 ease-out group-hover:scale-105"
+          className={`transition-transform duration-500 ease-out group-hover:scale-[1.04] ${
+            s.available ? "" : "opacity-60 grayscale"
+          }`}
         />
         <FavoriteButton id={product.id} variant="overlay" />
         {onSale && (
-          <span className="absolute left-2 top-2 z-10 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-[#1a1306] shadow-soft">
+          <span className="absolute left-2 top-2 z-10 rounded-[3px] bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-[#1a1306]">
             -{off}%
           </span>
         )}
-        {lowStock && (
-          <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-accent-200 ring-1 ring-white/15 backdrop-blur-sm">
-            {t("card.last", { n: product.stock })}
+        {!s.available ? (
+          <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-white/90">
+            {t("card.soldout")}
           </span>
+        ) : (
+          lowStock && (
+            <span className="absolute bottom-2 left-2 z-10 rounded-[3px] bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-accent-200">
+              {t("card.last", { n: product.stock })}
+            </span>
+          )
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3.5">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink-muted">
-            {product.category}
-          </span>
-          <StockBadge stock={product.stock} />
-        </div>
+      <div className="flex flex-1 flex-col p-3 sm:p-3.5">
         {product.name && (
-          <h3 className="text-sm font-semibold leading-snug text-ink">
+          <h3 className="line-clamp-2 text-sm font-medium leading-snug text-ink">
             <Link href={href} className="transition-colors hover:text-accent-300">
               {product.name}
             </Link>
           </h3>
         )}
-        {product.short && (
-          <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">{product.short}</p>
+        {(product.reviewCount || 0) > 0 && (
+          <Link
+            href={`${href}#resenas`}
+            className="mt-1 inline-flex items-center gap-1.5"
+          >
+            <MiniStars rating={product.ratingAvg} />
+            <span className="text-[11px] text-ink-muted">
+              ({product.reviewCount})
+            </span>
+          </Link>
         )}
 
-        <div className="mt-3 flex flex-col gap-2 border-t border-line/10 pt-2.5">
+        <div className="mt-auto pt-3">
           <div className="flex items-baseline gap-2 leading-tight">
-            <span className="text-lg font-bold tracking-tight text-ink">
+            <span className="text-base font-bold tracking-tight text-ink">
               {formatPrice(product.price)}
             </span>
             {onSale && (
@@ -99,7 +112,7 @@ function ProductCard({ product }: any) {
             disabled={!s.available}
             onClick={handleAdd}
             aria-live="polite"
-            className={`btn-accent w-full px-3 py-2 text-xs ${added ? "!bg-accent-400" : ""}`}
+            className={`btn-accent mt-2 w-full px-3 py-2 text-xs ${added ? "!bg-accent-400" : ""}`}
           >
             {!s.available ? (
               t("card.soldout")
@@ -124,27 +137,6 @@ function ProductCard({ product }: any) {
             )}
           </button>
         </div>
-
-        {/* Reseña destacada: prueba social directa en la tarjeta. Solo aparece
-            si el producto ya tiene una reseña aprobada. */}
-        {product.featuredReview && (
-          <Link
-            href={`${href}#resenas`}
-            className="mt-2.5 block border-t border-line/10 pt-2.5"
-          >
-            <div className="flex items-center gap-1.5">
-              <MiniStars rating={product.featuredReview.rating} />
-              {product.reviewCount > 1 && (
-                <span className="text-[10px] text-ink-muted">
-                  ({product.reviewCount})
-                </span>
-              )}
-            </div>
-            <p className="mt-1 line-clamp-2 text-[11px] italic leading-snug text-ink-muted">
-              “{product.featuredReview.text}”
-            </p>
-          </Link>
-        )}
       </div>
     </article>
   );

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
-import Reveal from "./Reveal";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLang } from "@/context/LanguageContext";
 import type { Product } from "@/lib/types";
@@ -66,22 +65,17 @@ export default function ProductGrid({ products }: { products: Product[] }) {
   }, [products, active, onlySale, onlyFav, favIds, q, sort]);
 
   return (
-    <section id="productos" className="container-content py-16 sm:py-20">
-      <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          {/* Eyebrow del estilo propio de la tienda (línea + versalitas). */}
-          <div className="mb-3 flex items-center gap-3 text-accent-300">
-            <span className="h-px w-8 bg-accent-400/70" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
-              {t("grid.eyebrow")}
-            </span>
-          </div>
+    <section id="productos" className="container-content py-10 sm:py-14">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex items-baseline gap-3">
           <h2 className="text-2xl font-semibold text-ink sm:text-3xl">
             {t("grid.heading")}
           </h2>
-          <p className="mt-2 text-ink-soft">
-            {t("grid.sub")}
-          </p>
+          <span className="text-sm text-ink-muted">
+            {filtered.length === 1
+              ? t("grid.countOne")
+              : t("grid.count", { n: filtered.length })}
+          </span>
         </div>
 
         <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
@@ -123,10 +117,10 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             </button>
           ))}
         </div>
-      </Reveal>
+      </div>
 
       {/* Buscador + orden: filtra por texto y ordena por precio. */}
-      <Reveal className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative w-full sm:max-w-md">
           <svg
             className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted"
@@ -162,13 +156,11 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           <option value="precio-asc">{t("grid.sortAsc")}</option>
           <option value="precio-desc">{t("grid.sortDesc")}</option>
         </select>
-      </Reveal>
+      </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-        {filtered.map((p, i) => (
-          <Reveal key={p.id} delay={Math.min(i * 60, 360)}>
-            <ProductCard product={p} />
-          </Reveal>
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        {filtered.map((p) => (
+          <ProductCard key={p.id} product={p} />
         ))}
       </div>
 

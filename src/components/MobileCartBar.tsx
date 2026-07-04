@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { useLang } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/format";
 
 // Barra de carrito fija al pie en mobile: siempre al alcance del pulgar.
@@ -8,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 // cerrado. Incluye safe-area para no quedar tapada por la barra del iPhone.
 export default function MobileCartBar() {
   const { count, total, openCart, isOpen, hydrated } = useCart();
+  const { t } = useLang();
   const show = hydrated && count > 0 && !isOpen;
 
   return (
@@ -32,14 +34,14 @@ export default function MobileCartBar() {
         </span>
         <span className="flex-1">
           <span className="block text-[11px] leading-tight text-ink-muted">
-            {count} {count === 1 ? "producto" : "productos"}
+            {count} {count === 1 ? t("mob.one") : t("mob.many")}
           </span>
           <span className="block text-sm font-semibold leading-tight text-ink">
             {formatPrice(total)}
           </span>
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-[4px] bg-accent-500 px-4 py-2.5 text-sm font-semibold text-[#1a1306]">
-          Ver pedido
+          {t("mob.view")}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 6l6 6-6 6" />
           </svg>

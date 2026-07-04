@@ -72,6 +72,21 @@ export default function Header({ categories = [] }) {
   ];
 
   return (
+    <>
+      {/* Barra de anuncio: los mensajes de confianza viven acá (patrón clásico
+          de ecommerce), no como checkmarks dentro del hero. Queda FUERA del
+          header sticky para que se vaya con el scroll y no robe pantalla. Se
+          invierte con el tema: crema sobre oscuro / oscura sobre claro. */}
+      <div className="bg-ink text-night">
+        <p className="container-content py-1.5 text-center text-[11px] font-medium">
+          {t("hero.trust1")}
+          <span className="mx-2 opacity-40">·</span>
+          {t("hero.trust2")}
+          <span className="mx-2 opacity-40 max-[380px]:hidden">·</span>
+          <span className="max-[380px]:hidden">{t("hero.trust3")}</span>
+        </p>
+      </div>
+
     <header
       className={`sticky top-0 z-40 border-b transition-all duration-300 ${
         scrolled
@@ -125,5 +140,6 @@ export default function Header({ categories = [] }) {
         </div>
       )}
     </header>
+    </>
   );
 }

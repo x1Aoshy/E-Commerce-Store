@@ -170,7 +170,7 @@ export default function Hero({ products = [] }: any) {
         </div>
       )}
 
-      <div className="container-content relative z-10 flex min-h-[72vh] flex-col items-center justify-center pb-14 pt-8 text-center sm:min-h-[88vh] sm:items-start sm:pt-16 sm:text-left">
+      <div className="container-content relative z-10 flex flex-col items-center justify-center pb-12 pt-7 text-center sm:min-h-[68vh] sm:items-start sm:py-16 sm:text-left">
         {/* Arriba en MÓVIL: vitrina de productos (o el logo si no hay). */}
         {hasShowcase ? (
           <div className="mb-5 w-full max-w-sm sm:hidden">{productCarousel(true)}</div>
@@ -196,15 +196,9 @@ export default function Hero({ products = [] }: any) {
 
         {/* En desktop, el texto ocupa la mitad izquierda cuando hay vitrina. */}
         <div className={hasShowcase ? "sm:max-w-[46%]" : ""}>
-          <span
-            className="animate-fade-in text-xs font-semibold uppercase tracking-[0.22em] text-green-400 sm:text-sm"
-            style={{ animationFillMode: "both" }}
-          >
-            {t("hero.eyebrow")}
-          </span>
           <h1
-            className="mt-3 max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink min-[380px]:text-4xl sm:text-5xl lg:text-6xl"
-            style={{ animationDelay: "80ms", animationFillMode: "both" }}
+            className="max-w-2xl animate-fade-in text-[2rem] font-extrabold leading-[1.05] text-ink min-[380px]:text-4xl sm:text-5xl lg:text-6xl"
+            style={{ animationFillMode: "both" }}
           >
             {t("hero.title1")}
             <br />
@@ -224,15 +218,15 @@ export default function Hero({ products = [] }: any) {
           </h1>
 
           <p
-            className="mt-6 max-w-xl animate-fade-in text-base leading-relaxed text-ink mx-auto sm:mx-0 sm:text-lg"
-            style={{ animationDelay: "160ms", animationFillMode: "both" }}
+            className="mt-4 max-w-xl animate-fade-in text-base leading-relaxed text-ink-soft mx-auto sm:mx-0 sm:text-lg"
+            style={{ animationDelay: "120ms", animationFillMode: "both" }}
           >
             {t("hero.sub")}
           </p>
 
           <div
-            className="mt-8 flex flex-wrap items-center justify-center gap-3 animate-fade-in sm:justify-start"
-            style={{ animationDelay: "240ms", animationFillMode: "both" }}
+            className="mt-7 flex flex-wrap items-center justify-center gap-3 animate-fade-in sm:justify-start"
+            style={{ animationDelay: "200ms", animationFillMode: "both" }}
           >
             <a href="#productos" className="btn-accent px-6 py-3 text-[15px]">
               {t("hero.ctaProducts")}
@@ -253,24 +247,6 @@ export default function Hero({ products = [] }: any) {
               </svg>
               {t("hero.ctaWhatsApp")}
             </a>
-          </div>
-
-          {/* Línea de confianza compacta. */}
-          <div
-            className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 animate-fade-in sm:justify-start"
-            style={{ animationDelay: "320ms", animationFillMode: "both" }}
-          >
-            {["hero.trust1", "hero.trust2", "hero.trust3"].map((k) => (
-              <span
-                key={k}
-                className="inline-flex items-center gap-1.5 text-[13px] text-ink-soft"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-accent-400" aria-hidden="true">
-                  <path d="M5 12l5 5L20 6" />
-                </svg>
-                {t(k)}
-              </span>
-            ))}
           </div>
         </div>
       </div>

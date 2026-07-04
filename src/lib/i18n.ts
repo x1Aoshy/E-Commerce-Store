@@ -10,12 +10,11 @@ const es: Record<string, string> = {
   "header.cart": "Carrito",
 
   // Hero
-  "hero.eyebrow": "Suplementos de alta pureza",
   "hero.title1": "Tu mejor versión",
   "hero.title2": "empieza con",
   "hero.title3": "RESULTADOS",
   "hero.sub":
-    "Suplementos de alta pureza para entrenar, recuperarte y rendir al máximo. Elegí el tuyo y hacé tu pedido en segundos por WhatsApp.",
+    "Suplementos originales, asesoría real y entrega rápida. Pedí por WhatsApp.",
   "hero.ctaProducts": "Ver productos",
   "hero.ctaWhatsApp": "Pedir por WhatsApp",
   "hero.trust1": "Envío en 24h",
@@ -23,16 +22,16 @@ const es: Record<string, string> = {
   "hero.trust3": "Atención por WhatsApp",
 
   // Grid / catálogo
-  "grid.heading": "Nuestros productos",
-  "grid.eyebrow": "Catálogo",
-  "grid.sub": "Elegí tu suplemento y sumalo al carrito. Confirmás por WhatsApp.",
+  "grid.heading": "Productos",
+  "grid.count": "{n} productos",
+  "grid.countOne": "1 producto",
   "grid.search": "Buscar productos…",
   "grid.sortRelevant": "Más relevantes",
   "grid.sortAsc": "Precio: menor a mayor",
   "grid.sortDesc": "Precio: mayor a menor",
   "grid.all": "Todos",
-  "grid.offers": "🔥 Ofertas",
-  "grid.favorites": "♥ Favoritos",
+  "grid.offers": "Ofertas",
+  "grid.favorites": "Favoritos",
   "grid.emptyFav":
     "Todavía no guardaste favoritos. Tocá el corazón ♥ en los productos que te gusten.",
   "grid.empty": "No hay productos que coincidan con tu búsqueda.",
@@ -49,13 +48,13 @@ const es: Record<string, string> = {
   "buy.preparing": "Preparando pedido…",
   "buy.openConfirm": "Abrir WhatsApp y confirmar",
   "buy.notOpen": "¿No se abre? Copiá el número:",
-  "buy.low": "🔥 ¡Quedan solo {n} unidades!",
+  "buy.low": "¡Quedan solo {n} unidades!",
   "buy.soldoutTitle": "Producto agotado por ahora",
   "buy.soldoutSub": "Dejanos tu WhatsApp o email y te avisamos apenas vuelva.",
   "buy.notifyPh": "Tu WhatsApp o email",
   "buy.notifyBtn": "Avisame",
   "buy.notifySending": "Enviando…",
-  "buy.notifyDone": "¡Listo! Te avisamos apenas vuelva a estar disponible. 💪",
+  "buy.notifyDone": "¡Listo! Te avisamos apenas vuelva a estar disponible.",
 
   // Carrito / checkout
   "cart.title": "Tu pedido",
@@ -101,9 +100,14 @@ const es: Record<string, string> = {
   "footer.newsSub": "Dejanos tu WhatsApp o email y te avisamos de promos y reposiciones.",
   "footer.newsPh": "Tu WhatsApp o email",
   "footer.newsBtn": "Quiero ofertas",
-  "footer.newsDone": "¡Listo! Te avisaremos de las próximas ofertas. 🎉",
+  "footer.newsDone": "¡Listo! Te avisaremos de las próximas ofertas.",
   "footer.rights": "Todos los derechos reservados",
   "footer.orders": "Pedidos por WhatsApp",
+
+  // Barra de carrito (mobile)
+  "mob.one": "producto",
+  "mob.many": "productos",
+  "mob.view": "Ver pedido",
 
   // Controles (idioma / tema)
   "ctrl.theme.auto": "Auto",
@@ -118,7 +122,7 @@ const es: Record<string, string> = {
   // Reseñas
   "rev.title": "Reseñas",
   "rev.empty": "Todavía no hay reseñas de este producto. ¡Sé el primero!",
-  "rev.write": "✍️ Escribir reseña",
+  "rev.write": "Escribir reseña",
   "rev.closeBtn": "Cerrar",
   "rev.one": "reseña",
   "rev.many": "reseñas",
@@ -137,28 +141,27 @@ const es: Record<string, string> = {
 const en: Record<string, string> = {
   "header.cart": "Cart",
 
-  "hero.eyebrow": "High-purity supplements",
   "hero.title1": "Your best self",
   "hero.title2": "starts with",
   "hero.title3": "RESULTS",
   "hero.sub":
-    "High-purity supplements to train, recover and perform at your peak. Pick yours and order in seconds via WhatsApp.",
+    "Original supplements, real guidance and fast delivery. Order on WhatsApp.",
   "hero.ctaProducts": "Shop products",
   "hero.ctaWhatsApp": "Order on WhatsApp",
   "hero.trust1": "24h delivery",
   "hero.trust2": "Cash on delivery",
   "hero.trust3": "WhatsApp support",
 
-  "grid.heading": "Our products",
-  "grid.eyebrow": "Catalog",
-  "grid.sub": "Pick your supplement and add it to the cart. Confirm on WhatsApp.",
+  "grid.heading": "Products",
+  "grid.count": "{n} products",
+  "grid.countOne": "1 product",
   "grid.search": "Search products…",
   "grid.sortRelevant": "Most relevant",
   "grid.sortAsc": "Price: low to high",
   "grid.sortDesc": "Price: high to low",
   "grid.all": "All",
-  "grid.offers": "🔥 Deals",
-  "grid.favorites": "♥ Favorites",
+  "grid.offers": "Deals",
+  "grid.favorites": "Favorites",
   "grid.emptyFav": "No favorites yet. Tap the ♥ on products you like.",
   "grid.empty": "No products match your search.",
 
@@ -172,13 +175,13 @@ const en: Record<string, string> = {
   "buy.preparing": "Preparing order…",
   "buy.openConfirm": "Open WhatsApp to confirm",
   "buy.notOpen": "Not opening? Copy the number:",
-  "buy.low": "🔥 Only {n} left in stock!",
+  "buy.low": "Only {n} left in stock!",
   "buy.soldoutTitle": "Out of stock for now",
   "buy.soldoutSub": "Leave your WhatsApp or email and we'll tell you when it's back.",
   "buy.notifyPh": "Your WhatsApp or email",
   "buy.notifyBtn": "Notify me",
   "buy.notifySending": "Sending…",
-  "buy.notifyDone": "Done! We'll let you know as soon as it's back. 💪",
+  "buy.notifyDone": "Done! We'll let you know as soon as it's back.",
 
   "cart.title": "Your order",
   "cart.emptyTitle": "Your cart is empty",
@@ -222,9 +225,13 @@ const en: Record<string, string> = {
   "footer.newsSub": "Leave your WhatsApp or email and we'll ping you about promos and restocks.",
   "footer.newsPh": "Your WhatsApp or email",
   "footer.newsBtn": "Get deals",
-  "footer.newsDone": "Done! We'll let you know about upcoming deals. 🎉",
+  "footer.newsDone": "Done! We'll let you know about upcoming deals.",
   "footer.rights": "All rights reserved",
   "footer.orders": "Orders via WhatsApp",
+
+  "mob.one": "product",
+  "mob.many": "products",
+  "mob.view": "View order",
 
   "ctrl.theme.auto": "Auto",
   "ctrl.theme.light": "Light",
@@ -236,7 +243,7 @@ const en: Record<string, string> = {
 
   "rev.title": "Reviews",
   "rev.empty": "No reviews for this product yet. Be the first!",
-  "rev.write": "✍️ Write a review",
+  "rev.write": "Write a review",
   "rev.closeBtn": "Close",
   "rev.one": "review",
   "rev.many": "reviews",
