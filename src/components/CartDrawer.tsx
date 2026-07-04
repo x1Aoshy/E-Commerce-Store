@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import { useBranding } from "@/context/BrandingContext";
 import { useLang } from "@/context/LanguageContext";
 import CopyNumber from "@/components/CopyNumber";
+import SmartImage from "@/components/SmartImage";
 
 // El generador de QR (lib `qrcode`) se carga sólo cuando se muestra el recibo,
 // para no pesar en el bundle inicial de todas las páginas.
@@ -362,14 +363,14 @@ export default function CartDrawer() {
                     className="flex gap-3 rounded-[4px] border border-line/10 p-3"
                   >
                     {thumbById.get(item.id) ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={thumbById.get(item.id)}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        className="h-14 w-14 shrink-0 rounded-[4px] border border-line/10 bg-surface-soft object-cover"
-                      />
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[4px] border border-line/10 bg-surface-soft">
+                        <SmartImage
+                          src={thumbById.get(item.id)}
+                          alt=""
+                          sizes="56px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[4px] border border-line/10 bg-surface-soft text-ink-muted">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -439,13 +440,9 @@ export default function CartDrawer() {
                           className="flex items-center gap-2.5 rounded-[4px] border border-line/10 p-2.5 text-sm"
                         >
                           {thumb && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={thumb}
-                              alt=""
-                              loading="lazy"
-                              className="h-10 w-10 shrink-0 rounded-[3px] object-cover"
-                            />
+                            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-[3px]">
+                              <SmartImage src={thumb} alt="" sizes="40px" className="object-cover" />
+                            </div>
                           )}
                           <div className="min-w-0 flex-1">
                             <p className="truncate font-medium text-ink">

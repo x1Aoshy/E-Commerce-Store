@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import ProductImage from "./ProductImage";
+import SmartImage from "./SmartImage";
 import { productImages, isVideo } from "@/lib/images";
 
 interface ProductGalleryProps {
@@ -16,7 +17,7 @@ interface ProductGalleryProps {
 // Galería de medios del producto: flechas suaves, puntitos indicadores y swipe
 // táctil. Si hay 0/1 medio, muestra la imagen (o el placeholder) sin controles.
 // `href` (opcional) hace que tocar la imagen navegue; las flechas/puntos no.
-export default function ProductGallery({ product, href, className = "", controls = false, fit = "cover" }: ProductGalleryProps) {
+export default function ProductGallery({ product, href, className = "", controls = false, fit = "cover", sizes }: any) {
   const media = productImages(product);
   const [i, setI] = useState(0);
   const startX = useRef<number | null>(null);
@@ -36,14 +37,16 @@ export default function ProductGallery({ product, href, className = "", controls
         preload="metadata"
       />
     ) : (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={product?.name || ""}
-        loading={eager ? "eager" : "lazy"}
-        decoding="async"
-        className={`h-full w-full ${fitClass} ${className}`}
-      />
+      // Optimizada por next/image (fill): el wrapper relativo define el área.
+      <div className="relative h-full w-full">
+        <SmartImage
+          src={src}
+          alt={product?.name || ""}
+          priority={eager}
+          sizes={sizes || "(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"}
+          className={`${fitClass} ${className}`}
+        />
+      </div>
     );
   }
 

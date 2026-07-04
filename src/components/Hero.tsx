@@ -6,6 +6,7 @@ import { useBranding } from "@/context/BrandingContext";
 import { useLang } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/format";
 import { productImages, isVideo } from "@/lib/images";
+import SmartImage from "@/components/SmartImage";
 
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
@@ -91,13 +92,12 @@ export default function Hero({ products = [] }: any) {
                 idx === sel ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <SmartImage
                 src={img}
                 alt={p.name || ""}
-                loading={idx === 0 ? "eager" : "lazy"}
-                decoding="async"
-                className="h-full w-full object-contain"
+                priority={idx === 0}
+                sizes="(max-width: 640px) 100vw, 40vw"
+                className="object-contain"
               />
             </Link>
           ))}
