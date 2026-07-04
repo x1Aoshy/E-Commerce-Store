@@ -14,7 +14,7 @@ const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, 
 // producto flotando (ondulación suave), nombre y precio, tocable para ir a la
 // ficha. Si no hay productos con foto, cae al fondo/logo de Ajustes como antes.
 export default function Hero({ products = [] }: any) {
-  const { heroImages, whatsappNumber } = useBranding();
+  const { heroImages, heroShowcase, whatsappNumber } = useBranding();
   const { t } = useLang();
   const images = Array.isArray(heroImages) ? heroImages.filter(Boolean) : [];
   const [current, setCurrent] = useState(0);
@@ -28,19 +28,33 @@ export default function Hero({ products = [] }: any) {
       )}`
     : "#productos";
 
-  // Vitrina: productos CON foto y stock (destacados primero), hasta 5. Cada uno
-  // guarda su primera foto para el carrusel.
+  // Vitrina del carrusel. Manda la lista CURADA de Ajustes (el dueño elige
+  // productos, orden y foto); si está vacía, selección automática: productos
+  // con foto y stock, destacados primero, hasta 5.
   const showcase = useMemo(() => {
-    const withImg = (Array.isArray(products) ? products : [])
+    const list = Array.isArray(products) ? products : [];
+    const firstPhoto = (p: any) =>
+      productImages(p).find((u: any) => !isVideo(u)) || "";
+
+    // Curada: respeta el orden elegido; salta productos borrados o agotados y
+    // cae a la primera foto del producto si la elegida ya no existe.
+    const curated = (Array.isArray(heroShowcase) ? heroShowcase : [])
+      .map(({ id, image }: any) => {
+        const p = list.find((x: any) => x.id === id);
+        if (!p || (Number(p.stock) || 0) <= 0) return null;
+        const img = image && !isVideo(image) ? image : firstPhoto(p);
+        return img ? { p, img } : null;
+      })
+      .filter(Boolean);
+    if (curated.length > 0) return curated.slice(0, 8);
+
+    const withImg = list
       .filter((p: any) => (Number(p?.stock) || 0) > 0)
-      .map((p: any) => ({
-        p,
-        img: productImages(p).find((u: any) => !isVideo(u)) || "",
-      }))
+      .map((p: any) => ({ p, img: firstPhoto(p) }))
       .filter((x: any) => x.img);
     const featured = withImg.filter((x: any) => x.p.featured);
     return (featured.length > 0 ? featured : withImg).slice(0, 5);
-  }, [products]);
+  }, [products, heroShowcase]);
   const hasShowcase = showcase.length > 0;
 
   // Carrusel de productos (4.5s) o, si no hay vitrina, del fondo/logo (5s).

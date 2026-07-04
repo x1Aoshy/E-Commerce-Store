@@ -690,10 +690,28 @@ function defaultSettings() {
     whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
     whatsappMessage: "",
     heroImages: [],
+    heroShowcase: [],
     paymentInfo: "",
     instagramUrl: "",
     facebookUrl: "",
   };
+}
+
+// Carrusel del hero curado: lista de { id de producto, url de foto elegida }.
+// Sanea forma, deduplica por producto y limita a 8 entradas.
+function sanitizeShowcase(list: any) {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const out: any[] = [];
+  for (const it of list) {
+    const id = String(it?.id || "").trim().slice(0, 80);
+    const image = String(it?.image || "").trim().slice(0, 1000);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, image });
+    if (out.length >= 8) break;
+  }
+  return out;
 }
 
 function mapSettings(row) {
@@ -709,6 +727,7 @@ function mapSettings(row) {
     whatsappNumber: row.whatsapp_number || def.whatsappNumber,
     whatsappMessage: row.whatsapp_message || "",
     heroImages: Array.isArray(row.hero_images) ? row.hero_images : [],
+    heroShowcase: sanitizeShowcase(row.hero_showcase),
     // Datos de pago (banco/cuenta/transferencia móvil) que se le muestran al
     // cliente al confirmar el pedido y en el recibo.
     paymentInfo: row.payment_info || "",
@@ -760,6 +779,10 @@ export async function updateSettings(patch: any = {}) {
     // Fondo del hero: arreglo de URLs (reusa el saneador de medios).
     next.hero_images = sanitizeMedia(patch.heroImages);
   }
+  if (patch.heroShowcase !== undefined) {
+    // Carrusel curado: [{ id de producto, foto elegida }] en el orden a mostrar.
+    next.hero_showcase = sanitizeShowcase(patch.heroShowcase);
+  }
   if (patch.paymentInfo !== undefined) {
     // Datos de pago (texto libre multilínea: banco, cuenta, a nombre de quién).
     next.payment_info = String(patch.paymentInfo || "").trim().slice(0, 600);
@@ -771,11 +794,25 @@ export async function updateSettings(patch: any = {}) {
     next.facebook_url = String(patch.facebookUrl || "").trim().slice(0, 300);
   }
 
-  const { data, error } = await supabase
+  // RESILIENCIA: si una columna nueva todavía no existe (migración sin correr),
+  // NO rompemos todo el guardado — se descarta esa columna y se reintenta. El
+  // campo descartado no persiste (el admin lo detecta comparando la respuesta).
+  let { data, error } = await supabase
     .from("settings")
     .upsert(next, { onConflict: "id" })
     .select("*")
     .maybeSingle();
+  for (let i = 0; i < 3 && error; i++) {
+    const m = /column "?([a-z0-9_]+)"?/i.exec(error.message || "");
+    const col = m && m[1];
+    if (!col || !(col in next) || col === "id") break;
+    delete next[col];
+    ({ data, error } = await supabase
+      .from("settings")
+      .upsert(next, { onConflict: "id" })
+      .select("*")
+      .maybeSingle());
+  }
   if (error) throw new Error(`No se pudieron guardar los ajustes: ${error.message}`);
   return mapSettings(data);
 }

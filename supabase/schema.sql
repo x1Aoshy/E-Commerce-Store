@@ -76,7 +76,8 @@ create table if not exists public.settings (
   login_icon_url   text not null default '',
   whatsapp_number  text not null default '',   -- número del chat (solo dígitos)
   whatsapp_message text not null default '',   -- mensaje/cierre automatizado
-  hero_images      jsonb not null default '[]'::jsonb,  -- fondo(s) del inicio (carrusel)
+  hero_images      jsonb not null default '[]'::jsonb,  -- fondo(s) del inicio (respaldo)
+  hero_showcase    jsonb not null default '[]'::jsonb,  -- carrusel curado: [{id de producto, foto}]
   payment_info     text not null default '',    -- datos de pago (banco/cuenta) para el cliente
   instagram_url    text not null default '',    -- link de Instagram (footer)
   facebook_url     text not null default '',    -- link de Facebook (footer)
@@ -88,6 +89,7 @@ insert into public.settings (id) values (1) on conflict (id) do nothing;
 alter table public.settings add column if not exists whatsapp_number text not null default '';
 alter table public.settings add column if not exists whatsapp_message text not null default '';
 alter table public.settings add column if not exists hero_images jsonb not null default '[]'::jsonb;
+alter table public.settings add column if not exists hero_showcase jsonb not null default '[]'::jsonb;
 alter table public.settings add column if not exists payment_info text not null default '';
 alter table public.settings add column if not exists instagram_url text not null default '';
 alter table public.settings add column if not exists facebook_url text not null default '';

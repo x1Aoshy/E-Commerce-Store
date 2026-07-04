@@ -124,6 +124,14 @@ export interface CartItem {
 
 /* ------------------------------- Ajustes --------------------------------- */
 
+/** Entrada del carrusel del hero elegida por el dueño: producto + foto. */
+export interface HeroShowcaseItem {
+  /** id del producto que sale en el carrusel. */
+  id: string;
+  /** URL de la foto elegida ("" = usa la primera foto del producto). */
+  image: string;
+}
+
 export interface Settings {
   storeName: string;
   logoUrl: string;
@@ -131,6 +139,8 @@ export interface Settings {
   whatsappNumber: string;
   whatsappMessage: string;
   heroImages: string[];
+  /** Carrusel del hero curado a mano (vacío = selección automática). */
+  heroShowcase: HeroShowcaseItem[];
   /** Datos de pago (banco/cuenta/transferencia) mostrados al cliente. */
   paymentInfo: string;
   /** Links de redes (footer); vacíos = ícono oculto. */

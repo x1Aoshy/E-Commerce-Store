@@ -23,6 +23,7 @@ export async function PATCH(req) {
       whatsappNumber: body.whatsappNumber,
       whatsappMessage: body.whatsappMessage,
       heroImages: body.heroImages,
+      heroShowcase: body.heroShowcase,
       paymentInfo: body.paymentInfo,
       instagramUrl: body.instagramUrl,
       facebookUrl: body.facebookUrl,

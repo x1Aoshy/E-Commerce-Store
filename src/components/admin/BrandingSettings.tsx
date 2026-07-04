@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
 import MediaManager from "./MediaManager";
+import HeroShowcaseEditor from "./HeroShowcaseEditor";
 
 // Panel de Ajustes (branding): el dueño cambia el nombre de la tienda, el logo
 // y el "Icon" (favicon del sitio + ícono del sidebar del admin). Las imágenes/
@@ -103,6 +104,7 @@ export default function BrandingSettings() {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [heroImages, setHeroImages] = useState<any[]>([]);
+  const [heroShowcase, setHeroShowcase] = useState<any[]>([]);
   const [paymentInfo, setPaymentInfo] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
   const [facebookUrl, setFacebookUrl] = useState("");
@@ -124,6 +126,11 @@ export default function BrandingSettings() {
           setWhatsappMessage(data.settings.whatsappMessage || "");
           setHeroImages(
             Array.isArray(data.settings.heroImages) ? data.settings.heroImages : []
+          );
+          setHeroShowcase(
+            Array.isArray(data.settings.heroShowcase)
+              ? data.settings.heroShowcase
+              : []
           );
           setPaymentInfo(data.settings.paymentInfo || "");
           setInstagramUrl(data.settings.instagramUrl || "");
@@ -153,6 +160,7 @@ export default function BrandingSettings() {
           whatsappNumber,
           whatsappMessage,
           heroImages,
+          heroShowcase,
           paymentInfo,
           instagramUrl,
           facebookUrl,
@@ -160,7 +168,19 @@ export default function BrandingSettings() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success("Ajustes guardados");
+        // Si mandamos carrusel pero volvió vacío, la columna hero_showcase no
+        // existe todavía (migración SQL pendiente): avisamos en vez de callar.
+        const saved = data.settings?.heroShowcase;
+        if (
+          heroShowcase.length > 0 &&
+          (!Array.isArray(saved) || saved.length === 0)
+        ) {
+          toast.error(
+            "Todo se guardó menos el carrusel: corré la migración SQL (hero_showcase) en Supabase."
+          );
+        } else {
+          toast.success("Ajustes guardados");
+        }
         branding.refresh?.();
       } else {
         toast.error(data.error || "No se pudieron guardar los ajustes.");
@@ -289,10 +309,22 @@ export default function BrandingSettings() {
 
       <div className="card space-y-3 p-5 shadow-soft">
         <div>
+          <h3 className="text-sm font-semibold text-ink">Carrusel del inicio</h3>
+          <p className="mt-0.5 text-[11px] text-ink-muted">
+            Los productos que salen flotando en la portada, en este orden y con
+            la foto que elijas. Si lo dejás vacío, el carrusel se arma solo con
+            los destacados.
+          </p>
+        </div>
+        <HeroShowcaseEditor value={heroShowcase} onChange={setHeroShowcase} />
+      </div>
+
+      <div className="card space-y-3 p-5 shadow-soft">
+        <div>
           <h3 className="text-sm font-semibold text-ink">Fondo del inicio</h3>
           <p className="mt-0.5 text-[11px] text-ink-muted">
-            Imagen de fondo del hero (la portada de la tienda). Si subís más de
-            una, rotan solas en carrusel. Lo ideal: una foto apaisada (horizontal).
+            Imagen de respaldo de la portada: solo se muestra cuando no hay
+            productos con foto para el carrusel. Si subís más de una, rotan solas.
           </p>
         </div>
         <MediaManager value={heroImages} onChange={setHeroImages} />

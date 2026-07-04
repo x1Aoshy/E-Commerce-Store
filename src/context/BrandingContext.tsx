@@ -20,6 +20,7 @@ const DEFAULTS = {
   whatsappNumber: "",
   whatsappMessage: "",
   heroImages: [],
+  heroShowcase: [],
   paymentInfo: "",
   instagramUrl: "",
   facebookUrl: "",
@@ -47,6 +48,9 @@ export function BrandingProvider({ children, initial }) {
           whatsappMessage: data.settings.whatsappMessage || "",
           heroImages: Array.isArray(data.settings.heroImages)
             ? data.settings.heroImages
+            : [],
+          heroShowcase: Array.isArray(data.settings.heroShowcase)
+            ? data.settings.heroShowcase
             : [],
           paymentInfo: data.settings.paymentInfo || "",
           instagramUrl: data.settings.instagramUrl || "",
