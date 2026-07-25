@@ -1,98 +1,71 @@
-# Aosh Suplementos — Storefront
+Aosh Supplements — Storefront
 
-Tienda de suplementos sobria y limpia, construida con **Next.js (App Router)** y
-**Tailwind CSS**. Los pedidos se gestionan por **WhatsApp** (enlaces `wa.me`) y el
-**inventario se descuenta automáticamente** al confirmar cada orden. Los datos
-(productos y pedidos) se guardan en **Supabase (Postgres)**.
+A clean and minimalist supplement storefront built with Next.js (App Router) and Tailwind CSS. Order management is handled seamlessly via WhatsApp (wa.me links), and inventory is automatically deducted upon order confirmation. All data (products and orders) is securely stored in Supabase (PostgreSQL).
 
-## Características
+Key Features
+🛍️ Minimalist Storefront: Features a hero section, a product grid with category filters, detailed product modals, and a slide-out shopping cart.
+💬 WhatsApp Checkout: The cart compiles the order and redirects the user to WhatsApp with a pre-filled summary addressed to the vendor's number. No traditional payment gateway is required.
+📦 Real-Time Inventory: Every order is validated against the current stock and deducted automatically. If there is insufficient stock, the order is rejected with detailed feedback.
+🔐 Admin Dashboard (/admin): A secure panel to manage pricing, update stock levels, highlight featured products, add new items, and view/confirm orders.
+Getting Started
+bash
 
-- 🛍️ **Storefront** sobrio: hero, grilla de productos con filtros por categoría,
-  ficha de producto (modal) y carrito deslizable.
-- 💬 **Checkout por WhatsApp**: el carrito arma el pedido y abre WhatsApp con el
-  resumen pre-cargado hacia el número del vendedor. Sin pasarela de pago.
-- 📦 **Inventario en tiempo real**: cada pedido valida y descuenta stock. Si no
-  hay unidades suficientes, el pedido se rechaza con el detalle.
-- 🔐 **Panel de administración** (`/admin`): editar precios y stock, destacar
-  productos, dar de alta productos y ver/confirmar órdenes.
 
-## Puesta en marcha
-
-```bash
 npm install
-cp .env.example .env.local   # y completá tus valores (incluida la base Supabase)
+cp .env.example .env.local   # Add your environment variables (including Supabase credentials)
 npm run dev                  # http://localhost:3000
-```
+The admin dashboard is accessible at http://localhost:3000/admin.
 
-El panel de administración está en `http://localhost:3000/admin`.
+Database Setup (Supabase)
 
-## Base de datos (Supabase)
+Create a free project on Supabase.
+Navigate to SQL Editor → New query, paste the contents of 
+supabase/schema.sql
+, and click Run. This will create the products and orders tables and populate the database with a sample catalog.
+Go to Project Settings → API and copy the following credentials:
+Project URL → SUPABASE_URL
+service_role key → SUPABASE_SERVICE_ROLE_KEY (Keep this secret!)
+Add these values to your .env.local file (for local development) and/or to your Vercel environment variables (for production).
+Note: The service_role key is strictly used server-side (within Server Components and Route Handlers) via src/lib/supabase.js. It is never exposed to the browser. The tables have Row Level Security (RLS) enabled, ensuring that the public API key cannot directly read or write to the database.
 
-1. Creá un proyecto gratis en [supabase.com](https://supabase.com).
-2. Abrí **SQL Editor → New query**, pegá el contenido de
-   [`supabase/schema.sql`](./supabase/schema.sql) y apretá **Run**. Eso crea las
-   tablas `products` y `orders` y carga el catálogo de ejemplo.
-3. En **Project Settings → API** copiá:
-   - **Project URL** → `SUPABASE_URL`
-   - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (¡es secreta!)
-4. Pegá esos valores en `.env.local` (local) y/o en las variables de entorno de
-   Vercel (producción).
+Configuration (.env.local)
 
-> La `service_role key` se usa **sólo del lado del servidor** (Server Components
-> y Route Handlers) a través de `src/lib/supabase.js`. Nunca se expone al
-> navegador. Las tablas tienen RLS activado, así que la clave pública no puede
-> leer ni escribir la base directamente.
+Variable	Description
 
-## Configuración (`.env.local`)
+NEXT_PUBLIC_WHATSAPP_NUMBER	Vendor's phone number in international format, without the + sign or spaces. (e.g., 5491112345678)
+NEXT_PUBLIC_STORE_NAME	Brand or store name (used in headers, titles, and messages).
+NEXT_PUBLIC_CURRENCY	Currency symbol used for displaying prices (defaults to $).
+ADMIN_PASSWORD	Password for accessing the /admin dashboard.
+SUPABASE_URL	Your Supabase Project URL.
+SUPABASE_SERVICE_ROLE_KEY	Your Supabase service_role key (must be kept secret, server-side only). Deployment on Vercel
 
-| Variable | Descripción |
-|----------|-------------|
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | Número del vendedor en formato internacional, **sin** `+` ni espacios. Ej: `5491112345678`. |
-| `NEXT_PUBLIC_STORE_NAME` | Nombre de la marca (header, títulos, mensajes). |
-| `NEXT_PUBLIC_CURRENCY` | Símbolo de moneda para mostrar precios (`$` por defecto). |
-| `ADMIN_PASSWORD` | Contraseña del panel `/admin`. |
-| `SUPABASE_URL` | Project URL de Supabase. |
-| `SUPABASE_SERVICE_ROLE_KEY` | service_role key de Supabase (secreta, sólo servidor). |
+Import the repository into Vercel.
 
-## Deploy en Vercel
+Root Directory: Leave it set to the repository root (the Next.js app resides here).
 
-1. Importá el repo en [vercel.com](https://vercel.com).
-2. **Root Directory**: dejalo en la raíz del repo (la app Next.js vive en la raíz).
-3. Cargá las **mismas variables** de la tabla de arriba en
-   **Settings → Environment Variables**.
-4. **Deploy**. Cada push genera además un preview automático.
+Add the same environment variables listed in the table above under Settings → Environment Variables.
+Click Deploy. Vercel will automatically generate preview deployments for every subsequent push.
 
-> Importante: el catálogo y los pedidos viven en Supabase (no en el disco),
-> porque el sistema de archivos de Vercel es de sólo lectura. Por eso el panel
-> `/admin` funciona también en producción.
+Important: The product catalog and orders are managed through Supabase rather than the local filesystem, as Vercel's filesystem is read-only. This architecture ensures that the /admin dashboard remains fully functional in the production environment.
 
-## Migrar a otra base de datos
+Database Migration
 
-La interfaz de acceso a datos está aislada en `src/lib/db.js` (`getProducts`,
-`createOrder`, etc.). Para usar Prisma / otro Postgres / MySQL sólo hay que
-reemplazar la implementación de esas funciones, sin tocar el resto de la app.
+The data access interface is decoupled and isolated within src/lib/db.js (e.g., getProducts, createOrder). To migrate to Prisma, another PostgreSQL instance, or MySQL, simply replace the implementations of these functions. No modifications to the rest of the application are required.
 
-## Estructura
+Project Structure
+text
 
-```
+
 src/
 ├── app/
-│   ├── page.js              # Storefront
-│   ├── admin/page.js        # Login + panel admin
+│   ├── page.js              # Main Storefront
+│   ├── admin/page.js        # Admin Login & Dashboard
 │   └── api/
-│       ├── products/        # GET catálogo · POST alta · PATCH editar
-│       ├── orders/          # POST crear pedido (descuenta stock) · GET listar
-│       └── admin/verify/    # Login por cookie del panel
-├── components/              # Header, Hero, ProductGrid, CartDrawer, admin/…
-├── context/CartContext.js   # Estado del carrito (localStorage)
-└── lib/                     # db (Supabase), supabase (cliente), whatsapp, format, auth
+│       ├── products/        # GET catalog · POST new product · PATCH edits
+│       ├── orders/          # POST create order (deducts stock) · GET order list
+│       └── admin/verify/    # Admin panel cookie-based login verification
+├── components/              # UI Components (Header, Hero, ProductGrid, CartDrawer, Admin, etc.)
+├── context/CartContext.js   # Shopping cart state management (via localStorage)
+└── lib/                     # Utilities (db/Supabase interface, Supabase client, WhatsApp logic, formatting, auth)
 supabase/
-└── schema.sql               # Tablas + RLS + catálogo inicial (pegar en Supabase)
-```
-
-## Próximo paso: WhatsApp Cloud API (opcional)
-
-Hoy los pedidos usan enlaces `wa.me` (cero configuración). Para enviar
-confirmaciones automáticas desde el servidor se puede sumar la **WhatsApp Cloud
-API** de Meta: la lógica de creación de la orden ya está centralizada en
-`POST /api/orders`, así que sólo habría que llamar a la API de Meta ahí mismo.
+└── schema.sql               # Database tables, RLS policies, and initial catalog seed (run in Supabase)
