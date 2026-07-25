@@ -1,4 +1,4 @@
-# Aosh Supplements — Storefront
+# Storefront Ecom
 
 A clean and minimalist supplement storefront built with Next.js (App Router) and Tailwind CSS. Order management is handled seamlessly via WhatsApp (`wa.me` links), and inventory is automatically deducted upon order confirmation. All data (products and orders) is securely stored in Supabase (PostgreSQL).
 
