@@ -181,7 +181,7 @@ function ToastItem({ toast, onDismiss }: any) {
   const { id, type, message, leaving } = toast;
   return (
     <div
-      className="pointer-events-auto relative flex w-full max-w-sm items-start gap-2.5 overflow-hidden rounded-[4px] border border-line/12 bg-surface px-3.5 py-2.5 shadow-card motion-reduce:!animate-none"
+      className="pointer-events-auto relative flex w-full max-w-sm items-start gap-3 overflow-hidden border-l-2 border-accent-400 bg-surface px-4 py-3 shadow-card ring-1 ring-line/12 motion-reduce:!animate-none"
       style={{
         animation: `${leaving ? "toast-out" : "toast-in"} ${EXIT_MS}ms ease forwards`,
       }}
@@ -195,14 +195,14 @@ function ToastItem({ toast, onDismiss }: any) {
       <span className="relative mt-0.5 flex h-4 w-4 flex-none items-center justify-center">
         <ToastIcon type={type} />
       </span>
-      <p className="relative min-w-0 flex-1 break-words text-sm leading-snug text-ink">
+      <p className="relative min-w-0 flex-1 break-words text-[13.5px] font-medium leading-snug text-ink">
         {message}
       </p>
       <button
         type="button"
         onClick={() => onDismiss(id)}
         aria-label="Cerrar"
-        className="relative -mr-1 mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-[3px] text-ink-muted transition hover:text-ink"
+        className="relative -mr-1 mt-0.5 flex h-4 w-4 flex-none items-center justify-center text-ink-muted transition-colors hover:text-ink"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <path d="M6 6l12 12M18 6L6 18" />
@@ -222,7 +222,7 @@ function ToastIcon({ type }: any) {
   }
   if (type === "error") {
     return (
-      <svg className="h-4 w-4 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+      <svg className="h-4 w-4 text-ember-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
         <path d="M6 6l12 12M18 6L6 18" />
       </svg>
     );

@@ -2,74 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   TITAN · SISTEMA VISUAL "CARBON & 24K"
+   --------------------------------------------------------------------------
+   Reglas de la casa:
+   1. Geometría RECTA para lo estructural (tarjetas, botones, secciones).
+      Píldoras sólo para filtros/chips. Ese choque es la firma.
+   2. Tres colores con oficio: ORO = marca/precio · BRASA = urgencia ·
+      VERDE = confianza/WhatsApp. Si un color no tiene oficio, no se usa.
+   3. El movimiento comunica, no decora: nada se mueve porque sí.
+   ========================================================================== */
+
 @layer base {
   /* ===== Tema OSCURO (por defecto) ===== */
-  /* `.theme-dark` fuerza el tema oscuro en un subárbol (ej. el panel admin)
-     aunque el resto de la página esté en claro. */
   :root,
   .theme-dark {
     color-scheme: dark;
-    --c-night: 10 12 13; /* #0a0c0d fondo de página */
-    --c-surface: 20 24 26; /* #14181a tarjetas */
-    --c-surface-soft: 27 33 37; /* #1b2125 elevado */
-    --c-ink: 241 236 225; /* #f1ece1 texto (crema) */
-    --c-ink-soft: 179 172 159;
-    --c-ink-muted: 131 123 111;
-    --c-line: 255 255 255; /* bordes/líneas: blancos sobre oscuro */
-    --c-fill: 255 255 255; /* rellenos sutiles */
+    --c-night: 10 10 11; /* #0a0a0b carbón */
+    --c-surface: 19 20 23; /* #131417 tarjetas */
+    --c-surface-soft: 28 30 34; /* #1c1e22 elevado */
+    --c-ink: 245 242 236; /* #f5f2ec hueso cálido */
+    --c-ink-soft: 168 164 156;
+    --c-ink-muted: 118 114 105;
+    --c-line: 255 255 255;
+    --c-fill: 255 255 255;
+    /* Sombra proyectada de las tarjetas al elevarse. */
+    --c-shadow: 0 0 0;
+    /* Intensidad de las capas de ambiente del fondo (ver Background.tsx).
+       Sobre carbón, la luz se puede permitir ser generosa. */
+    --ambient-gold: 0.16;
+    --ambient-ember: 0.1;
+    --ambient-grid: 0.055;
   }
 
   /* ===== Tema CLARO ===== */
   .light {
     color-scheme: light;
-    --c-night: 246 243 235; /* fondo cálido casi blanco */
-    --c-surface: 255 255 255; /* tarjetas blancas */
-    --c-surface-soft: 240 236 227; /* elevado / hover */
-    --c-ink: 28 25 19; /* texto oscuro cálido */
-    --c-ink-soft: 74 68 59;
-    --c-ink-muted: 122 114 101;
-    --c-line: 23 20 15; /* bordes/líneas: casi negros sobre claro */
-    --c-fill: 23 20 15;
+    --c-night: 244 241 234; /* #f4f1ea papel cálido */
+    --c-surface: 255 255 255;
+    --c-surface-soft: 235 231 221;
+    --c-ink: 17 17 18; /* #111112 casi negro */
+    --c-ink-soft: 74 71 64;
+    --c-ink-muted: 122 117 107;
+    --c-line: 17 17 18;
+    --c-fill: 17 17 18;
+    --c-shadow: 17 17 18;
+    /* Sobre papel, la MISMA luz ensucia el fondo y lo vuelve amarillento.
+       Acá el ambiente baja a un rumor. */
+    --ambient-gold: 0.055;
+    --ambient-ember: 0.035;
+    --ambient-grid: 0.035;
   }
 
   :root {
-    /* Grano "granizado" reutilizable (mismo ruido que el fondo) para texturar
-       botones y superficies. */
+    /* Grano compartido: textura de papel/film sobre fondos y botones. */
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
+
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /* El header sticky no debe tapar el destino de un anclaje (#productos).
+       En móvil el header es más alto porque lleva la fila de categorías. */
+    scroll-padding-top: 7.5rem;
   }
+  @screen lg {
+    html {
+      scroll-padding-top: 5.5rem;
+    }
+  }
+
   body {
-    /* Fondo oscuro de página; el <Background/> con textura va por encima de él.
-       Texto base en Inter (font-sans). */
     @apply bg-night font-sans text-ink antialiased;
   }
+
   ::selection {
-    background: #e7c454;
-    color: #1a1306;
+    background: #f0b92a;
+    color: #17130a;
   }
-  /* Títulos grandes en Oswald (atlético/condensado). */
+
+  /* Los h1/h2 quedan en Manrope pesado: el panel admin y los textos largos se
+     leen bien. Los titulares de PÓSTER piden `.headline` a propósito. */
   h1,
   h2 {
-    @apply font-display;
+    @apply font-extrabold tracking-headline;
   }
   h3 {
-    @apply tracking-tight;
+    @apply font-bold tracking-tight;
+  }
+
+  /* Las cifras (precios, contadores, stock) siempre tabulares: no bailan al
+     cambiar de valor y las columnas de totales quedan alineadas. */
+  .tnum,
+  input[type="number"] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 }
 
-/* Scrollbar personalizada, fina y clara para tema oscuro. */
+/* Scrollbar fina que hereda el tema. */
 @layer base {
-  /* Firefox */
   html {
     scrollbar-width: thin;
     scrollbar-color: rgb(var(--c-line) / 0.28) transparent;
   }
-
-  /* WebKit (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -84,7 +121,7 @@
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(var(--c-line) / 0.38);
+    background-color: rgb(var(--c-line) / 0.4);
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
@@ -92,60 +129,142 @@
 }
 
 @layer components {
+  /* ---------------------------------------------------------------- LAYOUT */
   .container-content {
-    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-content px-5 sm:px-7 lg:px-10;
   }
 
-  /* Botones planos y cuadrados, con borde fino (outline oscuro) y textura de
-     granizado encima del color. Sin gradientes ni glows. */
+  /* Titular de póster: Anton, versalitas, interlineado apretadísimo. Es el
+     recurso más fuerte del sistema — se usa poco y grande. */
+  .headline {
+    @apply font-display uppercase leading-[0.86] tracking-headline;
+  }
+
+  /* Etiqueta técnica: mono, mayúsculas, muy espaciada. Da el aire "laboratorio
+     deportivo" y ordena la jerarquía sin gritar. */
+  .eyebrow {
+    @apply font-mono text-[10px] uppercase tracking-widest2 text-ink-muted sm:text-[11px];
+  }
+
+  /* Regla de sección: hairline que cruza todo el ancho. El catálogo impreso
+     se siente ordenado por reglas, no por sombras. */
+  .rule {
+    @apply h-px w-full bg-line/12;
+  }
+
+  /* --------------------------------------------------------------- BOTONES */
   .btn-primary,
   .btn-accent,
-  .btn-ghost {
-    @apply relative isolate inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-[3px] border px-5 py-2.5 text-sm font-medium transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:pointer-events-none disabled:opacity-40 sm:min-h-0;
+  .btn-ghost,
+  .btn-wa {
+    @apply relative isolate inline-flex min-h-[46px] items-center justify-center gap-2 overflow-hidden
+           rounded-none border px-6 text-[13px] font-extrabold uppercase tracking-[0.08em]
+           transition-all duration-200 ease-out
+           active:translate-y-px focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-accent-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-night
+           disabled:pointer-events-none disabled:opacity-40;
   }
-  /* Primario: en oscuro es claro (ink crema) con texto oscuro; en claro se
-     invierte solo (ink oscuro) con texto claro. */
+
+  /* Primario: bloque de tinta. En oscuro sale claro; en claro, oscuro. */
   .btn-primary {
-    @apply border-night/80 bg-ink text-night hover:opacity-90;
+    @apply border-ink bg-ink text-night hover:-translate-y-0.5 hover:shadow-hard-sm;
   }
-  /* Acento (dorado): SIEMPRE texto oscuro fijo, en ambos temas, para buen
-     contraste sobre el dorado. */
+
+  /* Acento (oro): la acción de COMPRA. Texto siempre oscuro para contraste. */
   .btn-accent {
-    @apply border-night/80 bg-accent-500 font-semibold hover:bg-accent-400;
-    color: #1a1306;
+    @apply border-accent-400 bg-accent-400 hover:-translate-y-0.5 hover:bg-accent-300 hover:shadow-hard-sm;
+    color: #17130a;
   }
+
+  /* Fantasma: acción secundaria. Se rellena al pasar el cursor. */
   .btn-ghost {
-    @apply border-line/20 text-ink hover:border-line/40 hover:bg-fill/5;
+    @apply border-line/25 text-ink hover:border-ink hover:bg-ink hover:text-night;
   }
-  /* El grano va detrás del texto (::before pinta antes que el contenido). */
+
+  /* WhatsApp: verde de marca, para el paso final del pedido. */
+  .btn-wa {
+    @apply border-green-400 bg-green-400 text-[#052e16] hover:-translate-y-0.5 hover:bg-green-300 hover:shadow-hard-sm;
+  }
+
+  /* Grano bajo el texto de los botones sólidos: quita el plástico del color
+     plano y los acerca a una impresión real. */
   .btn-primary::before,
-  .btn-accent::before {
+  .btn-accent::before,
+  .btn-wa::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     background-image: var(--grain);
     background-size: 150px 150px;
-    opacity: 0.14;
+    opacity: 0.16;
     mix-blend-mode: overlay;
     pointer-events: none;
   }
 
-  .card {
-    @apply rounded-[4px] border border-line/10 bg-surface;
+  /* Barrido de luz al pasar el cursor: el metal pulido reacciona. */
+  .btn-accent::after,
+  .btn-primary::after,
+  .btn-wa::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.45), transparent);
+    transform: translateX(-120%) skewX(-18deg);
+    pointer-events: none;
   }
-  .input {
-    /* text-base en mobile (16px) evita el auto-zoom de iOS al enfocar; text-sm en desktop. */
-    @apply min-h-[44px] w-full rounded-[4px] border border-line/15 bg-fill/[0.04] px-3.5 py-2.5 text-base text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-accent-400 focus:ring-2 focus:ring-accent-500/25 sm:text-sm;
-  }
-  .label {
-    @apply mb-1.5 block text-xs font-medium text-ink-soft;
-  }
-  .chip {
-    @apply inline-flex items-center rounded-[3px] px-2.5 py-0.5 text-[11px] font-medium;
+  .btn-accent:hover::after,
+  .btn-primary:hover::after,
+  .btn-wa:hover::after {
+    animation: sheen 1.1s ease-out;
   }
 
-  /* Oculta la scrollbar (p. ej. en la fila de filtros deslizable en mobile). */
+  /* ------------------------------------------------------------- SUPERFICIE */
+  /* Tarjeta: rectángulo puro con borde hairline. Nada de radios. */
+  .card {
+    @apply rounded-none border border-line/12 bg-surface;
+  }
+
+  /* Tarjeta "cartel": borde grueso + sombra dura desplazada. Para bloques que
+     tienen que gritar (oferta del día, garantía). */
+  .card-poster {
+    @apply rounded-none border-2 border-line/85 bg-surface shadow-hard;
+  }
+
+  /* --------------------------------------------------------------- CAMPOS */
+  .input {
+    /* 16px en móvil evita el zoom automático de iOS al enfocar. */
+    @apply min-h-[46px] w-full rounded-none border border-line/20 bg-fill/[0.03] px-4 py-3
+           text-base text-ink outline-none transition
+           placeholder:text-ink-muted/70
+           focus:border-accent-400 focus:bg-fill/[0.06] focus:ring-1 focus:ring-accent-400
+           sm:text-sm;
+  }
+  .label {
+    @apply mb-1.5 block font-mono text-[10px] uppercase tracking-widest2 text-ink-muted;
+  }
+
+  /* Chip / filtro: la única forma redonda del sistema. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-bold
+           transition-all duration-200 active:scale-95;
+  }
+  .chip-off {
+    @apply bg-transparent text-ink-soft ring-1 ring-line/20 hover:ring-line/45 hover:text-ink;
+  }
+  .chip-on {
+    @apply bg-ink text-night ring-1 ring-ink;
+  }
+
+  /* Etiqueta de oferta / stock sobre las fotos: rectángulo duro, sin radio. */
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-none px-2 py-1 font-mono text-[10px]
+           font-bold uppercase tracking-wider;
+  }
+
+  /* -------------------------------------------------------------- UTILIDAD */
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -154,14 +273,80 @@
     display: none;
   }
 
-  /* Anillo giratorio reutilizable para spinners y toasts de "loading". */
   .spin-ring {
     animation: spin-ring 0.7s linear infinite;
   }
+
+  /* Cinta infinita. El hijo `.marquee-track` se duplica en el componente y se
+     desplaza justo media pista, así el bucle es invisible. */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track {
+    @apply flex w-max animate-marquee items-center;
+  }
+  /* Se detiene al pasar el cursor: si algo de la cinta interesa (una reseña),
+     el usuario tiene que poder leerlo sin perseguirlo. */
+  .marquee-hover:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Texto contorneado (relleno vacío): números gigantes de sección sin peso
+     visual. Recurso de póster puro. */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(var(--c-line) / 0.22);
+  }
+
+  /* Enlace con subrayado que crece desde la izquierda. */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1.5px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Rejilla del catálogo impreso: hairlines entre celdas, sin tarjetas
+     flotando. Da orden y densidad de tienda real. */
+  .grid-rules {
+    @apply border-l border-t border-line/10;
+  }
+  .grid-rules > * {
+    @apply border-b border-r border-line/10;
+  }
 }
 
-/* Animaciones de toast: entran deslizando hacia arriba + fade; salen con
-   fade/scale. ~220ms, planas y suaves. */
+@layer utilities {
+  /* Recorte diagonal de esquina: la insignia se ve troquelada, no pegada. */
+  .clip-notch {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  }
+  .clip-notch-lg {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+  }
+  /* Perspectiva para el tilt de las tarjetas del carrusel. */
+  .perspective {
+    perspective: 1200px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+/* ------------------------------------------------------------------ TOASTS */
 @keyframes toast-in {
   from {
     opacity: 0;
@@ -188,7 +373,25 @@
   }
 }
 
-/* Accesibilidad: si el sistema pide menos movimiento, casi anulamos animaciones. */
+/* "Vuelo al carrito": el fantasma de la foto viaja hasta el ícono del carrito.
+   Las coordenadas las inyecta el script (lib/flyToCart.ts) como variables. */
+@keyframes fly-to-cart {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(var(--fly-x), var(--fly-y), 0) scale(0.12);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------- ACCESIBILIDAD */
+/* Si el sistema pide menos movimiento: se apaga TODO lo ambiental (cintas,
+   ken burns, barridos) y las transiciones quedan casi instantáneas. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -197,5 +400,9 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
   }
 }

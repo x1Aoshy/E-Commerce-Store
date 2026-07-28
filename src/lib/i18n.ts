@@ -2,45 +2,143 @@
 // admin y el mensaje de WhatsApp (que le llega al vendedor) quedan en español,
 // y los textos de los productos son los que escribe el dueño (un solo idioma).
 // Claves planas; si falta una traducción se cae al español y nunca rompe.
+//
+// NOTA DE REDACCIÓN: los textos venden, no describen. Verbo primero, frases
+// cortas, y CERO promesas que la tienda no pueda cumplir — nada de "envío
+// gratis" o "garantía de por vida" si no es verdad. La urgencia sólo aparece
+// atada a datos reales (stock que se agota, ofertas que existen).
 
 export type Lang = "es" | "en";
 
 const es: Record<string, string> = {
   // Header
   "header.cart": "Carrito",
+  "header.search": "Buscar",
+  "header.go": "Buscar",
+
+  // Cinta de anuncios
+  "ticker.original": "100% original",
+  "ticker.support": "Asesoría gratis",
 
   // Hero
-  "hero.title1": "Tu mejor versión",
-  "hero.title2": "empieza con",
-  "hero.title3": "RESULTADOS",
+  "hero.badge": "Atendiendo pedidos ahora",
+  "hero.title1": "Entrená duro",
+  "hero.title2": "comé bien",
+  "hero.title3": "y ganá",
   "hero.sub":
-    "Suplementos originales, asesoría real y entrega rápida. Pedí por WhatsApp.",
-  "hero.ctaProducts": "Ver productos",
+    "Suplementos originales, asesoría de verdad y entrega rápida. Elegí lo tuyo y te lo despachamos hoy mismo.",
+  "hero.ctaProducts": "Ver catálogo",
   "hero.ctaWhatsApp": "Pedir por WhatsApp",
+  "hero.scroll": "Deslizá",
+  "hero.stat1": "Productos disponibles",
+  "hero.stat2": "Promedio de {n} reseñas",
+  "hero.stat3": "Despacho en Managua",
   "hero.trust1": "Envío en 24h",
   "hero.trust2": "Pago contra entrega",
   "hero.trust3": "Atención por WhatsApp",
 
+  // Banda de garantías
+  "value.ship.t": "Entrega en 24h",
+  "value.ship.s": "Despachamos el mismo día si pedís antes de las 4 pm.",
+  "value.orig.t": "Producto original",
+  "value.orig.s": "Sellado, con registro y lote visible. Revisalo al recibirlo.",
+  "value.pay.t": "Pagá al recibir",
+  "value.pay.s": "Efectivo o transferencia. Sin adelantos ni tarjetas.",
+  "value.help.t": "Te asesoramos",
+  "value.help.s": "Escribinos y te decimos qué te sirve de verdad.",
+
+  // Carrusel "más pedidos"
+  "rail.eyebrow": "Selección",
+  "rail.heading": "Los más pedidos",
+  "rail.prev": "Anterior",
+  "rail.next": "Siguiente",
+
+  // Comprá por objetivo
+  "cat.eyebrow": "Encontrá lo tuyo",
+  "cat.heading": "Comprá por objetivo",
+  "cat.see": "Ver todo",
+
+  // Oferta del día
+  "offer.eyebrow": "Ofertas de hoy",
+  "offer.heading": "Bajá el precio, no el estándar",
+  "offer.sub":
+    "{n} productos rebajados hoy. Mismos suplementos originales, menos plata.",
+  "offer.endsIn": "Termina en",
+  "offer.hours": "Horas",
+  "offer.minutes": "Min",
+  "offer.seconds": "Seg",
+  "offer.cta": "Ver ofertas",
+  "offer.ticker": "Hasta {off} de descuento · sólo hoy",
+
   // Grid / catálogo
-  "grid.heading": "Productos",
+  "grid.eyebrow": "Catálogo completo",
+  "grid.heading": "Todos los productos",
   "grid.count": "{n} productos",
   "grid.countOne": "1 producto",
-  "grid.search": "Buscar productos…",
-  "grid.sortRelevant": "Más relevantes",
+  "grid.search": "Buscar proteína, creatina…",
+  "grid.sortLabel": "Ordenar productos",
+  "grid.sortRelevant": "Destacados",
+  "grid.sortNew": "Novedades",
   "grid.sortAsc": "Precio: menor a mayor",
   "grid.sortDesc": "Precio: mayor a menor",
   "grid.all": "Todos",
-  "grid.offers": "Ofertas",
+  "grid.offers": "En oferta",
   "grid.favorites": "Favoritos",
+  "grid.inStock": "Disponible",
+  "grid.clear": "Limpiar filtros",
+  "grid.emptyTitle": "Nada por acá",
   "grid.emptyFav":
     "Todavía no guardaste favoritos. Tocá el corazón ♥ en los productos que te gusten.",
-  "grid.empty": "No hay productos que coincidan con tu búsqueda.",
+  "grid.empty": "Ningún producto coincide con lo que buscás. Probá con otro filtro.",
 
   // Tarjeta de producto
   "card.add": "Agregar",
+  "card.quickAdd": "Agregar al carrito",
   "card.added": "Agregado",
   "card.soldout": "Agotado",
-  "card.last": "¡Últimas {n}!",
+  "card.top": "Top",
+  "card.last": "Quedan {n}",
+  "card.save": "Ahorrás {amount}",
+
+  // Reel de marca
+  "film.eyebrow": "Nuestra historia",
+  "film.reel": "Reel",
+  "film.line1": "Suplementos que sí funcionan",
+  "film.line2": "Elegidos uno por uno",
+  "film.line3": "Y en tu puerta mañana",
+  "film.cta": "Ver este producto",
+  "film.play": "Reproducir",
+  "film.pause": "Pausar",
+  "film.mute": "Silenciar",
+  "film.unmute": "Activar sonido",
+  "film.shot": "Toma",
+
+  // Reseñas
+  "test.eyebrow": "Prueba social",
+  "test.heading": "Clientes que ya volvieron",
+  "test.based": "{n} reseñas",
+  "test.anon": "Cliente",
+
+  // Preguntas frecuentes
+  "faq.eyebrow": "Antes de comprar",
+  "faq.heading": "Preguntas frecuentes",
+  "faq.sub": "Lo que más nos preguntan por WhatsApp, respondido de una vez.",
+  "faq.cta": "Preguntar por WhatsApp",
+  "faq.q1": "¿Cuánto tarda en llegar mi pedido?",
+  "faq.a1":
+    "En Managua entregamos dentro de las 24 horas si confirmás antes de las 4 pm. Al resto del país sale por encomienda y suele llegar en 2 a 3 días hábiles. Cuando despachamos te avisamos por WhatsApp.",
+  "faq.q2": "¿Cómo pago?",
+  "faq.a2":
+    "Contra entrega en efectivo, o por transferencia bancaria antes del despacho. No necesitás tarjeta ni cuenta en ningún lado: el pedido se cierra por WhatsApp.",
+  "faq.q3": "¿Los productos son originales?",
+  "faq.a3":
+    "Sí. Trabajamos sólo con importadores autorizados y todo llega sellado, con lote y fecha de vencimiento visibles. Revisá el envase delante del repartidor antes de pagar.",
+  "faq.q4": "¿Puedo cambiar o devolver algo?",
+  "faq.a4":
+    "Si el producto llega dañado o no es el que pediste, lo cambiamos sin costo. Escribinos el mismo día que lo recibís, con una foto, y lo resolvemos.",
+  "faq.q5": "No sé qué suplemento me conviene, ¿me ayudan?",
+  "faq.a5":
+    "Para eso estamos. Contanos tu objetivo, cuántos días entrenás y qué venís tomando, y te armamos una recomendación concreta. Es gratis y no tenés que comprar nada.",
 
   // Ficha / panel de compra
   "buy.addToCart": "Agregar al carrito",
@@ -49,15 +147,26 @@ const es: Record<string, string> = {
   "buy.openConfirm": "Abrir WhatsApp y confirmar",
   "buy.notOpen": "¿No se abre? Copiá el número:",
   "buy.low": "¡Quedan solo {n} unidades!",
+  "buy.qty": "Cantidad",
+  "buy.total": "Total",
   "buy.soldoutTitle": "Producto agotado por ahora",
   "buy.soldoutSub": "Dejanos tu WhatsApp o email y te avisamos apenas vuelva.",
   "buy.notifyPh": "Tu WhatsApp o email",
   "buy.notifyBtn": "Avisame",
   "buy.notifySending": "Enviando…",
   "buy.notifyDone": "¡Listo! Te avisamos apenas vuelva a estar disponible.",
+  "buy.guarantee": "Producto sellado y original · revisalo antes de pagar",
+  "buy.ships": "Entrega en 24h en Managua",
+  "buy.stickyAdd": "Agregar",
+  "buy.related": "También te puede interesar",
+  "buy.details": "Descripción",
+  "buy.share": "Compartir",
+  "buy.shared": "Link copiado",
 
   // Carrito / checkout
   "cart.title": "Tu pedido",
+  "cart.items": "{n} productos",
+  "cart.itemOne": "1 producto",
   "cart.emptyTitle": "Tu carrito está vacío",
   "cart.emptySub": "Agregá productos para hacer tu pedido.",
   "cart.seeProducts": "Ver productos",
@@ -78,7 +187,7 @@ const es: Record<string, string> = {
   "cart.subtotal": "Subtotal",
   "cart.discount": "Descuento ({code})",
   "cart.total": "Total",
-  "cart.checkout": "Finalizar pedido por WhatsApp",
+  "cart.checkout": "Finalizar pedido",
   "cart.processing": "Procesando...",
   "cart.willOpen": "Se abrirá WhatsApp con el resumen de tu pedido listo para enviar.",
   "cart.cash": "Efectivo",
@@ -93,16 +202,25 @@ const es: Record<string, string> = {
   "cart.openWa": "Abrir WhatsApp",
   "cart.copyHint": "¿No se abre? Copiá el número y escribinos:",
   "cart.keep": "Seguir comprando",
+  "cart.secure": "Sin adelantos · pagás al recibir",
 
   // Footer
   "footer.whatsapp": "Escribinos por WhatsApp",
-  "footer.newsTitle": "Ofertas y novedades",
-  "footer.newsSub": "Dejanos tu WhatsApp o email y te avisamos de promos y reposiciones.",
+  "footer.newsTitle": "Enterate de las ofertas primero",
+  "footer.newsSub":
+    "Dejanos tu WhatsApp o email: te avisamos de promos y reposiciones. Nada de spam.",
   "footer.newsPh": "Tu WhatsApp o email",
   "footer.newsBtn": "Quiero ofertas",
   "footer.newsDone": "¡Listo! Te avisaremos de las próximas ofertas.",
   "footer.rights": "Todos los derechos reservados",
   "footer.orders": "Pedidos por WhatsApp",
+  "footer.shop": "Tienda",
+  "footer.help": "Ayuda",
+  "footer.contact": "Contacto",
+  "footer.allProducts": "Todos los productos",
+  "footer.deals": "Ofertas",
+  "footer.faq": "Preguntas frecuentes",
+  "footer.tagline": "Suplementos originales, asesoría real, entrega rápida.",
 
   // Barra de carrito (mobile)
   "mob.one": "producto",
@@ -119,7 +237,7 @@ const es: Record<string, string> = {
   "copy.copy": "Copiar",
   "copy.copied": "Copiado",
 
-  // Reseñas
+  // Reseñas (ficha)
   "rev.title": "Reseñas",
   "rev.empty": "Todavía no hay reseñas de este producto. ¡Sé el primero!",
   "rev.write": "Escribir reseña",
@@ -140,35 +258,119 @@ const es: Record<string, string> = {
 
 const en: Record<string, string> = {
   "header.cart": "Cart",
+  "header.search": "Search",
+  "header.go": "Search",
 
-  "hero.title1": "Your best self",
-  "hero.title2": "starts with",
-  "hero.title3": "RESULTS",
+  "ticker.original": "100% genuine",
+  "ticker.support": "Free guidance",
+
+  "hero.badge": "Taking orders right now",
+  "hero.title1": "Train hard",
+  "hero.title2": "eat right",
+  "hero.title3": "and win",
   "hero.sub":
-    "Original supplements, real guidance and fast delivery. Order on WhatsApp.",
-  "hero.ctaProducts": "Shop products",
+    "Genuine supplements, honest guidance and fast delivery. Pick yours and we ship it today.",
+  "hero.ctaProducts": "Shop catalog",
   "hero.ctaWhatsApp": "Order on WhatsApp",
+  "hero.scroll": "Scroll",
+  "hero.stat1": "Products in stock",
+  "hero.stat2": "Average of {n} reviews",
+  "hero.stat3": "Dispatch in Managua",
   "hero.trust1": "24h delivery",
   "hero.trust2": "Cash on delivery",
   "hero.trust3": "WhatsApp support",
 
-  "grid.heading": "Products",
+  "value.ship.t": "24h delivery",
+  "value.ship.s": "Same-day dispatch on orders placed before 4 pm.",
+  "value.orig.t": "Genuine product",
+  "value.orig.s": "Sealed, with batch and expiry visible. Check it on arrival.",
+  "value.pay.t": "Pay on delivery",
+  "value.pay.s": "Cash or bank transfer. No deposits, no cards.",
+  "value.help.t": "We advise you",
+  "value.help.s": "Message us and we'll tell you what actually helps.",
+
+  "rail.eyebrow": "Selection",
+  "rail.heading": "Best sellers",
+  "rail.prev": "Previous",
+  "rail.next": "Next",
+
+  "cat.eyebrow": "Find yours",
+  "cat.heading": "Shop by goal",
+  "cat.see": "See all",
+
+  "offer.eyebrow": "Today's deals",
+  "offer.heading": "Drop the price, not the standard",
+  "offer.sub": "{n} products on sale today. Same genuine supplements, less money.",
+  "offer.endsIn": "Ends in",
+  "offer.hours": "Hours",
+  "offer.minutes": "Min",
+  "offer.seconds": "Sec",
+  "offer.cta": "Shop deals",
+  "offer.ticker": "Up to {off} off · today only",
+
+  "grid.eyebrow": "Full catalog",
+  "grid.heading": "All products",
   "grid.count": "{n} products",
   "grid.countOne": "1 product",
-  "grid.search": "Search products…",
-  "grid.sortRelevant": "Most relevant",
+  "grid.search": "Search protein, creatine…",
+  "grid.sortLabel": "Sort products",
+  "grid.sortRelevant": "Featured",
+  "grid.sortNew": "Newest",
   "grid.sortAsc": "Price: low to high",
   "grid.sortDesc": "Price: high to low",
   "grid.all": "All",
-  "grid.offers": "Deals",
+  "grid.offers": "On sale",
   "grid.favorites": "Favorites",
+  "grid.inStock": "In stock",
+  "grid.clear": "Clear filters",
+  "grid.emptyTitle": "Nothing here",
   "grid.emptyFav": "No favorites yet. Tap the ♥ on products you like.",
-  "grid.empty": "No products match your search.",
+  "grid.empty": "No product matches your search. Try another filter.",
 
   "card.add": "Add",
+  "card.quickAdd": "Add to cart",
   "card.added": "Added",
   "card.soldout": "Sold out",
-  "card.last": "Only {n} left!",
+  "card.top": "Top",
+  "card.last": "{n} left",
+  "card.save": "Save {amount}",
+
+  "film.eyebrow": "Our story",
+  "film.reel": "Reel",
+  "film.line1": "Supplements that actually work",
+  "film.line2": "Picked one by one",
+  "film.line3": "At your door tomorrow",
+  "film.cta": "See this product",
+  "film.play": "Play",
+  "film.pause": "Pause",
+  "film.mute": "Mute",
+  "film.unmute": "Unmute",
+  "film.shot": "Shot",
+
+  "test.eyebrow": "Social proof",
+  "test.heading": "Customers who came back",
+  "test.based": "{n} reviews",
+  "test.anon": "Customer",
+
+  "faq.eyebrow": "Before you buy",
+  "faq.heading": "Frequently asked",
+  "faq.sub": "The questions we get most on WhatsApp, answered once and for all.",
+  "faq.cta": "Ask on WhatsApp",
+  "faq.q1": "How long does delivery take?",
+  "faq.a1":
+    "In Managua we deliver within 24 hours if you confirm before 4 pm. Elsewhere in the country it ships by courier and usually arrives in 2 to 3 business days. We message you on WhatsApp the moment it's dispatched.",
+  "faq.q2": "How do I pay?",
+  "faq.a2":
+    "Cash on delivery, or bank transfer before dispatch. No card or account needed anywhere: the order is closed on WhatsApp.",
+  "faq.q3": "Are the products genuine?",
+  "faq.a3":
+    "Yes. We only work with authorised importers and everything arrives sealed, with batch and expiry date visible. Check the packaging in front of the courier before paying.",
+  "faq.q4": "Can I exchange or return something?",
+  "faq.a4":
+    "If it arrives damaged or isn't what you ordered, we replace it at no cost. Message us the same day you receive it, with a photo, and we'll sort it out.",
+  "faq.q5": "I don't know which supplement suits me — can you help?",
+  "faq.a5":
+    "That's what we're here for. Tell us your goal, how many days you train and what you're currently taking, and we'll put together a concrete recommendation. It's free and you don't have to buy anything.",
 
   "buy.addToCart": "Add to cart",
   "buy.orderNow": "Order now on WhatsApp",
@@ -176,14 +378,25 @@ const en: Record<string, string> = {
   "buy.openConfirm": "Open WhatsApp to confirm",
   "buy.notOpen": "Not opening? Copy the number:",
   "buy.low": "Only {n} left in stock!",
+  "buy.qty": "Quantity",
+  "buy.total": "Total",
   "buy.soldoutTitle": "Out of stock for now",
   "buy.soldoutSub": "Leave your WhatsApp or email and we'll tell you when it's back.",
   "buy.notifyPh": "Your WhatsApp or email",
   "buy.notifyBtn": "Notify me",
   "buy.notifySending": "Sending…",
   "buy.notifyDone": "Done! We'll let you know as soon as it's back.",
+  "buy.guarantee": "Sealed, genuine product · check it before paying",
+  "buy.ships": "24h delivery in Managua",
+  "buy.stickyAdd": "Add",
+  "buy.related": "You may also like",
+  "buy.details": "Description",
+  "buy.share": "Share",
+  "buy.shared": "Link copied",
 
   "cart.title": "Your order",
+  "cart.items": "{n} products",
+  "cart.itemOne": "1 product",
   "cart.emptyTitle": "Your cart is empty",
   "cart.emptySub": "Add products to place your order.",
   "cart.seeProducts": "See products",
@@ -204,7 +417,7 @@ const en: Record<string, string> = {
   "cart.subtotal": "Subtotal",
   "cart.discount": "Discount ({code})",
   "cart.total": "Total",
-  "cart.checkout": "Place order via WhatsApp",
+  "cart.checkout": "Place order",
   "cart.processing": "Processing...",
   "cart.willOpen": "WhatsApp will open with your order summary ready to send.",
   "cart.cash": "Cash",
@@ -219,15 +432,24 @@ const en: Record<string, string> = {
   "cart.openWa": "Open WhatsApp",
   "cart.copyHint": "Not opening? Copy the number and text us:",
   "cart.keep": "Keep shopping",
+  "cart.secure": "No deposits · pay on delivery",
 
   "footer.whatsapp": "Message us on WhatsApp",
-  "footer.newsTitle": "Deals & news",
-  "footer.newsSub": "Leave your WhatsApp or email and we'll ping you about promos and restocks.",
+  "footer.newsTitle": "Hear about deals first",
+  "footer.newsSub":
+    "Leave your WhatsApp or email: we'll ping you about promos and restocks. No spam.",
   "footer.newsPh": "Your WhatsApp or email",
   "footer.newsBtn": "Get deals",
   "footer.newsDone": "Done! We'll let you know about upcoming deals.",
   "footer.rights": "All rights reserved",
   "footer.orders": "Orders via WhatsApp",
+  "footer.shop": "Shop",
+  "footer.help": "Help",
+  "footer.contact": "Contact",
+  "footer.allProducts": "All products",
+  "footer.deals": "Deals",
+  "footer.faq": "FAQ",
+  "footer.tagline": "Genuine supplements, real guidance, fast delivery.",
 
   "mob.one": "product",
   "mob.many": "products",

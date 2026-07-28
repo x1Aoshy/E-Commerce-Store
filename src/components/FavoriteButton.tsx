@@ -17,12 +17,16 @@ export default function FavoriteButton({ id, variant = "overlay", className = ""
     toggle(id);
   };
 
+  // Geometría recta como el resto del sistema (nada de círculos), y el corazón
+  // activo en BRASA — el mismo color que las ofertas y la urgencia, para que
+  // "lo que me importa" y "lo que se me escapa" hablen el mismo idioma.
   const base =
     variant === "overlay"
-      ? // Sobre la imagen: SIEMPRE oscuro translúcido + ícono claro (no depende del tema).
-        "absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm ring-1 ring-white/20 transition hover:bg-black/65 active:scale-90"
+      ? // Sobre la foto: siempre oscuro translúcido, sin depender del tema.
+        // Aparece al pasar el cursor en escritorio; en móvil queda visible.
+        "absolute right-0 top-0 z-10 flex h-9 w-9 items-center justify-center bg-night/70 text-ink backdrop-blur-sm transition-all duration-200 hover:bg-night/90 active:scale-90 md:opacity-0 md:group-hover:opacity-100"
       : // En la ficha (sobre superficie): se adapta al tema.
-        "flex h-12 w-12 items-center justify-center rounded-[3px] border border-line/15 text-ink-soft transition hover:border-line/30 hover:text-ink active:scale-95";
+        "flex h-[54px] w-[54px] shrink-0 items-center justify-center border border-line/20 text-ink-soft transition-all duration-200 hover:border-ember-400 hover:text-ember-400 active:translate-y-px";
 
   return (
     <button
@@ -31,7 +35,7 @@ export default function FavoriteButton({ id, variant = "overlay", className = ""
       aria-pressed={active}
       aria-label={active ? "Quitar de favoritos" : "Guardar en favoritos"}
       title={active ? "Quitar de favoritos" : "Guardar en favoritos"}
-      className={`${base} ${active ? "!text-red-400" : ""} ${className}`}
+      className={`${base} ${active ? "!text-ember-400 md:!opacity-100" : ""} ${className}`}
     >
       <svg
         viewBox="0 0 24 24"

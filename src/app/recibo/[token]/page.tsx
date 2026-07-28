@@ -69,17 +69,15 @@ export default async function ReceiptPage({ params }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logo} alt={store} className="h-10 w-auto max-w-[180px] object-contain" />
           ) : (
-            <span className="text-lg font-semibold text-ink">{store}</span>
+            <span className="headline text-2xl text-ink">{store}</span>
           )}
         </div>
 
         <div className="card overflow-hidden shadow-card">
           {/* Cabecera del recibo */}
           <div className="border-b border-line/10 px-6 py-5 text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent-300">
-              Recibo de compra
-            </p>
-            <p className="mt-1 text-2xl font-bold text-ink">{order.code}</p>
+            <p className="eyebrow text-accent-300">Recibo de compra</p>
+            <p className="tnum headline mt-2 text-4xl text-ink">{order.code}</p>
             <p className="mt-1 text-xs text-ink-muted">{date}</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <span
@@ -116,11 +114,11 @@ export default async function ReceiptPage({ params }) {
                     <p className="text-sm font-medium text-ink">
                       {it.name || "Producto"}
                     </p>
-                    <p className="mt-0.5 text-xs text-ink-muted">
+                    <p className="tnum mt-0.5 text-xs text-ink-muted">
                       {it.quantity} × {formatPrice(it.price)}
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-ink">
+                  <span className="tnum shrink-0 text-sm font-semibold text-ink">
                     {formatPrice(it.subtotal)}
                   </span>
                 </li>
@@ -149,7 +147,7 @@ export default async function ReceiptPage({ params }) {
               <span className="text-sm text-ink-soft">
                 Total · {units} {units === 1 ? "unidad" : "unidades"}
               </span>
-              <span className="text-xl font-bold text-ink">{formatPrice(grand)}</span>
+              <span className="tnum font-display text-3xl leading-none text-ink">{formatPrice(grand)}</span>
             </div>
           </div>
 
@@ -186,9 +184,7 @@ export default async function ReceiptPage({ params }) {
           {/* ¿Cómo pagar? Sólo mientras el pedido siga sin cobrarse. */}
           {!order.paid && order.status !== "cancelada" && settings?.paymentInfo && (
             <div className="border-t border-line/10 px-6 py-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-accent-300">
-                ¿Cómo pagar?
-              </p>
+              <p className="eyebrow text-accent-300">¿Cómo pagar?</p>
               <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
                 {settings.paymentInfo}
               </p>
