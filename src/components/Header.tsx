@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import Marquee from "@/components/motion/Marquee";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLang } from "@/context/LanguageContext";
@@ -146,33 +146,11 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
     [query]
   );
 
-  const ticker = [
-    t("hero.trust1"),
-    t("hero.trust2"),
-    t("hero.trust3"),
-    t("ticker.original"),
-    t("ticker.support"),
-  ];
-
   return (
     <>
-      {/* ====================== CINTA DE ANUNCIOS (en movimiento) ============
-          Un ticker que corre es la diferencia entre una tienda encendida y una
-          plantilla. Va FUERA del header sticky: se va con el scroll y no roba
-          altura útil. */}
-      <div className="relative z-30 border-b border-line/10 bg-ink text-night">
-        <Marquee speed={38} itemClassName="px-6 py-2">
-          {ticker.map((txt) => (
-            <span
-              key={txt}
-              className="flex items-center gap-2.5 font-mono text-[10.5px] font-bold uppercase tracking-widest2"
-            >
-              <span className="inline-block h-1.5 w-1.5 rotate-45 bg-accent-500" aria-hidden="true" />
-              {txt}
-            </span>
-          ))}
-        </Marquee>
-      </div>
+      {/* Barra de anuncios: un mensaje a la vez, rotando. Vive FUERA del header
+          sticky, así se va con el scroll y no roba altura útil. */}
+      <AnnouncementBar />
 
       {/* ============================== HEADER ============================== */}
       <header
