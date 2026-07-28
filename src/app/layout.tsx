@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Nunito_Sans, Fraunces } from "next/font/google";
+import { Manrope, Anton, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
@@ -13,19 +13,29 @@ import { getSettings } from "@/lib/db";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
-// Tipografía: Fraunces (serif suave y natural) para los títulos; Nunito Sans
-// (sans humanista cálido) para el texto. Se cargan optimizadas como variables.
-const nunito = Nunito_Sans({
+// TIPOGRAFÍA — tres voces con oficio distinto:
+//  · Manrope   → interfaz y texto. Cifras claras para precios y totales.
+//  · Anton     → titulares de póster (condensada, atlética). Sólo en grande.
+//  · JetBrains → micro-etiquetas técnicas (categoría, lote, "24G PROTEÍNA").
+// Se cargan como variables CSS y las consume tailwind.config (font-sans /
+// font-display / font-mono).
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-nunito",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
   display: "swap",
   adjustFontFallback: false,
 });
-const fraunces = Fraunces({
+const anton = Anton({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-fraunces",
+  weight: ["400"],
+  variable: "--font-anton",
+  display: "swap",
+});
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -69,8 +79,8 @@ export async function generateMetadata() {
 export const viewport = {
   // El color de la barra del navegador (móvil) se adapta al tema del sistema.
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0c0d" },
-    { media: "(prefers-color-scheme: light)", color: "#f6f3eb" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
   ],
   viewportFit: "cover",
 };
@@ -84,7 +94,10 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="es" className={`${nunito.variable} ${fraunces.variable}`}>
+    <html
+      lang="es"
+      className={`${manrope.variable} ${anton.variable} ${mono.variable}`}
+    >
       <body>
         {/* Aplica el tema (claro/oscuro) ANTES de pintar, para que no haya
             parpadeo al recargar. Lee la preferencia guardada o la del sistema. */}

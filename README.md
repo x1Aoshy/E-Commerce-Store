@@ -9,6 +9,78 @@ A clean and minimalist supplement storefront built with Next.js (App Router) and
 * **📦 Real-Time Inventory:** Every order is validated against the current stock and deducted automatically. If there is insufficient stock, the order is rejected with detailed feedback.
 * **🔐 Admin Dashboard (`/admin`):** A secure panel to manage pricing, update stock levels, highlight featured products, add new items, and view/confirm orders.
 
+## 🎨 Design System — "Carbon & 24K"
+
+The storefront runs on a small, opinionated design system. Read this before
+touching styles: it explains *why* things look the way they do.
+
+### Colour — three colours, three jobs
+
+| Token | Role | Where it may appear |
+| --- | --- | --- |
+| `accent` (24K gold) | Brand, price, primary purchase action | Buy buttons, prices, brand marks |
+| `ember` (hot orange) | **Urgency only** | Discounts, countdown, "only N left", cart badge |
+| `green` | Trust / go | Stock status, WhatsApp, confirmations |
+
+A colour with no job doesn't get used. `ember` in particular is never
+decorative — if it shows up, there is something to lose.
+
+Neutrals are semantic tokens (`ink`, `night`, `surface`, `line`, `fill`) backed
+by CSS variables, so light mode is a token flip rather than a class rewrite.
+Add `theme-dark` to any subtree that must stay dark regardless of theme (the
+admin panel and the brand reel both do this).
+
+### Type — three voices
+
+* **Anton** (`font-display`, via the `.headline` class) — poster headlines only.
+  Uppercase, very tight leading. Used big and used sparingly.
+* **Manrope** (`font-sans`) — all UI and body copy; clear figures for prices.
+* **JetBrains Mono** (`font-mono`, via `.eyebrow`) — technical micro-labels.
+
+`h1`/`h2` deliberately stay in Manrope so the admin panel reads normally;
+poster type is opt-in with `.headline`.
+
+### Geometry
+
+Structural elements are **square** (zero radius): cards, buttons, inputs,
+badges. Only chips and filters are pills. That hard/soft collision is the
+signature — don't soften the rectangles. `.card-poster` and `shadow-hard` add
+the offset screen-printed shadow for blocks that need to shout.
+
+### Motion
+
+Movement communicates; nothing moves for decoration. Primitives live in
+`src/components/motion/` (`Marquee`, `Headline`, `CountUp`) plus
+`src/lib/useReveal.ts` (scroll reveal, with variants) and
+`src/lib/flyToCart.ts` (the add-to-cart flight). Everything animates
+`transform`/`opacity` only, ambient loops pause when off-screen or when the tab
+is hidden, and `prefers-reduced-motion` switches all of it off.
+
+### Video
+
+Two ways to get motion footage on the home page, both handled by
+`src/components/home/BrandFilm.tsx`:
+
+1. **Upload real footage.** Add an `.mp4`/`.webm` to *Settings → Hero images* in
+   the admin panel. It plays full-bleed and looping (muted, with play/pause and
+   sound controls) both in the hero background and in the brand reel.
+2. **No footage? The reel builds itself.** With no video uploaded, the section
+   edits one from the store's own product photos: each shot gets a slow
+   ken-burns push, the headline assembles word by word over it, and a progress
+   bar tracks the cut — the Instagram-story language customers already read.
+
+Product cards use the same idea at small scale: with two or more media, the
+second one cross-fades in on hover, and if it's a video it plays by itself.
+
+### Honesty rules (please keep them)
+
+Sections hide themselves rather than show invented data. The deals band only
+renders when products are genuinely discounted, the review wall only when real
+approved reviews exist, and the hero's trust figures are computed from the live
+catalogue (products in stock, real review average) — never hard-coded. Scarcity
+copy ("only 3 left") is driven by actual stock. The countdown runs to midnight
+tonight because the band is titled *today's deals*, and it resets honestly.
+
 ## 🚀 Getting Started
 
 ```bash

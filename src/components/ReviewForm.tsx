@@ -80,7 +80,7 @@ export default function ReviewForm({ productId = null, onClose }) {
 
   if (state === "done") {
     return (
-      <div className="card p-6 text-center shadow-soft">
+      <div className="border-2 border-green-400/40 bg-green-400/10 p-6 text-center">
         <p className="text-sm text-green-300">{msg}</p>
         {onClose && (
           <button onClick={onClose} className="btn-ghost mt-4 px-4 py-2 text-[13px]">
@@ -92,8 +92,8 @@ export default function ReviewForm({ productId = null, onClose }) {
   }
 
   return (
-    <form onSubmit={submit} className="card p-5 shadow-soft sm:p-6">
-      <h3 className="text-base font-semibold text-ink">{t("rev.formTitle")}</h3>
+    <form onSubmit={submit} className="border-2 border-line/85 bg-surface p-5 shadow-hard-sm sm:p-6">
+      <h3 className="headline text-2xl text-ink">{t("rev.formTitle")}</h3>
       <p className="mt-1 text-sm text-ink-muted">
         {t("rev.formSub")}
       </p>
@@ -127,7 +127,7 @@ export default function ReviewForm({ productId = null, onClose }) {
         />
       </div>
 
-      {state === "error" && <p className="mt-2 text-sm text-red-400">{msg}</p>}
+      {state === "error" && <p className="mt-2 text-sm text-ember-400">{msg}</p>}
 
       <div className="mt-4 flex items-center justify-end gap-2">
         {onClose && (

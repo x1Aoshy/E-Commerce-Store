@@ -34,8 +34,7 @@ export async function generateMetadata({ params }) {
     const product = await getProductBySlug(params.slug);
     if (product) {
       const title = `${product.name || "Producto"} — ${STORE}`;
-      const description =
-        product.short || (product.description || "").slice(0, 150);
+      const description = product.short || (product.description || "").slice(0, 150);
       const img = firstImage(product);
       return {
         title,
@@ -62,6 +61,18 @@ export async function generateMetadata({ params }) {
   return { title: `Producto — ${STORE}` };
 }
 
+/* ==========================================================================
+   FICHA DE PRODUCTO
+   --------------------------------------------------------------------------
+   Todo lo que decide la compra vive en la primera pantalla: foto grande,
+   nombre, estrellas, precio y el botón. La descripción, la ficha técnica y
+   las reseñas van DEBAJO, para quien necesita más argumentos.
+
+   La galería es sticky en escritorio: al bajar a leer la descripción, la foto
+   del producto sigue a la vista. En móvil manda el orden natural y el panel de
+   compra reaparece en una barra fija al pie.
+   ========================================================================== */
+
 export default async function ProductPage({ params }) {
   let product: Product | null = null;
   let all: Product[] = [];
@@ -76,14 +87,13 @@ export default async function ProductPage({ params }) {
 
   const related = all
     .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 3);
+    .slice(0, 4);
 
   const categories = Array.from(new Set(all.map((p) => p.category)));
 
   // Datos estructurados (schema.org/Product): Google puede mostrar precio,
-  // stock y estrellas directo en los resultados de búsqueda. El JSON se
-  // escapa (`<` → <) para que texto malicioso en nombre/descripción no
-  // pueda cerrar el <script>.
+  // stock y estrellas directo en los resultados. El JSON se escapa (`<` →
+  // <) para que texto malicioso en nombre/descripción no cierre el script.
   const img = firstImage(product);
   const jsonLd = {
     "@context": "https://schema.org",
@@ -124,48 +134,77 @@ export default async function ProductPage({ params }) {
       />
       <AutoRefresh />
       <Header categories={categories} />
-      <main className="container-content py-8 sm:py-12">
-        <nav className="text-sm text-ink-muted">
-          <Link href="/" className="transition hover:text-ink">
+
+      <main className="container-content pb-24 pt-6 sm:pb-16 sm:pt-8">
+        {/* ----------------------------- Migas ---------------------------- */}
+        <nav className="font-mono text-[10px] uppercase tracking-widest2 text-ink-muted">
+          <Link href="/" className="transition-colors hover:text-ink">
             Inicio
           </Link>
-          <span className="px-1.5">/</span>
-          <Link href="/#productos" className="transition hover:text-ink">
-            Productos
+          <span className="px-2 text-line/30">/</span>
+          <Link href="/#productos" className="transition-colors hover:text-ink">
+            {product.category}
           </Link>
-          <span className="px-1.5">/</span>
+          <span className="px-2 text-line/30">/</span>
           <span className="text-ink-soft">{product.name}</span>
         </nav>
 
-        <div className="mt-6 grid gap-8 lg:grid-cols-2">
-          <Reveal>
-            <div className="card aspect-square overflow-hidden bg-surface-soft">
-              <ProductGallery product={product} controls fit="contain" sizes="(max-width: 1024px) 100vw, 50vw" />
+        {/* --------------------------- Bloque principal ------------------- */}
+        <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-14">
+          {/* Galería (sticky en escritorio) */}
+          <Reveal variant="scale">
+            <div className="lg:sticky lg:top-28">
+              <div className="aspect-square w-full border border-line/12 bg-surface-soft p-2">
+                <ProductGallery
+                  product={product}
+                  controls
+                  fit="contain"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
             </div>
           </Reveal>
 
-          <Reveal delay={80}>
+          {/* Panel de compra */}
+          <Reveal variant="right" delay={80}>
             <div>
               {product.name && (
-                <h1 className="text-2xl font-semibold text-ink sm:text-3xl">
+                <h1 className="headline text-4xl text-ink sm:text-5xl lg:text-6xl">
                   {product.name}
                 </h1>
               )}
-              <p className="mt-3 leading-relaxed text-ink-soft">
-                {product.description || product.short}
-              </p>
 
-              <div className="mt-6">
+              {product.short && (
+                <p className="mt-4 max-w-prose2 text-[15px] leading-relaxed text-ink-soft">
+                  {product.short}
+                </p>
+              )}
+
+              <div className="mt-7">
                 <ProductBuyPanel product={product} />
               </div>
 
-              <div className="mt-6">
+              {/* Descripción larga: debajo del botón, no encima. */}
+              {product.description && product.description !== product.short && (
+                <div className="mt-10 border-t border-line/12 pt-7">
+                  <h2 className="font-mono text-[10px] uppercase tracking-widest2 text-ink-muted">
+                    Descripción
+                  </h2>
+                  <p className="mt-3 max-w-prose2 whitespace-pre-line text-[14.5px] leading-relaxed text-ink-soft">
+                    {product.description}
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-8">
                 <ProductProfile product={product} />
               </div>
             </div>
           </Reveal>
         </div>
 
+        {/* ---------------------------- Reseñas --------------------------- */}
         <ProductReviews
           productId={product.id}
           reviews={product.reviews || []}
@@ -173,21 +212,25 @@ export default async function ProductPage({ params }) {
           reviewCount={product.reviewCount || 0}
         />
 
+        {/* --------------------------- Relacionados ----------------------- */}
         {related.length > 0 && (
-          <section className="mt-16">
-            <h2 className="text-xl font-semibold text-ink">
-              También te puede interesar
-            </h2>
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-              {related.map((p, i) => (
-                <Reveal key={p.id} delay={i * 60}>
-                  <ProductCard product={p} />
-                </Reveal>
+          <section className="mt-20 border-t border-line/12 pt-14">
+            <Reveal>
+              <p className="eyebrow">{product.category}</p>
+              <h2 className="headline mt-2 text-3xl text-ink sm:text-5xl">
+                También te puede interesar
+              </h2>
+            </Reveal>
+
+            <div className="grid-rules mt-8 grid grid-cols-2 lg:grid-cols-4">
+              {related.map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </section>
         )}
       </main>
+
       <Footer />
       <CartDrawer />
       <MobileCartBar />
