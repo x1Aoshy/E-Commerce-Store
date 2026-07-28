@@ -16,9 +16,11 @@ const es: Record<string, string> = {
   "header.search": "Buscar",
   "header.go": "Buscar",
 
-  // Cinta de anuncios
-  "ticker.original": "100% original",
-  "ticker.support": "Asesoría gratis",
+  // Barra de anuncios
+  "ticker.original": "Producto 100% original",
+  "ticker.support": "Asesoría gratis por WhatsApp",
+  "ann.close": "Cerrar anuncios",
+  "ann.go": "Ver anuncio",
 
   // Hero
   "hero.title1": "Entrená duro",
@@ -260,8 +262,10 @@ const en: Record<string, string> = {
   "header.search": "Search",
   "header.go": "Search",
 
-  "ticker.original": "100% genuine",
-  "ticker.support": "Free guidance",
+  "ticker.original": "100% genuine product",
+  "ticker.support": "Free guidance on WhatsApp",
+  "ann.close": "Dismiss announcements",
+  "ann.go": "Show announcement",
 
   "hero.title1": "Train hard",
   "hero.title2": "eat right",

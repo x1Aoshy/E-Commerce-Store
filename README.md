@@ -103,6 +103,17 @@ Reveal-on-scroll and `CountUp` both carry a 2.5 s failsafe: if the
 anyway. A missing animation is a detail; content that never appears is a lost
 sale.
 
+### The announcement bar
+
+`src/components/AnnouncementBar.tsx` is deliberately *not* a scrolling ticker.
+One message shows at a time and rotates on a slot-style vertical transition, so
+motion happens only at the change instead of continuously pulling the eye. A
+segmented indicator fills in real time, each message links somewhere useful
+(delivery and payment claims open the FAQ; support claims open WhatsApp), and
+the whole bar is dismissible for the session — anything placed above the logo
+without asking should be removable. It pauses on hover and when the tab is
+hidden, and `prefers-reduced-motion` swaps the slide for a plain change.
+
 ### Video
 
 Two ways to get motion footage on the home page, both handled by
