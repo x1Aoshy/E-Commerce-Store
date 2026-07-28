@@ -107,12 +107,12 @@ export default function OfferBand({ products }: { products: Product[] }) {
       />
 
       {/* Cinta superior: repite el descuento máximo real del catálogo. */}
-      <div className="border-b border-ember-500/25 bg-ember-600/25 py-2">
+      <div className="border-b border-ember-700/40 bg-ember-600 py-2">
         <Marquee speed={26} itemClassName="px-5">
           {Array.from({ length: 6 }).map((_, i) => (
             <span
               key={i}
-              className="font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-ember-100"
+              className="font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-white"
             >
               {t("offer.ticker", { off: `${maxOff}%` })}
             </span>
@@ -124,7 +124,7 @@ export default function OfferBand({ products }: { products: Product[] }) {
         {/* --------------------------- El mensaje --------------------------- */}
         <Reveal variant="left">
           <div>
-            <p className="eyebrow text-ember-300">{t("offer.eyebrow")}</p>
+            <p className="eyebrow text-urgent">{t("offer.eyebrow")}</p>
             <h2 className="headline mt-3 text-3xl text-ink sm:text-[2.75rem]">
               {t("offer.heading")}
             </h2>
@@ -135,14 +135,14 @@ export default function OfferBand({ products }: { products: Product[] }) {
             {/* Contador a medianoche. */}
             {left && (
               <div className="mt-8">
-                <p className="font-mono text-[10px] uppercase tracking-widest2 text-ember-300">
+                <p className="font-mono text-[10px] uppercase tracking-widest2 text-urgent">
                   {t("offer.endsIn")}
                 </p>
                 <div className="mt-3 flex items-start gap-2.5">
                   <Digits value={left.h} label={t("offer.hours")} />
-                  <span className="pt-3 font-display text-3xl text-ember-400">:</span>
+                  <span className="pt-3 font-display text-3xl text-urgent">:</span>
                   <Digits value={left.m} label={t("offer.minutes")} />
-                  <span className="pt-3 font-display text-3xl text-ember-400">:</span>
+                  <span className="pt-3 font-display text-3xl text-urgent">:</span>
                   <Digits value={left.s} label={t("offer.seconds")} />
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function OfferBand({ products }: { products: Product[] }) {
                   {formatPrice(star.compareAt)}
                 </p>
               </div>
-              <span className="tnum shrink-0 font-display text-3xl leading-none text-accent-300 sm:text-4xl">
+              <span className="tnum shrink-0 font-display text-3xl leading-none text-brand sm:text-4xl">
                 {formatPrice(star.price)}
               </span>
             </div>

@@ -192,12 +192,12 @@ export default function Hero({ products = [] }: any) {
             <span className="relative block">
               <Headline
                 text={t("hero.title3")}
-                className="block text-accent-400"
+                className="block text-brand"
                 delay={280}
               />
               {/* Remate a mano: un trazo, no un subrayado de plantilla. */}
               <svg
-                className="pointer-events-none absolute -bottom-1 left-0 h-4 w-[min(100%,9ch)] text-accent-500/60 sm:h-6"
+                className="pointer-events-none absolute -bottom-1 left-0 h-4 w-[min(100%,9ch)] text-brand/60 sm:h-6"
                 viewBox="0 0 100 10"
                 preserveAspectRatio="none"
                 aria-hidden="true"
@@ -286,7 +286,7 @@ export default function Hero({ products = [] }: any) {
                   "left-0 bottom-0 border-b-2 border-l-2",
                   "bottom-0 right-0 border-b-2 border-r-2",
                 ].map((pos) => (
-                  <span key={pos} className={`absolute h-7 w-7 border-accent-400/50 ${pos}`} />
+                  <span key={pos} className={`absolute h-7 w-7 border-brand/45 ${pos}`} />
                 ))}
               </div>
 
@@ -347,7 +347,7 @@ export default function Hero({ products = [] }: any) {
                       {activeProduct.name}
                     </p>
                   </div>
-                  <span className="tnum shrink-0 font-display text-xl text-accent-300">
+                  <span className="tnum shrink-0 font-display text-xl text-brand">
                     {formatPrice(activeProduct.price)}
                   </span>
                   <svg
@@ -359,7 +359,7 @@ export default function Hero({ products = [] }: any) {
                     strokeWidth="2.4"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="shrink-0 text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:text-accent-300"
+                    className="shrink-0 text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand"
                     aria-hidden="true"
                   >
                     <path d="M5 12h14M13 6l6 6-6 6" />

@@ -66,7 +66,7 @@ export default function Footer() {
     : "";
 
   return (
-    <footer id="contacto" className="mt-4 border-t border-line/12 bg-surface/25">
+    <footer id="contacto" className="mt-4 border-t border-line/12 bg-surface-soft/50">
       {/* ================= BANDA DE MARCA (nombre en movimiento) ============ */}
       <div className="border-b border-line/10 py-5">
         <Marquee speed={44} itemClassName="px-5">

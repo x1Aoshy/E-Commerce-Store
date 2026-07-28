@@ -21,7 +21,7 @@ export default function Spinner({ className = "" }) {
 export function LoadingOverlay({ label = "Cargando…" }) {
   return (
     <div className="flex animate-fade-in flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-      <Spinner className="h-6 w-6 text-accent-300" />
+      <Spinner className="h-6 w-6 text-brand" />
       <p className="text-sm text-ink-muted">{label}</p>
     </div>
   );

@@ -35,6 +35,17 @@ module.exports = {
         line: "rgb(var(--c-line) / <alpha-value>)", // bordes y reglas
         fill: "rgb(var(--c-fill) / <alpha-value>)", // rellenos sutiles
 
+        // --- Colores SEMÁNTICOS para TEXTO e iconos ------------------------
+        // Mismo significado en los dos temas, distinto tono según el fondo:
+        // oro↔bronce, brasa↔ladrillo, verde claro↔verde bosque. Usar SIEMPRE
+        // estos para texto; las escalas fijas de abajo, sólo para rellenos.
+        brand: "rgb(var(--c-brand) / <alpha-value>)", // marca, precio destacado
+        urgent: "rgb(var(--c-urgent) / <alpha-value>)", // urgencia
+        ok: "rgb(var(--c-ok) / <alpha-value>)", // confianza, stock
+
+        // Velo sobre fotografía: oscuro en ambos temas, nunca se invierte.
+        scrim: "rgb(var(--c-scrim) / <alpha-value>)",
+
         // --- ORO 24K · marca, precio, premium ------------------------------
         // Más saturado y luminoso que el dorado anterior: se lee como metal,
         // no como mostaza. Es el color de la MARCA, no el de la urgencia.

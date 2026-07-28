@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS = {
   pendiente: { label: "Pendiente de confirmación", cls: "bg-amber-400/15 text-amber-300 ring-amber-400/30" },
-  confirmada: { label: "Pedido completado", cls: "bg-green-500/15 text-green-300 ring-green-500/30" },
+  confirmada: { label: "Pedido completado", cls: "bg-green-500/15 text-ok ring-green-500/30" },
   cancelada: { label: "Pedido cancelado", cls: "bg-red-500/15 text-red-300 ring-red-500/30" },
 };
 
@@ -76,7 +76,7 @@ export default async function ReceiptPage({ params }) {
         <div className="card overflow-hidden shadow-card">
           {/* Cabecera del recibo */}
           <div className="border-b border-line/10 px-6 py-5 text-center">
-            <p className="eyebrow text-accent-300">Recibo de compra</p>
+            <p className="eyebrow text-brand">Recibo de compra</p>
             <p className="tnum headline mt-2 text-4xl text-ink">{order.code}</p>
             <p className="mt-1 text-xs text-ink-muted">{date}</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -89,7 +89,7 @@ export default async function ReceiptPage({ params }) {
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ring-1 ${
                     order.paid
-                      ? "bg-green-500/15 text-green-300 ring-green-500/30"
+                      ? "bg-green-500/15 text-ok ring-green-500/30"
                       : "bg-fill/5 text-ink-muted ring-line/15"
                   }`}
                 >
@@ -98,7 +98,7 @@ export default async function ReceiptPage({ params }) {
               )}
               {/* Pedido despachado: el cliente que escanea su QR ve que ya va en camino. */}
               {order.shipped && order.status !== "cancelada" && (
-                <span className="inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-medium text-accent-300 ring-1 ring-accent-500/30">
+                <span className="inline-flex rounded-full bg-accent-500/15 px-3 py-1 text-xs font-medium text-brand ring-1 ring-accent-500/30">
                   🚚 En camino
                 </span>
               )}
@@ -130,7 +130,7 @@ export default async function ReceiptPage({ params }) {
             {discount > 0 && (
               <div className="flex items-center justify-between border-t border-line/10 pt-3 text-sm">
                 <span className="text-ink-soft">Descuento ({coupon})</span>
-                <span className="font-medium text-green-300">
+                <span className="font-medium text-ok">
                   −{formatPrice(discount)}
                 </span>
               </div>
@@ -184,7 +184,7 @@ export default async function ReceiptPage({ params }) {
           {/* ¿Cómo pagar? Sólo mientras el pedido siga sin cobrarse. */}
           {!order.paid && order.status !== "cancelada" && settings?.paymentInfo && (
             <div className="border-t border-line/10 px-6 py-4">
-              <p className="eyebrow text-accent-300">¿Cómo pagar?</p>
+              <p className="eyebrow text-brand">¿Cómo pagar?</p>
               <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
                 {settings.paymentInfo}
               </p>

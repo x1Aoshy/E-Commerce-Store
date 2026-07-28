@@ -23,7 +23,7 @@ function Stars({ value, onChange }: any) {
           >
             <svg
               viewBox="0 0 24 24"
-              className={`h-7 w-7 transition-colors ${active ? "text-accent-400" : "text-line/20"}`}
+              className={`h-7 w-7 transition-colors ${active ? "text-brand" : "text-line/20"}`}
               fill="currentColor"
               aria-hidden="true"
             >
@@ -81,7 +81,7 @@ export default function ReviewForm({ productId = null, onClose }) {
   if (state === "done") {
     return (
       <div className="border-2 border-green-400/40 bg-green-400/10 p-6 text-center">
-        <p className="text-sm text-green-300">{msg}</p>
+        <p className="text-sm text-ok">{msg}</p>
         {onClose && (
           <button onClick={onClose} className="btn-ghost mt-4 px-4 py-2 text-[13px]">
             Cerrar
@@ -127,7 +127,7 @@ export default function ReviewForm({ productId = null, onClose }) {
         />
       </div>
 
-      {state === "error" && <p className="mt-2 text-sm text-ember-400">{msg}</p>}
+      {state === "error" && <p className="mt-2 text-sm text-urgent">{msg}</p>}
 
       <div className="mt-4 flex items-center justify-end gap-2">
         {onClose && (

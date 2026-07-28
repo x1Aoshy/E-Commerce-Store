@@ -156,7 +156,7 @@ export default function ProductGallery({
 
         {/* Contador de medios: avisa que hay más para ver en la ficha. */}
         {count > 1 && (
-          <span className="pointer-events-none absolute bottom-2 right-2 z-10 bg-night/75 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-ink-soft backdrop-blur-sm">
+          <span className="pointer-events-none absolute bottom-2 right-2 z-10 bg-scrim/75 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-white/75">
             {isVideo(second || "") ? "▶" : `1/${count}`}
           </span>
         )}
@@ -194,7 +194,7 @@ export default function ProductGallery({
         go(i + dir);
       }}
       aria-label={dir === -1 ? "Anterior" : "Siguiente"}
-      className={`absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-line/20 bg-night/70 text-ink opacity-0 backdrop-blur-sm transition-all duration-200 hover:border-accent-400 hover:bg-accent-400 hover:text-[#17130a] group-hover/gal:opacity-100 max-md:opacity-100 ${
+      className={`absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-white/20 bg-scrim/70 text-white opacity-0 backdrop-blur-sm transition-all duration-200 hover:border-accent-400 hover:bg-accent-400 hover:text-[#17130a] group-hover/gal:opacity-100 max-md:opacity-100 ${
         dir === -1 ? "left-2" : "right-2"
       }`}
     >
@@ -233,7 +233,7 @@ export default function ProductGallery({
             <Arrow dir={-1} />
             <Arrow dir={1} />
             {/* Índice tipo cámara: "03 / 05". */}
-            <span className="tnum pointer-events-none absolute right-3 top-3 bg-night/70 px-2 py-1 font-mono text-[10px] font-bold tracking-widest text-ink-soft backdrop-blur-sm">
+            <span className="tnum pointer-events-none absolute right-3 top-3 bg-scrim/70 px-2 py-1 font-mono text-[10px] font-bold tracking-widest text-white/75">
               {String(i + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
           </>

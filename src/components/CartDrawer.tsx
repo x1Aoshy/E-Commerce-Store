@@ -333,7 +333,7 @@ export default function CartDrawer() {
                   href={`/recibo/${success.token}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-underline mt-2 text-[12px] font-bold text-accent-300"
+                  className="link-underline mt-2 text-[12px] font-bold text-brand"
                 >
                   {t("cart.viewReceipt")}
                 </a>
@@ -344,7 +344,7 @@ export default function CartDrawer() {
                 instante, sin tener que preguntarlos por chat. */}
             {paymentInfo && (
               <div className="mt-6 w-full border border-accent-400/30 bg-accent-400/[0.07] px-4 py-3.5 text-left">
-                <p className="font-mono text-[10px] uppercase tracking-widest2 text-accent-300">
+                <p className="font-mono text-[10px] uppercase tracking-widest2 text-brand">
                   {t("cart.howPay")}
                 </p>
                 <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-ink-soft">
@@ -452,7 +452,7 @@ export default function CartDrawer() {
                         </div>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="font-mono text-[10px] uppercase tracking-widest2 text-ink-muted underline-offset-4 transition-colors hover:text-ember-400 hover:underline"
+                          className="font-mono text-[10px] uppercase tracking-widest2 text-ink-muted underline-offset-4 transition-colors hover:text-urgent hover:underline"
                         >
                           {t("cart.remove")}
                         </button>
@@ -466,7 +466,7 @@ export default function CartDrawer() {
                   en el carrito. Sube el ticket promedio sin estorbar. */}
               {suggestions.length > 0 && (
                 <div className="mt-5 border-t border-line/12 pt-5">
-                  <p className="font-mono text-[10px] uppercase tracking-widest2 text-accent-300">
+                  <p className="font-mono text-[10px] uppercase tracking-widest2 text-brand">
                     {t("cart.crossSell")}
                   </p>
                   <ul className="mt-3 space-y-2">
@@ -504,7 +504,7 @@ export default function CartDrawer() {
               )}
 
               {error && (
-                <div className="mt-5 border border-ember-500/40 bg-ember-500/10 p-3.5 text-[13px] text-ember-200">
+                <div className="mt-5 border border-ember-500/40 bg-ember-500/10 p-3.5 text-[13px] text-urgent">
                   <p className="font-bold">{error}</p>
                   {conflicts.length > 0 && (
                     <ul className="mt-1.5 list-inside list-disc text-[12px]">
@@ -570,7 +570,7 @@ export default function CartDrawer() {
                   PC quedaba fuera de vista. */}
               <div className="mb-3.5">
                 {appliedCoupon ? (
-                  <div className="flex items-center justify-between gap-3 border border-green-400/40 bg-green-400/10 px-3 py-2.5 text-[12.5px] font-bold text-green-300">
+                  <div className="flex items-center justify-between gap-3 border border-green-400/40 bg-green-400/10 px-3 py-2.5 text-[12.5px] font-bold text-ok">
                     <span className="min-w-0 truncate">
                       {t("cart.couponOn", {
                         code: appliedCoupon.code,
@@ -620,7 +620,7 @@ export default function CartDrawer() {
                       </button>
                     </div>
                     {couponError && (
-                      <p className="mt-1.5 text-[11.5px] text-ember-400">{couponError}</p>
+                      <p className="mt-1.5 text-[11.5px] text-urgent">{couponError}</p>
                     )}
                   </>
                 )}
@@ -635,7 +635,7 @@ export default function CartDrawer() {
                       {formatPrice(total)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-[13px] font-bold text-green-300">
+                  <div className="flex items-center justify-between text-[13px] font-bold text-ok">
                     <span>{t("cart.discount", { code: appliedCoupon.code })}</span>
                     <span className="tnum">−{formatPrice(discount)}</span>
                   </div>

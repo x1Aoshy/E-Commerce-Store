@@ -38,10 +38,10 @@ function Row({
         aria-expanded={open}
         className="group flex w-full items-start gap-4 py-6 text-left"
       >
-        <span className="tnum mt-0.5 shrink-0 font-mono text-[11px] font-bold tracking-widest text-accent-400">
+        <span className="tnum mt-0.5 shrink-0 font-mono text-[11px] font-bold tracking-widest text-brand">
           {String(index + 1).padStart(2, "0")}
         </span>
-        <span className="flex-1 text-base font-extrabold leading-snug text-ink transition-colors group-hover:text-accent-300 sm:text-lg">
+        <span className="flex-1 text-base font-extrabold leading-snug text-ink transition-colors group-hover:text-brand sm:text-lg">
           {q}
         </span>
         {/* Cruz que rota a "menos": un solo elemento para los dos estados. */}
