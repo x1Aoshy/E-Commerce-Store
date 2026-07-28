@@ -98,7 +98,7 @@ export default function FAQ() {
         <Reveal variant="left">
           <div className="lg:sticky lg:top-28">
             <p className="eyebrow">{t("faq.eyebrow")}</p>
-            <h2 className="headline mt-2 text-4xl text-ink sm:text-5xl">
+            <h2 className="headline mt-2 text-3xl text-ink sm:text-[2.75rem]">
               {t("faq.heading")}
             </h2>
             <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-ink-soft">

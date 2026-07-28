@@ -73,7 +73,7 @@ export default function Footer() {
           {Array.from({ length: 8 }).map((_, i) => (
             <span
               key={i}
-              className="headline text-4xl text-outline sm:text-6xl"
+              className="headline text-3xl text-outline sm:text-5xl"
               aria-hidden={i > 0}
             >
               {store}

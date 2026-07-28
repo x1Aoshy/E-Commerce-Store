@@ -213,7 +213,7 @@ export default function ProductBuyPanel({ product }: any) {
 
       {lowStock && (
         <p className="mt-3 inline-flex items-center gap-2 border border-ember-500/40 bg-ember-500/10 px-3 py-1.5 text-[12.5px] font-bold text-ember-300">
-          <span className="h-1.5 w-1.5 animate-flicker rounded-full bg-ember-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-ember-400" />
           {t("buy.low", { n: product.stock })}
         </p>
       )}

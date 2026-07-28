@@ -170,7 +170,7 @@ export default async function ProductPage({ params }) {
           <Reveal variant="right" delay={80}>
             <div>
               {product.name && (
-                <h1 className="headline text-4xl text-ink sm:text-5xl lg:text-6xl">
+                <h1 className="headline text-3xl text-ink sm:text-4xl lg:text-[2.75rem]">
                   {product.name}
                 </h1>
               )}

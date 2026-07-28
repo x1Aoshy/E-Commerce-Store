@@ -89,7 +89,7 @@ export default function BestSellers({ products }: { products: Product[] }) {
           <div className="flex items-end justify-between gap-6">
             <div>
               <p className="eyebrow">{t("rail.eyebrow")}</p>
-              <h2 className="headline mt-2 text-4xl text-ink sm:text-6xl">
+              <h2 className="headline mt-2 text-3xl text-ink sm:text-[2.75rem]">
                 {t("rail.heading")}
               </h2>
             </div>

@@ -40,26 +40,47 @@ export default function CountUp({
       return;
     }
 
+    const run = () => {
+      if (done.current) return;
+      done.current = true;
+
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / duration);
+        // easeOutExpo: arranca rápido y frena — se siente "contado".
+        const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+        setValue(to * eased);
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting || done.current) return;
-        done.current = true;
+        if (!entry.isIntersecting) return;
         io.disconnect();
-
-        const start = performance.now();
-        const tick = (now: number) => {
-          const p = Math.min(1, (now - start) / duration);
-          // easeOutExpo: arranca rápido y frena — se siente "contado".
-          const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-          setValue(to * eased);
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
+        run();
       },
-      { threshold: 0.4 }
+      // Umbral 0: basta con que asome. Con 0.4 había cifras que nunca llegaban
+      // a mostrarse y se quedaban clavadas en "0.0" — y un promedio de reseñas
+      // en cero dice justo lo contrario de lo que la tienda quiere decir.
+      { threshold: 0, rootMargin: "0px 0px -40px 0px" }
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    // Red de seguridad: pase lo que pase, a los 2,5 s la cifra real está en
+    // pantalla. El dato importa; la animación es un adorno.
+    const failsafe = setTimeout(() => {
+      if (!done.current) {
+        done.current = true;
+        setValue(to);
+      }
+    }, 2500);
+
+    return () => {
+      io.disconnect();
+      clearTimeout(failsafe);
+    };
   }, [to, duration]);
 
   const shown = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString("es-NI");

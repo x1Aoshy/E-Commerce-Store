@@ -15,7 +15,7 @@ export default function NotFound() {
 
       <div className="relative">
         <p className="eyebrow">Error 404</p>
-        <h1 className="headline mt-3 text-5xl text-ink sm:text-7xl">
+        <h1 className="headline mt-3 text-4xl text-ink sm:text-6xl">
           Esta página
           <br />
           no existe

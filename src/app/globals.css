@@ -134,16 +134,19 @@
     @apply mx-auto w-full max-w-content px-5 sm:px-7 lg:px-10;
   }
 
-  /* Titular de póster: Anton, versalitas, interlineado apretadísimo. Es el
-     recurso más fuerte del sistema — se usa poco y grande. */
+  /* Titular: grotesco pesado en CAJA NORMAL, apretado.
+     Antes era una condensada en mayúsculas a tamaño enorme y tapaba todo: un
+     titular tiene que abrir la sección, no competir con el producto. En caja
+     normal se lee de un golpe y deja respirar a la foto, que es la que vende. */
   .headline {
-    @apply font-display uppercase leading-[0.86] tracking-headline;
+    @apply font-display font-extrabold leading-[0.98] tracking-headline;
   }
 
-  /* Etiqueta técnica: mono, mayúsculas, muy espaciada. Da el aire "laboratorio
-     deportivo" y ordena la jerarquía sin gritar. */
+  /* Etiqueta pequeña: mono del sistema, mayúsculas y espaciada. Acá las
+     mayúsculas SÍ funcionan porque el tamaño es diminuto y el color, apagado:
+     ordenan la jerarquía sin levantar la voz. */
   .eyebrow {
-    @apply font-mono text-[10px] uppercase tracking-widest2 text-ink-muted sm:text-[11px];
+    @apply font-mono text-[10px] uppercase tracking-widest2 text-ink-muted sm:text-[10.5px];
   }
 
   /* Regla de sección: hairline que cruza todo el ancho. El catálogo impreso
