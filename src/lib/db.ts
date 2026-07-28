@@ -430,18 +430,6 @@ async function buildOrder({
     };
   }
 
-  if (reserve) {
-    for (const li of lineItems) {
-      const product = byId.get(li.id);
-      const { error: updErr } = await supabase
-        .from("products")
-        .update({ stock: Math.max(0, product.stock - li.quantity) })
-        .eq("id", li.id)
-        .gte("stock", li.quantity);
-      if (updErr) throw new Error(`No se pudo actualizar el stock: ${updErr.message}`);
-    }
-  }
-
   const total = lineItems.reduce((sum, li) => sum + li.subtotal, 0);
   // Descuento del cupón sobre el subtotal de productos (no sobre el extra).
   const discount = coupon
@@ -474,26 +462,53 @@ async function buildOrder({
     order.discount = discount;
   }
 
-  const { data: inserted, error: insErr } = await supabase
-    .from("orders")
-    .insert(order)
-    .select(ORDER_COLUMNS)
-    .single();
-  if (insErr) throw new Error(`No se pudo guardar la orden: ${insErr.message}`);
+  /*
+   * Reserva de stock + insert de la orden + conteo del cupón, en UNA sola
+   * transacción del lado de Postgres (ver supabase/migrations/0001_atomic_orders.sql).
+   *
+   * Antes esto eran tres pasos sueltos desde JS y se podía: vender la misma
+   * última unidad dos veces (el guard `.gte()` no casaba, afectaba 0 filas y no
+   * devolvía error, así que la orden se creaba igual), dejar stock descontado
+   * sin orden si el insert fallaba, y pasarse de `max_uses` en los cupones.
+   */
+  const { data: rpcData, error: rpcErr } = await supabase.rpc("create_order_atomic", {
+    p_order: order,
+    p_reserve: !!reserve,
+    p_coupon_id: coupon ? coupon.id : null,
+  });
 
-  // Cuenta el uso del cupón (después del insert exitoso; si falla, no bloquea).
-  if (coupon) {
-    try {
-      await supabase
-        .from("coupons")
-        .update({ uses: (Number(coupon.uses) || 0) + 1 })
-        .eq("id", coupon.id);
-    } catch {
-      /* el pedido ya está creado; el conteo es informativo */
+  if (rpcErr) {
+    // La función todavía no existe en la base: pedir la migración en vez de
+    // caer al camino viejo, que es justamente el que sobrevende.
+    if (rpcErr.code === "PGRST202" || /create_order_atomic/.test(rpcErr.message || "")) {
+      throw new Error(
+        "Falta la función create_order_atomic en la base. Corré " +
+          "supabase/migrations/0001_atomic_orders.sql en el SQL Editor de Supabase."
+      );
     }
+
+    if (rpcErr.message === "stock_conflict") {
+      let parsed: any[] = [];
+      try {
+        parsed = JSON.parse(rpcErr.details || "[]");
+      } catch {
+        /* si el detalle no viniera parseable, devolvemos el error genérico */
+      }
+      return { error: "Stock insuficiente para algunos productos.", conflicts: parsed };
+    }
+
+    if (rpcErr.message === "coupon_exhausted") {
+      return { error: "Ese cupón ya alcanzó su límite de usos." };
+    }
+
+    if (rpcErr.message === "empty_cart") {
+      return { error: "El carrito está vacío." };
+    }
+
+    throw new Error(`No se pudo guardar la orden: ${rpcErr.message}`);
   }
 
-  return { order: mapOrder(inserted) };
+  return { order: mapOrder(rpcData) };
 }
 
 // Checkout público: crea la orden como 'pendiente' SIN reservar stock.
