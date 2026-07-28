@@ -83,7 +83,7 @@ export default function BestSellers({ products }: { products: Product[] }) {
   );
 
   return (
-    <section className="overflow-hidden border-y border-line/10 bg-surface/25 py-14 sm:py-20">
+    <section className="overflow-hidden border-y border-line/10 bg-surface-soft/50 py-14 sm:py-20">
       <div className="container-content">
         <Reveal>
           <div className="flex items-end justify-between gap-6">

@@ -26,7 +26,7 @@ function initials(name: string) {
 
 function Stars({ rating = 5, className = "h-4 w-4" }: any) {
   return (
-    <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
+    <span className="inline-flex gap-0.5 text-brand" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (
         <svg
           key={s}
@@ -89,7 +89,7 @@ export default function ProductReviews({
           <Reveal variant="left">
             <div className="border-2 border-line/85 bg-surface p-6 shadow-hard-sm lg:sticky lg:top-28">
               <div className="flex items-end gap-3">
-                <span className="tnum font-display text-6xl leading-none text-accent-300">
+                <span className="tnum font-display text-6xl leading-none text-brand">
                   {ratingAvg.toFixed(1)}
                 </span>
                 <div className="pb-1.5">
@@ -109,7 +109,7 @@ export default function ProductReviews({
                       <span className="tnum w-3 font-mono text-[10px] text-ink-muted">
                         {star}
                       </span>
-                      <svg className="h-2.5 w-2.5 shrink-0 text-accent-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <svg className="h-2.5 w-2.5 shrink-0 text-brand" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="m12 2 3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
                       </svg>
                       <div className="h-1.5 flex-1 overflow-hidden bg-fill/8">

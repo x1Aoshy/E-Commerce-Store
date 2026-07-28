@@ -198,7 +198,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                   className={`chip shrink-0 whitespace-nowrap ${
                     onlySale
                       ? "bg-ember-500 text-white ring-1 ring-ember-500"
-                      : "bg-transparent text-ember-400 ring-1 ring-ember-500/40 hover:ring-ember-500"
+                      : "bg-transparent text-urgent ring-1 ring-ember-500/40 hover:ring-ember-500"
                   }`}
                 >
                   🔥 {t("grid.offers")}

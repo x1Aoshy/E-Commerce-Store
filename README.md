@@ -26,9 +26,36 @@ A colour with no job doesn't get used. `ember` in particular is never
 decorative — if it shows up, there is something to lose.
 
 Neutrals are semantic tokens (`ink`, `night`, `surface`, `line`, `fill`) backed
-by CSS variables, so light mode is a token flip rather than a class rewrite.
-Add `theme-dark` to any subtree that must stay dark regardless of theme (the
-admin panel and the brand reel both do this).
+by CSS variables. Add `theme-dark` to any subtree that must stay dark
+regardless of theme (the admin panel and the brand reel both do this).
+
+### Light mode is its own theme, not an inversion
+
+The first attempt just flipped the neutrals, and it fell apart: a pale gold that
+glows on carbon is invisible on paper. Two rules came out of that.
+
+**1. Colour used as *text* goes through a semantic token that retells the same
+meaning in the tone the background needs.** Use these for text and icons —
+never the fixed scales:
+
+| Token | Meaning | Dark | Light | Contrast (light) |
+| --- | --- | --- | --- | --- |
+| `text-brand` | brand, price | gold `#f6ce4e` | bronze `#855a0c` | 5.8:1 |
+| `text-urgent` | urgency | ember `#ff9a6b` | brick `#b22d0b` | 6.1:1 |
+| `text-ok` | trust, stock | mint `#5fe0a0` | forest `#0a6940` | 6.8:1 |
+
+The fixed scales (`bg-accent-400`, `bg-ember-500`…) stay for **fills**, where a
+bright chip with dark text works identically in both themes.
+
+**2. Anything sitting on a photo uses `scrim`, which never inverts.** Sold-out
+overlays, "only 3 left" badges and gallery arrows were built on `bg-night`;
+the moment the theme flipped they became pale boxes with pale text on a photo.
+`bg-scrim/85` + `text-white` is always legible because a photo is always busy.
+
+The light page itself is near-white paper (`#faf9f6`) with pure white cards, so
+cards separate cleanly — the earlier cream-on-cream read as one beige smear.
+Alternating section bands use `bg-surface-soft/50`, which is perceptible over
+both carbon and paper; `bg-surface/25` was invisible on white.
 
 ### Type — one family, three weights
 

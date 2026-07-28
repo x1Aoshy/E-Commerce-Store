@@ -29,7 +29,7 @@ import { flyToCart } from "@/lib/flyToCart";
 
 function MiniStars({ rating = 5 }: any) {
   return (
-    <span className="inline-flex gap-[1px] text-accent-400" aria-label={`${rating} de 5`}>
+    <span className="inline-flex gap-[1px] text-brand" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (
         <svg
           key={s}
@@ -107,12 +107,12 @@ function ProductCard({ product, priority = false }: any) {
         </div>
 
         {!s.available ? (
-          <span className="absolute inset-x-0 bottom-0 z-10 bg-night/85 py-2 text-center font-mono text-[10px] font-bold uppercase tracking-widest2 text-ink-soft backdrop-blur-sm">
+          <span className="absolute inset-x-0 bottom-0 z-10 bg-scrim/85 py-2 text-center font-mono text-[10px] font-bold uppercase tracking-widest2 text-white/80">
             {t("card.soldout")}
           </span>
         ) : (
           lowStock && (
-            <span className="absolute bottom-2 left-2 z-10 inline-flex items-center gap-1.5 bg-night/85 px-2 py-1 font-mono text-[9.5px] font-bold uppercase tracking-wider text-ember-300 backdrop-blur-sm">
+            <span className="absolute bottom-2 left-2 z-10 inline-flex items-center gap-1.5 bg-scrim/85 px-2 py-1 font-mono text-[9.5px] font-bold uppercase tracking-wider text-ember-300">
               <span className="h-1.5 w-1.5 rounded-full bg-ember-400" />
               {t("card.last", { n: product.stock })}
             </span>
@@ -182,7 +182,7 @@ function ProductCard({ product, priority = false }: any) {
             )}
           </div>
           {onSale && (
-            <p className="mt-1 font-mono text-[9.5px] font-bold uppercase tracking-wider text-ember-400">
+            <p className="mt-1 font-mono text-[9.5px] font-bold uppercase tracking-wider text-urgent">
               {t("card.save", { amount: formatPrice(saving) })}
             </p>
           )}

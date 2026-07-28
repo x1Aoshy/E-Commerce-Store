@@ -23,7 +23,7 @@ import type { Product } from "@/lib/types";
 
 function Stars({ rating = 5 }: { rating?: number }) {
   return (
-    <span className="inline-flex gap-0.5 text-accent-400" aria-label={`${rating} de 5`}>
+    <span className="inline-flex gap-0.5 text-brand" aria-label={`${rating} de 5`}>
       {Array.from({ length: 5 }).map((_, s) => (
         <svg
           key={s}
@@ -84,7 +84,7 @@ export default function Testimonials({ products }: { products: Product[] }) {
 
             {/* Resumen numérico: promedio + total, calculados de verdad. */}
             <div className="flex shrink-0 items-center gap-4 border border-line/15 px-5 py-4">
-              <span className="tnum font-display text-4xl leading-none text-accent-300">
+              <span className="tnum font-display text-4xl leading-none text-brand">
                 <CountUp to={summary.avg} decimals={1} />
               </span>
               <span className="h-10 w-px bg-line/15" aria-hidden="true" />

@@ -68,13 +68,13 @@ export default function ValueStrip() {
   ];
 
   return (
-    <section className="border-b border-line/10 bg-surface/30">
+    <section className="border-b border-line/10 bg-surface-soft/50">
       <div className="container-content">
         <div className="grid grid-cols-2 gap-px bg-line/10 lg:grid-cols-4">
           {items.map((it, i) => (
             <Reveal key={it.title} delay={i * 90} variant="up">
               <div className="group flex h-full items-start gap-3.5 bg-night px-4 py-6 sm:px-6 sm:py-8">
-                <span className="shrink-0 text-accent-400 transition-transform duration-500 ease-out group-hover:-rotate-12 group-hover:scale-110">
+                <span className="shrink-0 text-brand transition-transform duration-500 ease-out group-hover:-rotate-12 group-hover:scale-110">
                   <Icon name={it.icon} />
                 </span>
                 <div className="min-w-0">

@@ -65,7 +65,7 @@ function NotifyMe({ product }: any) {
 
   if (state === "done") {
     return (
-      <div className="mt-7 border border-green-400/40 bg-green-400/10 px-4 py-4 text-sm font-medium text-green-300">
+      <div className="mt-7 border border-green-400/40 bg-green-400/10 px-4 py-4 text-sm font-medium text-ok">
         {t("buy.notifyDone")}
       </div>
     );
@@ -92,7 +92,7 @@ function NotifyMe({ product }: any) {
           {state === "loading" ? t("buy.notifySending") : t("buy.notifyBtn")}
         </button>
       </form>
-      {state === "error" && <p className="mt-2 text-xs text-ember-400">{msg}</p>}
+      {state === "error" && <p className="mt-2 text-xs text-urgent">{msg}</p>}
     </div>
   );
 }
@@ -102,7 +102,7 @@ function Stars({ rating = 0, count = 0 }: { rating?: number; count?: number }) {
   if (!count) return null;
   return (
     <a href="#resenas" className="inline-flex items-center gap-2">
-      <span className="inline-flex gap-0.5 text-accent-400">
+      <span className="inline-flex gap-0.5 text-brand">
         {Array.from({ length: 5 }).map((_, s) => (
           <svg
             key={s}
@@ -206,13 +206,13 @@ export default function ProductBuyPanel({ product }: any) {
       </div>
 
       {onSale && (
-        <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-wider text-ember-400">
+        <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-wider text-urgent">
           {t("card.save", { amount: formatPrice(saving) })}
         </p>
       )}
 
       {lowStock && (
-        <p className="mt-3 inline-flex items-center gap-2 border border-ember-500/40 bg-ember-500/10 px-3 py-1.5 text-[12.5px] font-bold text-ember-300">
+        <p className="mt-3 inline-flex items-center gap-2 border border-ember-500/40 bg-ember-500/10 px-3 py-1.5 text-[12.5px] font-bold text-urgent">
           <span className="h-1.5 w-1.5 rounded-full bg-ember-400" />
           {t("buy.low", { n: product.stock })}
         </p>
@@ -248,7 +248,7 @@ export default function ProductBuyPanel({ product }: any) {
               {/* Total de la línea: el cliente ve lo que va a pagar ANTES de
                   tocar nada, sin hacer la multiplicación de cabeza. */}
               {qty > 1 && (
-                <span className="tnum font-display text-2xl text-accent-300">
+                <span className="tnum font-display text-2xl text-brand">
                   {formatPrice(lineTotal)}
                 </span>
               )}
@@ -304,7 +304,7 @@ export default function ProductBuyPanel({ product }: any) {
             {[t("buy.guarantee"), t("buy.ships"), t("cart.secure")].map((line) => (
               <li key={line} className="flex items-start gap-2.5 text-[12.5px] text-ink-soft">
                 <svg
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400"
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ok"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
                   aria-hidden="true"

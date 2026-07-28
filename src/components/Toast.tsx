@@ -215,21 +215,21 @@ function ToastItem({ toast, onDismiss }: any) {
 function ToastIcon({ type }: any) {
   if (type === "success") {
     return (
-      <svg className="h-4 w-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="h-4 w-4 text-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
         <path d="M5 13l4 4L19 7" />
       </svg>
     );
   }
   if (type === "error") {
     return (
-      <svg className="h-4 w-4 text-ember-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+      <svg className="h-4 w-4 text-urgent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
         <path d="M6 6l12 12M18 6L6 18" />
       </svg>
     );
   }
   if (type === "loading") {
     return (
-      <svg className="spin-ring h-4 w-4 text-accent-300" viewBox="0 0 24 24" fill="none">
+      <svg className="spin-ring h-4 w-4 text-brand" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
         <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
       </svg>

@@ -198,7 +198,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
             <nav className="hidden min-w-0 items-center gap-1 lg:flex">
               <button
                 onClick={() => goCategory("Todos")}
-                className="whitespace-nowrap px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-accent-300"
+                className="whitespace-nowrap px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-brand"
               >
                 {t("grid.all")}
               </button>
@@ -206,7 +206,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
                 <button
                   key={c}
                   onClick={() => goCategory(c)}
-                  className="whitespace-nowrap px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-accent-300"
+                  className="whitespace-nowrap px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-brand"
                 >
                   {c}
                 </button>
@@ -233,7 +233,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
                   document.getElementById("productos")?.scrollIntoView({ behavior: "smooth" });
                 }}
                 aria-label={t("grid.favorites")}
-                className="relative hidden h-11 w-11 items-center justify-center border border-transparent text-ink-soft transition-colors hover:border-line/20 hover:text-ember-400 sm:flex"
+                className="relative hidden h-11 w-11 items-center justify-center border border-transparent text-ink-soft transition-colors hover:border-line/20 hover:text-urgent sm:flex"
               >
                 <HeartIcon />
                 <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-ember-400" />
@@ -270,7 +270,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
               <div className="no-scrollbar -mx-5 flex items-center gap-1 overflow-x-auto px-5 sm:mx-0 sm:px-0">
                 <button
                   onClick={() => goCategory("Todos")}
-                  className="shrink-0 whitespace-nowrap px-3 py-2.5 font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-accent-300"
+                  className="shrink-0 whitespace-nowrap px-3 py-2.5 font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-brand"
                 >
                   {t("grid.all")}
                 </button>
@@ -278,7 +278,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
                   <button
                     key={c}
                     onClick={() => goCategory(c)}
-                    className="shrink-0 whitespace-nowrap px-3 py-2.5 font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-accent-300"
+                    className="shrink-0 whitespace-nowrap px-3 py-2.5 font-mono text-[10.5px] font-bold uppercase tracking-widest2 text-ink-soft transition-colors hover:text-brand"
                   >
                     {c}
                   </button>

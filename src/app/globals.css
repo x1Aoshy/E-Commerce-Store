@@ -28,6 +28,22 @@
     --c-fill: 255 255 255;
     /* Sombra proyectada de las tarjetas al elevarse. */
     --c-shadow: 0 0 0;
+
+    /* --- Colores SEMÁNTICOS de texto -------------------------------------
+       Oro, brasa y verde no pueden ser el mismo tono en los dos temas: un
+       dorado claro que brilla sobre carbón desaparece sobre papel. Estos tres
+       tokens conservan el SIGNIFICADO (marca / urgencia / confianza) y ajustan
+       el tono al fondo que les toca. Se usan para TEXTO e iconos; los rellenos
+       (botones, insignias) siguen usando la escala fija, que ahí sí funciona
+       igual en ambos temas. */
+    --c-brand: 246 206 78; /* #f6ce4e oro claro */
+    --c-urgent: 255 154 107; /* #ff9a6b brasa clara */
+    --c-ok: 95 224 160; /* #5fe0a0 verde claro */
+
+    /* Velo sobre fotografía. NO se invierte con el tema: una etiqueta sobre
+       una foto necesita fondo oscuro y texto claro siempre, o deja de leerse
+       en cuanto la tienda se ve en modo claro. */
+    --c-scrim: 10 10 11;
     /* Intensidad de las capas de ambiente del fondo (ver Background.tsx).
        Sobre carbón, la luz se puede permitir ser generosa. */
     --ambient-gold: 0.16;
@@ -35,18 +51,33 @@
     --ambient-grid: 0.055;
   }
 
-  /* ===== Tema CLARO ===== */
+  /* ===== Tema CLARO =====
+     No es "el oscuro invertido": es un tema propio, pensado como papel.
+     El fondo baja a un blanco cálido casi puro en vez del crema anterior —
+     con crema de fondo Y tarjetas blancas, la diferencia era tan chica que
+     todo se veía como una sola mancha beige. Ahora las tarjetas blancas se
+     recortan limpias sobre el papel, y la estructura la dan las líneas finas
+     negras y las sombras duras, no los rellenos. */
   .light {
     color-scheme: light;
-    --c-night: 244 241 234; /* #f4f1ea papel cálido */
-    --c-surface: 255 255 255;
-    --c-surface-soft: 235 231 221;
-    --c-ink: 17 17 18; /* #111112 casi negro */
-    --c-ink-soft: 74 71 64;
-    --c-ink-muted: 122 117 107;
-    --c-line: 17 17 18;
-    --c-fill: 17 17 18;
-    --c-shadow: 17 17 18;
+    --c-night: 250 249 246; /* #faf9f6 papel casi blanco, cálido */
+    --c-surface: 255 255 255; /* tarjetas: blanco puro que se despega */
+    --c-surface-soft: 240 238 232; /* #f0eee8 huecos y fondos de foto */
+    --c-ink: 23 22 20; /* #171614 negro cálido */
+    --c-ink-soft: 82 78 71;
+    --c-ink-muted: 124 119 110;
+    --c-line: 23 22 20;
+    --c-fill: 23 22 20;
+    --c-shadow: 23 22 20;
+
+    /* Los mismos tres significados, en tonos que SÍ se leen sobre papel:
+       el oro se vuelve bronce, la brasa se vuelve ladrillo y el verde se
+       vuelve bosque. Los tres pasan holgados el contraste AA para texto. */
+    --c-brand: 133 90 12; /* #855a0c bronce */
+    --c-urgent: 178 45 11; /* #b22d0b ladrillo */
+    --c-ok: 10 105 64; /* #0a6940 bosque */
+
+    --c-scrim: 10 10 11; /* el velo sobre fotos NO cambia */
     /* Sobre papel, la MISMA luz ensucia el fondo y lo vuelve amarillento.
        Acá el ambiente baja a un rumor. */
     --ambient-gold: 0.055;

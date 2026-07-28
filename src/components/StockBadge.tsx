@@ -14,8 +14,8 @@ const DOT = {
   out: "bg-ink-muted",
 };
 const TEXT = {
-  in: "text-green-300",
-  low: "text-ember-300",
+  in: "text-ok",
+  low: "text-urgent",
   out: "text-ink-muted",
 };
 

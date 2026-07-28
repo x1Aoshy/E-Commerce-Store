@@ -38,7 +38,7 @@ export default function ProductProfile({ product }: any) {
           <div key={`${s.label}-${i}`}>
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-[13px] font-medium text-ink-soft">{s.label}</span>
-              <span className="tnum font-display text-base text-accent-300">{s.value}</span>
+              <span className="tnum font-display text-base text-brand">{s.value}</span>
             </div>
             <div className="mt-2 h-[6px] overflow-hidden bg-fill/8">
               <div
