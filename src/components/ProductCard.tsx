@@ -113,7 +113,7 @@ function ProductCard({ product, priority = false }: any) {
         ) : (
           lowStock && (
             <span className="absolute bottom-2 left-2 z-10 inline-flex items-center gap-1.5 bg-night/85 px-2 py-1 font-mono text-[9.5px] font-bold uppercase tracking-wider text-ember-300 backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 animate-flicker rounded-full bg-ember-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-ember-400" />
               {t("card.last", { n: product.stock })}
             </span>
           )

@@ -178,7 +178,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
       <header
         className={`sticky top-0 z-40 transition-[background-color,box-shadow,border-color] duration-300 ${
           scrolled
-            ? "border-b border-line/12 bg-night/92 shadow-soft backdrop-blur-xl supports-[backdrop-filter]:bg-night/80"
+            ? "border-b border-line/12 bg-night shadow-soft"
             : "border-b border-transparent bg-night"
         }`}
       >
@@ -298,7 +298,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
 
         {/* ---------------------- Panel de búsqueda ---------------------- */}
         <div
-          className={`absolute inset-x-0 top-full origin-top border-b border-line/12 bg-night/97 backdrop-blur-xl transition-all duration-300 ease-out ${
+          className={`absolute inset-x-0 top-full origin-top border-b border-line/12 bg-night transition-all duration-300 ease-out ${
             searchOpen
               ? "pointer-events-auto translate-y-0 opacity-100"
               : "pointer-events-none -translate-y-3 opacity-0"

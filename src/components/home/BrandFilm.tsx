@@ -159,17 +159,16 @@ export default function BrandFilm({ products }: { products: Product[] }) {
         <div className="absolute inset-0 bg-night/72" />
         <div className="absolute inset-0 bg-gradient-to-t from-night via-night/35 to-night/85" />
 
-        {/* Textura de proyección: líneas de escaneo finas + barrido. */}
+        {/* Textura de proyección: líneas finas de escaneo. Sin `mix-blend-mode`
+            a propósito — mezclar esta capa con la foto que hace zoom debajo
+            obliga a recomponer la sección entera en cada cuadro. */}
         <div
-          className="absolute inset-0 opacity-[0.13] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.07]"
           style={{
             backgroundImage:
               "repeating-linear-gradient(0deg, rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 1px, transparent 1px, transparent 4px)",
           }}
         />
-        {running && (
-          <div className="absolute inset-x-0 top-0 h-40 animate-scan bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
-        )}
       </div>
 
       {/* =========================== INTERFAZ ============================= */}
@@ -180,7 +179,7 @@ export default function BrandFilm({ products }: { products: Product[] }) {
             {storeName || "Titan"} · {t("film.reel")}
           </span>
           <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest2 text-ember-300">
-            <span className={`h-2 w-2 rounded-full bg-ember-500 ${running ? "animate-flicker" : "opacity-40"}`} />
+            <span className={`h-2 w-2 rounded-full bg-ember-500 ${running ? "" : "opacity-40"}`} />
             REC
           </span>
         </div>
@@ -189,7 +188,7 @@ export default function BrandFilm({ products }: { products: Product[] }) {
             palabra por palabra en cada cambio de toma. */}
         <div className="max-w-3xl py-10">
           <p className="eyebrow text-accent-300">{t("film.eyebrow")}</p>
-          <h2 className="headline mt-4 text-5xl text-ink sm:text-7xl lg:text-8xl">
+          <h2 className="headline mt-4 text-4xl text-ink sm:text-5xl lg:text-6xl">
             <Headline
               key={ownVideo ? "video" : shot}
               text={ownVideo ? t("film.line1") : current?.line || ""}

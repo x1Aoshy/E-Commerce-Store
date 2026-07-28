@@ -5,11 +5,12 @@ export function stockStatus(stock) {
   return { label: "En stock", tone: "in", available: true };
 }
 
-// Verde = adelante · brasa = se acaba · apagado = no hay. El punto de "quedan
-// pocas" late para que el ojo lo agarre sin necesidad de leer.
+// Verde = adelante · brasa = se acaba · apagado = no hay. El punto era
+// parpadeante; se quitó porque en una rejilla de 20 productos son 20
+// animaciones infinitas compitiendo, y el color solo ya comunica lo mismo.
 const DOT = {
   in: "bg-green-400",
-  low: "bg-ember-400 animate-flicker",
+  low: "bg-ember-400",
   out: "bg-ink-muted",
 };
 const TEXT = {

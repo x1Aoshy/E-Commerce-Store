@@ -62,12 +62,12 @@ export default function CategoryRail({ products }: { products: Product[] }) {
           <div className="flex items-end justify-between gap-6">
             <div>
               <p className="eyebrow">{t("cat.eyebrow")}</p>
-              <h2 className="headline mt-2 max-w-xl text-4xl text-ink sm:text-6xl">
+              <h2 className="headline mt-2 max-w-xl text-3xl text-ink sm:text-[2.75rem]">
                 {t("cat.heading")}
               </h2>
             </div>
             {/* Número gigante contorneado: recurso de póster, peso visual cero. */}
-            <span className="headline hidden text-8xl text-outline lg:block" aria-hidden="true">
+            <span className="headline hidden text-7xl text-outline lg:block" aria-hidden="true">
               01
             </span>
           </div>

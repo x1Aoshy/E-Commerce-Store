@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Manrope, Anton, JetBrains_Mono } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
@@ -13,30 +13,23 @@ import { getSettings } from "@/lib/db";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
-// TIPOGRAFÍA — tres voces con oficio distinto:
-//  · Manrope   → interfaz y texto. Cifras claras para precios y totales.
-//  · Anton     → titulares de póster (condensada, atlética). Sólo en grande.
-//  · JetBrains → micro-etiquetas técnicas (categoría, lote, "24G PROTEÍNA").
-// Se cargan como variables CSS y las consume tailwind.config (font-sans /
-// font-display / font-mono).
+// TIPOGRAFÍA — UNA sola familia.
+//
+// Antes había tres (Manrope + Anton + JetBrains Mono): nueve archivos que el
+// navegador tenía que bajar antes de pintar bien la página. Ahora se carga sólo
+// Manrope, que es variable — un archivo cubre de 400 a 800. Los titulares usan
+// el peso 800 con interletrado apretado, y las micro-etiquetas usan la mono del
+// sistema (cero descargas).
+//
+// El cambio es de rendimiento Y de tono: la condensada de póster en mayúsculas
+// gritaba demasiado. Un grotesco pesado en caja normal se lee como marca seria
+// sin taparle la vista al producto, que es lo que se tiene que vender.
 const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "700", "800"],
   variable: "--font-manrope",
   display: "swap",
   adjustFontFallback: false,
-});
-const anton = Anton({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-anton",
-  display: "swap",
-});
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-mono",
-  display: "swap",
 });
 
 // Dinámico: leemos el branding en cada request para que el logo/nombre/Icon
@@ -94,10 +87,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html
-      lang="es"
-      className={`${manrope.variable} ${anton.variable} ${mono.variable}`}
-    >
+    <html lang="es" className={manrope.variable}>
       <body>
         {/* Aplica el tema (claro/oscuro) ANTES de pintar, para que no haya
             parpadeo al recargar. Lee la preferencia guardada o la del sistema. */}

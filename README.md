@@ -30,15 +30,16 @@ by CSS variables, so light mode is a token flip rather than a class rewrite.
 Add `theme-dark` to any subtree that must stay dark regardless of theme (the
 admin panel and the brand reel both do this).
 
-### Type — three voices
+### Type — one family, three weights
 
-* **Anton** (`font-display`, via the `.headline` class) — poster headlines only.
-  Uppercase, very tight leading. Used big and used sparingly.
-* **Manrope** (`font-sans`) — all UI and body copy; clear figures for prices.
-* **JetBrains Mono** (`font-mono`, via `.eyebrow`) — technical micro-labels.
+**Manrope** (variable) does everything. `.headline` is the same family at
+weight 800 with tight tracking, in **sentence case** — an earlier version used a
+condensed poster face in all-caps and it shouted over the product photography,
+which is what actually sells. `.eyebrow` micro-labels use the *system*
+monospace stack, so they cost nothing to download.
 
-`h1`/`h2` deliberately stay in Manrope so the admin panel reads normally;
-poster type is opt-in with `.headline`.
+One family means one font file (~24 KB) instead of nine, which is most of why
+the page scrolls smoothly on a mid-range phone.
 
 ### Geometry
 
@@ -47,14 +48,33 @@ badges. Only chips and filters are pills. That hard/soft collision is the
 signature — don't soften the rectangles. `.card-poster` and `shadow-hard` add
 the offset screen-printed shadow for blocks that need to shout.
 
-### Motion
+### Motion — and the performance budget behind it
 
 Movement communicates; nothing moves for decoration. Primitives live in
 `src/components/motion/` (`Marquee`, `Headline`, `CountUp`) plus
 `src/lib/useReveal.ts` (scroll reveal, with variants) and
-`src/lib/flyToCart.ts` (the add-to-cart flight). Everything animates
-`transform`/`opacity` only, ambient loops pause when off-screen or when the tab
-is hidden, and `prefers-reduced-motion` switches all of it off.
+`src/lib/flyToCart.ts` (the add-to-cart flight).
+
+**Rules, learned the hard way** — an earlier pass shipped continuously animated
+blurred gradients and a moving `background-position`, and scrolling dropped to
+roughly 13 fps on throttled mobile:
+
+* Animate **`transform` and `opacity` only**. Never `background-position`,
+  `filter`, `blur`, `width`, or `top` on a loop.
+* **No large `mix-blend-mode` layers over moving content** — blending forces the
+  whole area to recomposite every frame.
+* **`backdrop-filter` is not free.** Sticky headers and filter bars use solid
+  backgrounds instead.
+* **Ambient loops pause when off-screen** (marquees observe their own
+  visibility) and video pauses when the tab is hidden.
+* **One infinite animation per concept**, not per item — a blinking dot on every
+  card in a 20-product grid is 20 live animations for no added meaning.
+* `prefers-reduced-motion` switches all of it off.
+
+Reveal-on-scroll and `CountUp` both carry a 2.5 s failsafe: if the
+`IntersectionObserver` never fires, the content and the real numbers appear
+anyway. A missing animation is a detail; content that never appears is a lost
+sale.
 
 ### Video
 

@@ -164,7 +164,7 @@ export default function Hero({ products = [] }: any) {
               alt=""
               loading={idx === 0 ? "eager" : "lazy"}
               decoding="async"
-              className={`absolute inset-0 h-full w-full animate-ken-burns object-cover transition-opacity duration-[1600ms] ease-out ${
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1600ms] ease-out ${
                 idx === photoIdx ? "opacity-30" : "opacity-0"
               }`}
             />
@@ -174,27 +174,19 @@ export default function Hero({ products = [] }: any) {
         {/* Cortina: el texto SIEMPRE legible sobre cualquier metraje. */}
         <div className="absolute inset-0 bg-gradient-to-r from-night via-night/88 to-night/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-night via-transparent to-night/70" />
-
-        {/* Línea de escaneo: el gesto que dice "esto es video en vivo". */}
-        <div className="absolute inset-x-0 top-0 h-32 animate-scan bg-gradient-to-b from-transparent via-accent-400/[0.07] to-transparent" />
       </div>
 
       <div className="container-content relative grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:py-24">
         {/* ============================== MENSAJE ============================= */}
         <div className="order-2 text-center lg:order-1 lg:text-left">
-          {/* Etiqueta viva: el punto que late confirma que la tienda está atendiendo. */}
-          <div className="inline-flex items-center gap-2.5 border border-accent-400/35 bg-accent-400/[0.07] px-3 py-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-green-400" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-            </span>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest2 text-accent-200">
-              {t("hero.badge")}
-            </span>
-          </div>
+          {/* Sin insignia de "atendiendo pedidos ahora": era un adorno que
+              simulaba actividad en vivo sin medir nada real. Esa clase de señal
+              inventada es justo lo que hace que una tienda huela a plantilla.
+              El mensaje de disponibilidad ya lo dan el stock de cada producto y
+              el botón de WhatsApp, que sí responden a la realidad. */}
 
-          {/* Titular de póster: se arma palabra por palabra al cargar. */}
-          <h1 className="headline mt-6 text-[3.25rem] text-ink min-[400px]:text-[4rem] sm:text-[5.5rem] lg:text-[6.25rem] xl:text-[7rem]">
+          {/* Titular: entra palabra por palabra al cargar. */}
+          <h1 className="headline text-4xl text-ink min-[400px]:text-5xl sm:text-6xl lg:text-[4.25rem] xl:text-[4.75rem]">
             <Headline text={t("hero.title1")} className="block" />
             <Headline text={t("hero.title2")} className="block" delay={140} />
             <span className="relative block">

@@ -77,7 +77,7 @@ export default function Testimonials({ products }: { products: Product[] }) {
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
             <div>
               <p className="eyebrow">{t("test.eyebrow")}</p>
-              <h2 className="headline mt-2 max-w-2xl text-4xl text-ink sm:text-6xl">
+              <h2 className="headline mt-2 max-w-2xl text-3xl text-ink sm:text-[2.75rem]">
                 {t("test.heading")}
               </h2>
             </div>

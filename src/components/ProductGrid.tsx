@@ -124,7 +124,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="eyebrow">{t("grid.eyebrow")}</p>
-              <h2 className="headline mt-2 text-4xl text-ink sm:text-6xl">
+              <h2 className="headline mt-2 text-3xl text-ink sm:text-[2.75rem]">
                 {t("grid.heading")}
               </h2>
             </div>
@@ -143,7 +143,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
       {/* Sticky justo debajo del header: los filtros viajan con el cliente.
           En móvil el header mide 68px + la fila de categorías (~38px); en
           escritorio esa fila no existe y basta con los 68px. */}
-      <div className="sticky top-[106px] z-20 mt-0 border-b border-line/10 bg-night/92 py-3 backdrop-blur-xl supports-[backdrop-filter]:bg-night/80 lg:top-[68px]">
+      <div className="sticky top-[106px] z-20 mt-0 border-b border-line/10 bg-night py-3 lg:top-[68px]">
         <div className="container-content">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             {/* Buscador */}

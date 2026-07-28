@@ -3,9 +3,14 @@
 // ============================================================================
 // SISTEMA DE DISEÑO · "CARBON & 24K"
 // ----------------------------------------------------------------------------
-// Dirección: tienda deportiva editorial. Tipografía de póster condensada, mucho
-// contraste, geometría RECTA (cero radio) para lo estructural y PÍLDORAS para
-// lo interactivo secundario. Ese contraste duro/blando es la firma de la marca.
+// Dirección: tienda deportiva editorial. UNA tipografía (Manrope variable) que
+// se diferencia por peso, mucho contraste de color, geometría RECTA (cero radio)
+// para lo estructural y PÍLDORAS para lo interactivo secundario. Ese contraste
+// duro/blando es la firma de la marca.
+//
+// El movimiento es deliberadamente escaso: sólo transform y opacity, nada que
+// anime `background-position`, `filter` ni `blur` de forma continua — eso es lo
+// que hace saltar el scroll en un teléfono.
 //
 // Los colores viven en variables CSS (globals.css) para que el tema claro sea
 // una inversión de tokens y no una reescritura de clases.
@@ -70,7 +75,7 @@ module.exports = {
       },
 
       fontFamily: {
-        // Texto e interfaz: Manrope (geométrica, cifras excelentes para precios).
+        // UNA familia para todo: Manrope (variable, un solo archivo).
         sans: [
           "var(--font-manrope)",
           "-apple-system",
@@ -81,16 +86,32 @@ module.exports = {
           "Arial",
           "sans-serif",
         ],
-        // Titulares de póster: Anton (condensada, atlética). Se usa a propósito,
-        // no por defecto — los h1/h2 del panel admin siguen en Manrope.
-        display: ["var(--font-anton)", "Impact", "Haettenschweiler", "sans-serif"],
-        // Micro-etiquetas técnicas (lote, SKU, "PROTEÍNA 24G"): sabor laboratorio.
-        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+        // `display` es la MISMA familia: los titulares se distinguen por peso e
+        // interletrado, no por una segunda tipografía. Menos descargas y un
+        // conjunto más tranquilo.
+        display: [
+          "var(--font-manrope)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif",
+        ],
+        // Micro-etiquetas: mono DEL SISTEMA. Da el sabor técnico sin descargar
+        // una cuarta tipografía.
+        mono: [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Consolas",
+          "Liberation Mono",
+          "monospace",
+        ],
       },
 
       letterSpacing: {
-        headline: "-0.02em",
-        widest2: "0.22em",
+        // Los titulares pesados necesitan cerrarse; si no, se ven despegados.
+        headline: "-0.03em",
+        widest2: "0.16em",
       },
 
       // Escala de opacidad al 1%: el sistema se apoya en hairlines y velos muy
@@ -165,28 +186,10 @@ module.exports = {
           "0%": { transform: "translateX(-120%) skewX(-18deg)" },
           "100%": { transform: "translateX(220%) skewX(-18deg)" },
         },
-        // Línea de escaneo que recorre el hero: sensación de metraje en vivo.
-        scan: {
-          "0%": { transform: "translateY(-10%)", opacity: "0" },
-          "12%": { opacity: "0.5" },
-          "88%": { opacity: "0.5" },
-          "100%": { transform: "translateY(110%)", opacity: "0" },
-        },
-        // Anillo que se expande (punto de "en vivo" / stock).
-        "pulse-ring": {
-          "0%": { transform: "scale(0.7)", opacity: "0.8" },
-          "80%, 100%": { transform: "scale(2.4)", opacity: "0" },
-        },
         // Degradado que se desplaza: fondo "vivo" sin video.
         "gradient-pan": {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
-        },
-        // Deriva lenta de una masa de luz (capa de ambiente del hero).
-        drift: {
-          "0%, 100%": { transform: "translate3d(0,0,0) scale(1)" },
-          "33%": { transform: "translate3d(4%,-3%,0) scale(1.08)" },
-          "66%": { transform: "translate3d(-3%,4%,0) scale(0.96)" },
         },
         // Entrada de titular por palabras (máscara que sube).
         "word-up": {
@@ -206,12 +209,6 @@ module.exports = {
           "50%": { transform: "translateY(6px)" },
         },
         "spin-slow": { to: { transform: "rotate(360deg)" } },
-        // Parpadeo de neón muy leve para el badge "EN VIVO".
-        flicker: {
-          "0%, 100%": { opacity: "1" },
-          "45%": { opacity: "0.55" },
-          "50%": { opacity: "1" },
-        },
       },
 
       animation: {
@@ -225,16 +222,12 @@ module.exports = {
         marquee: "marquee var(--marquee-duration, 32s) linear infinite",
         "ken-burns": "ken-burns 22s ease-in-out infinite",
         sheen: "sheen 1.1s ease-out",
-        scan: "scan 5.5s linear infinite",
-        "pulse-ring": "pulse-ring 2s cubic-bezier(0.22,1,0.36,1) infinite",
         "gradient-pan": "gradient-pan 14s ease infinite",
-        drift: "drift 24s ease-in-out infinite",
         "word-up": "word-up 0.8s cubic-bezier(0.22,1,0.36,1) both",
         "digit-in": "digit-in 0.35s cubic-bezier(0.22,1,0.36,1) both",
         "bar-fill": "bar-fill 0.9s cubic-bezier(0.22,1,0.36,1) both",
         "nudge-y": "nudge-y 1.8s ease-in-out infinite",
         "spin-slow": "spin-slow 18s linear infinite",
-        flicker: "flicker 3.4s ease-in-out infinite",
       },
     },
   },

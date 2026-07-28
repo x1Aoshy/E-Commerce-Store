@@ -21,7 +21,6 @@ const es: Record<string, string> = {
   "ticker.support": "Asesoría gratis",
 
   // Hero
-  "hero.badge": "Atendiendo pedidos ahora",
   "hero.title1": "Entrená duro",
   "hero.title2": "comé bien",
   "hero.title3": "y ganá",
@@ -264,7 +263,6 @@ const en: Record<string, string> = {
   "ticker.original": "100% genuine",
   "ticker.support": "Free guidance",
 
-  "hero.badge": "Taking orders right now",
   "hero.title1": "Train hard",
   "hero.title2": "eat right",
   "hero.title3": "and win",

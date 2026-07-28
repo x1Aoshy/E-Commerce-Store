@@ -93,13 +93,15 @@ export default function OfferBand({ products }: { products: Product[] }) {
 
   return (
     <section className="relative overflow-hidden border-y-2 border-ember-500/30">
-      {/* Fondo caliente: brasa que se desplaza despacio bajo el contenido. */}
+      {/* Fondo caliente. Era un degradado que se desplazaba solo; animar
+          `background-position` repinta toda la banda en cada cuadro, que es
+          justo el tipo de coste que se paga en scroll. Estático da el mismo
+          calor por cero. */}
       <div
-        className="absolute inset-0 -z-10 animate-gradient-pan opacity-[0.16]"
+        className="absolute inset-0 -z-10 opacity-[0.16]"
         style={{
           background:
-            "linear-gradient(115deg, #f04e1e 0%, #f0b92a 35%, #f04e1e 70%, #c93a12 100%)",
-          backgroundSize: "260% 260%",
+            "linear-gradient(115deg, #f04e1e 0%, #f0b92a 38%, #f04e1e 72%, #c93a12 100%)",
         }}
         aria-hidden="true"
       />
@@ -123,7 +125,7 @@ export default function OfferBand({ products }: { products: Product[] }) {
         <Reveal variant="left">
           <div>
             <p className="eyebrow text-ember-300">{t("offer.eyebrow")}</p>
-            <h2 className="headline mt-3 text-4xl text-ink sm:text-6xl">
+            <h2 className="headline mt-3 text-3xl text-ink sm:text-[2.75rem]">
               {t("offer.heading")}
             </h2>
             <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">
