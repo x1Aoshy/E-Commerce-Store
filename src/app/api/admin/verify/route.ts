@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   ADMIN_COOKIE,
   isValidPassword,
+  isAuthConfigured,
   checkAdmin,
   createSessionToken,
   SESSION_MAX_AGE,
@@ -53,6 +54,21 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  // Sin ADMIN_PASSWORD (o con una de ejemplo) el panel queda deshabilitado a
+  // propósito: antes existía un fallback a "admin123" del que además se derivaba
+  // la clave de firma, así que un despliegue sin configurar permitía forjar la
+  // cookie de sesión. Mejor un 503 visible que un panel abierto.
+  if (!isAuthConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "El panel no está configurado en el servidor. Definí ADMIN_PASSWORD (y preferiblemente AUTH_SECRET).",
+      },
+      { status: 503 }
+    );
+  }
+
   const ip = clientIp(req);
   if (tooMany(ip)) {
     return NextResponse.json(
@@ -74,9 +90,17 @@ export async function POST(req) {
 
   // Login correcto: reseteamos el contador y emitimos un token de sesión firmado
   // (la cookie ya no guarda la contraseña).
+  const token = createSessionToken();
+  if (!token) {
+    return NextResponse.json(
+      { ok: false, error: "El panel no está configurado en el servidor." },
+      { status: 503 }
+    );
+  }
+
   attempts.delete(ip);
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(ADMIN_COOKIE, createSessionToken(), {
+  res.cookies.set(ADMIN_COOKIE, token, {
     ...cookieOptions,
     maxAge: SESSION_MAX_AGE,
   });
