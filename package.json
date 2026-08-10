@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:auth": "node scripts/check-auth-guards.mjs",
+    "verify": "npm run typecheck && npm run check:auth && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

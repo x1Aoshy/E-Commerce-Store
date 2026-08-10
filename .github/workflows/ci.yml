@@ -1,0 +1,60 @@
+# Ejecuta las comprobaciones en cada cambio.
+#
+# Hasta ahora este repo no tenía ninguna: el único check que aparecía en un PR
+# era el preview de Vercel, que es un despliegue, no una verificación. Comprueba
+# que el build no explota y nada más — no mira los tipos ni la autorización.
+#
+# Importa sobre todo para los cambios de dependencias que abre Dependabot: son
+# los que nadie lee con atención, y son exactamente los que pueden romper algo
+# sin que se note hasta que está en producción.
+#
+# Lo que NO hace: levantar la tienda contra Supabase. Las rutas que tocan la
+# base necesitan credenciales reales, y meterlas en CI significa poner la clave
+# de servicio en los secretos del repo para ganar poco: lo que vigilan estas
+# comprobaciones —tipos, compilación y los guardias de sesión— no depende de
+# que haya datos al otro lado.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Un empujón nuevo cancela la ejecución anterior de la misma rama: lo que
+# interesa es el último estado, no la cola entera.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 22 y no una anterior: Next 16 pide 20.9 como mínimo, y 22 es la
+      # LTS con la que se compila en local. Fijarla evita que el runner cambie
+      # de versión por su cuenta y el fallo aparezca sin que nadie tocara nada.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # Los tipos por separado. `next build` también los revisa, pero llega
+      # después de compilar; así el error de tipos sale en segundos en vez de
+      # al final, y falla aunque algún día se desactive esa parte del build.
+      - run: npm run typecheck
+
+      # Que ninguna llamada a checkAdmin() se quede sin `await`. Ver el
+      # comentario del script: esto TypeScript no lo puede atrapar.
+      - run: npm run check:auth
+
+      # Que la tienda compile de verdad: que Next resuelva las rutas y Tailwind
+      # genere el CSS. Es lo que se rompe en una subida de versión.
+      - run: npm run build
