@@ -98,7 +98,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
           placeholder="Precio"
-          className="w-24 rounded-[4px] border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
+          className="w-24 rounded-[4px] border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-hidden focus:border-accent-400"
         />
         <input
           value={compareAt}
@@ -106,7 +106,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           inputMode="numeric"
           placeholder="Antes (OFF)"
           title="Precio anterior tachado. Dejá vacío o 0 para no mostrar descuento."
-          className="mt-1.5 w-24 rounded-[4px] border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
+          className="mt-1.5 w-24 rounded-[4px] border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-hidden focus:border-accent-400"
         />
       </td>
       <td className="px-4 py-3">
@@ -124,7 +124,7 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
               setStock(Math.max(0, Number(e.target.value.replace(/[^\d]/g, "")) || 0))
             }
             inputMode="numeric"
-            className="w-12 border-x border-white/15 bg-transparent py-1.5 text-center text-sm text-ink outline-none"
+            className="w-12 border-x border-white/15 bg-transparent py-1.5 text-center text-sm text-ink outline-hidden"
           />
           <button
             onClick={() => setStock((s) => Number(s) + 1)}

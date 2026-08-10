@@ -7,8 +7,9 @@ export const dynamic = "force-dynamic";
 const ALLOWED_STATUSES = ["pendiente", "confirmada", "cancelada"];
 const ALLOWED_PAYMENTS = ["efectivo", "transferencia", "", null];
 
-export async function PATCH(req, { params }) {
-  if (!checkAdmin()) {
+export async function PATCH(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const body = await req.json();
@@ -45,8 +46,9 @@ export async function PATCH(req, { params }) {
 }
 
 // Elimina la orden del sistema. Si no estaba cancelada, el backend repone stock.
-export async function DELETE(req, { params }) {
-  if (!checkAdmin()) {
+export async function DELETE(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

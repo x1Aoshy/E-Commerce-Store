@@ -172,8 +172,8 @@ export default function Hero({ products = [] }: any) {
         )}
 
         {/* Cortina: el texto SIEMPRE legible sobre cualquier metraje. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-night via-night/88 to-night/45" />
-        <div className="absolute inset-0 bg-gradient-to-t from-night via-transparent to-night/70" />
+        <div className="absolute inset-0 bg-linear-to-r from-night via-night/88 to-night/45" />
+        <div className="absolute inset-0 bg-linear-to-t from-night via-transparent to-night/70" />
       </div>
 
       <div className="container-content relative grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:py-24">

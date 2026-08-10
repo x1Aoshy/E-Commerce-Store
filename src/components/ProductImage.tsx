@@ -44,7 +44,7 @@ export default function ProductImage({ product, className = "" }) {
   const icon = ICONS[category] || ICONS.default;
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-surface-soft to-surface ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden bg-linear-to-br from-surface-soft to-surface ${className}`}
     >
       <svg
         viewBox="0 0 64 64"

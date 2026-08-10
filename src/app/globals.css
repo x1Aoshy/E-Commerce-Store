@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* En v3 esto era `content` en tailwind.config.js. v4 descubre las fuentes solo
+   (desde la raíz del repo, respetando .gitignore), pero dejarlo explícito
+   documenta la intención y evita sorpresas si el CSS cambia de sitio. */
+@source "../";
 
 /* ==========================================================================
    TITAN · SISTEMA VISUAL "CARBON & 24K"
@@ -12,6 +15,277 @@
       VERDE = confianza/WhatsApp. Si un color no tiene oficio, no se usa.
    3. El movimiento comunica, no decora: nada se mueve porque sí.
    ========================================================================== */
+
+/* ==========================================================================
+   TOKENS DEL TEMA  ·  antes vivían en tailwind.config.js (theme.extend)
+   --------------------------------------------------------------------------
+   v4 define el tema en CSS y el nombre de la utilidad sale del namespace de
+   cada variable: --color-* da bg-/text-/border-/ring-, --tracking-* da
+   tracking-, --container-* da max-w-, --shadow-* da shadow-, --ease-* da
+   ease-, --animate-* da animate-.
+
+   Este primer bloque va `inline` a propósito: sus valores apuntan a --c-* y a
+   --font-manrope, que cambian según el tema y según la clase de next/font. Sin
+   `inline`, Tailwind emitiría `var(--color-ink)` con el valor ya congelado en
+   :root; con `inline` la utilidad lleva `rgb(var(--c-ink))` y se resuelve en el
+   elemento, que es lo que hace que el tema claro siga funcionando.
+   ========================================================================== */
+@theme inline {
+  /* --- Tokens semánticos (cambian con el tema) ------------------------- */
+  --color-ink: rgb(var(--c-ink)); /* texto principal */
+  --color-ink-soft: rgb(var(--c-ink-soft));
+  --color-ink-muted: rgb(var(--c-ink-muted));
+  --color-night: rgb(var(--c-night)); /* fondo de página */
+  --color-surface: rgb(var(--c-surface)); /* tarjetas */
+  --color-surface-soft: rgb(var(--c-surface-soft)); /* elevado / hover */
+  --color-line: rgb(var(--c-line)); /* bordes y reglas */
+  --color-fill: rgb(var(--c-fill)); /* rellenos sutiles */
+
+  /* Mismo significado en los dos temas, distinto tono según el fondo:
+     oro↔bronce, brasa↔ladrillo, verde claro↔verde bosque. Usar SIEMPRE estos
+     para texto; las escalas fijas de abajo, sólo para rellenos. */
+  --color-brand: rgb(var(--c-brand)); /* marca, precio destacado */
+  --color-urgent: rgb(var(--c-urgent)); /* urgencia */
+  --color-ok: rgb(var(--c-ok)); /* confianza, stock */
+
+  /* Velo sobre fotografía: oscuro en ambos temas, nunca se invierte. */
+  --color-scrim: rgb(var(--c-scrim));
+
+  /* UNA familia para todo: Manrope (variable, un solo archivo). `display` es la
+     MISMA familia — los titulares se distinguen por peso e interletrado, no por
+     una segunda tipografía. `mono` es la del sistema: da el sabor técnico sin
+     descargar una cuarta fuente. */
+  --font-sans:
+    var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Sombra "dura" tipo cartel serigrafiado: la firma brutalista. Depende de
+     --c-line, así que también tiene que ser inline. */
+  --shadow-hard: 6px 6px 0 0 rgb(var(--c-line) / 0.9);
+  --shadow-hard-sm: 3px 3px 0 0 rgb(var(--c-line) / 0.9);
+}
+
+@theme {
+  /* --- ORO 24K · marca, precio, premium -------------------------------- */
+  /* Se lee como metal, no como mostaza. Es el color de la MARCA, no el de la
+     urgencia. */
+  --color-accent-50: #fef9e8;
+  --color-accent-100: #fcefc0;
+  --color-accent-200: #f9e08a;
+  --color-accent-300: #f6ce4e;
+  --color-accent-400: #f0b92a;
+  --color-accent-500: #db9e13;
+  --color-accent-600: #b27c0c;
+  --color-accent-700: #8a5e0d;
+  --color-accent-800: #664611;
+  --color-accent-900: #4a3311;
+
+  /* --- BRASA · urgencia: ofertas, contadores, "últimas unidades" -------- */
+  /* El color que EMPUJA. Nunca decora: si aparece, hay algo que perder. */
+  --color-ember-100: #ffe3d6;
+  --color-ember-200: #ffc0a3;
+  --color-ember-300: #ff9a6b;
+  --color-ember-400: #ff6b35;
+  --color-ember-500: #f04e1e;
+  --color-ember-600: #c93a12;
+  --color-ember-700: #9c2c0e;
+
+  /* --- VERDE · confianza: stock, WhatsApp, confirmaciones -------------- */
+  /* Pisa sólo estos escalones del verde por defecto; el resto sigue siendo el
+     de Tailwind, igual que hacía `extend` en v3. */
+  --color-green-200: #a7f3cd;
+  --color-green-300: #5fe0a0;
+  --color-green-400: #25d366; /* verde WhatsApp exacto */
+  --color-green-500: #1eb955;
+  --color-green-600: #128c7e;
+  --color-green-700: #0b6e45;
+
+  /* Los titulares pesados necesitan cerrarse; si no, se ven despegados. */
+  --tracking-headline: -0.03em;
+  --tracking-widest2: 0.16em;
+
+  /* El namespace --container-* es el que alimenta max-w-*. */
+  --container-content: 1280px;
+  --container-prose2: 68ch;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px rgb(0 0 0 / 0.22);
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.35), 0 24px 60px rgb(0 0 0 / 0.35);
+  --shadow-glow:
+    0 0 0 1px rgb(240 185 42 / 0.35), 0 12px 40px -8px rgb(240 185 42 / 0.45);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-fade-in: fade-in 0.5s ease forwards;
+  --animate-slide-in: slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  --animate-pop: pop 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-scale-in: scale-in 0.24s ease forwards;
+  --animate-cart-bump: cart-bump 0.45s ease;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-marquee: marquee var(--marquee-duration, 32s) linear infinite;
+  --animate-ken-burns: ken-burns 22s ease-in-out infinite;
+  --animate-sheen: sheen 1.1s ease-out;
+  --animate-gradient-pan: gradient-pan 14s ease infinite;
+  --animate-word-up: word-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-digit-in: digit-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-bar-fill: bar-fill 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-nudge-y: nudge-y 1.8s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 18s linear infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.4;
+    }
+    60% {
+      transform: scale(1.18);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes cart-bump {
+    0%,
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+    30% {
+      transform: scale(1.18) rotate(-7deg);
+    }
+    60% {
+      transform: scale(0.94) rotate(5deg);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(-6px);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+  /* Cinta infinita: se duplica el contenido y se desplaza media pista. */
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  /* Zoom lentísimo tipo documental: da vida "de video" a una foto fija. */
+  @keyframes ken-burns {
+    0% {
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+    50% {
+      transform: scale(1.09) translate3d(-1.5%, -1%, 0);
+    }
+    100% {
+      transform: scale(1) translate3d(0, 0, 0);
+    }
+  }
+  /* Barrido de luz sobre botones y tarjetas (metal pulido). */
+  @keyframes sheen {
+    0% {
+      transform: translateX(-120%) skewX(-18deg);
+    }
+    100% {
+      transform: translateX(220%) skewX(-18deg);
+    }
+  }
+  /* Degradado que se desplaza: fondo "vivo" sin video. */
+  @keyframes gradient-pan {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  /* Entrada de titular por palabras (máscara que sube). */
+  @keyframes word-up {
+    from {
+      transform: translateY(110%) rotate(3deg);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) rotate(0);
+      opacity: 1;
+    }
+  }
+  /* Contador / dígitos que cambian. */
+  @keyframes digit-in {
+    from {
+      transform: translateY(60%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  /* Barra de progreso que se llena (envío gratis). */
+  @keyframes bar-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  /* Rebote sutil de flecha (scroll hint). */
+  @keyframes nudge-y {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(6px);
+    }
+  }
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
 
 @layer base {
   /* ===== Tema OSCURO (por defecto) ===== */
@@ -98,7 +372,9 @@
        En móvil el header es más alto porque lleva la fila de categorías. */
     scroll-padding-top: 7.5rem;
   }
-  @screen lg {
+  /* `@screen` desapareció en v4; `@variant` es su reemplazo y sigue atado al
+     breakpoint del tema en vez de a un media query escrito a mano. */
+  @variant lg {
     html {
       scroll-padding-top: 5.5rem;
     }
@@ -194,7 +470,7 @@
     @apply relative isolate inline-flex min-h-[46px] items-center justify-center gap-2 overflow-hidden
            rounded-none border px-6 text-[13px] font-extrabold uppercase tracking-[0.08em]
            transition-all duration-200 ease-out
-           active:translate-y-px focus-visible:outline-none focus-visible:ring-2
+           active:translate-y-px focus-visible:outline-hidden focus-visible:ring-2
            focus-visible:ring-accent-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-night
            disabled:pointer-events-none disabled:opacity-40;
   }
@@ -271,7 +547,7 @@
   .input {
     /* 16px en móvil evita el zoom automático de iOS al enfocar. */
     @apply min-h-[46px] w-full rounded-none border border-line/20 bg-fill/[0.03] px-4 py-3
-           text-base text-ink outline-none transition
+           text-base text-ink outline-hidden transition
            placeholder:text-ink-muted/70
            focus:border-accent-400 focus:bg-fill/[0.06] focus:ring-1 focus:ring-accent-400
            sm:text-sm;

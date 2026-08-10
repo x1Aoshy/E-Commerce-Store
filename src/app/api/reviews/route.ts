@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   try {
     const all = new URL(req.url).searchParams.get("all");
-    if (all && checkAdmin()) {
+    if (all && await checkAdmin()) {
       return NextResponse.json({ reviews: await getAllReviews() });
     }
     return NextResponse.json({ reviews: await getApprovedReviews() });
@@ -25,7 +25,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const body = await req.json().catch(() => ({}));
-    const isAdmin = checkAdmin();
+    const isAdmin = await checkAdmin();
     const asAdmin = isAdmin && body.manual === true;
     // Anti-spam para el público (el admin no se limita): 3 reseñas / 5 min.
     if (!asAdmin && !rateLimitOk(`${clientIp(req)}:reviews`, 3, 300_000)) {

@@ -29,7 +29,8 @@ function firstImage(product: any): string {
   return img || "";
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   try {
     const product = await getProductBySlug(params.slug);
     if (product) {
@@ -73,7 +74,8 @@ export async function generateMetadata({ params }) {
    compra reaparece en una barra fija al pie.
    ========================================================================== */
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage(props) {
+  const params = await props.params;
   let product: Product | null = null;
   let all: Product[] = [];
   try {

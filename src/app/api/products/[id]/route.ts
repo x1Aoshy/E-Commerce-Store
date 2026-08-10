@@ -4,8 +4,9 @@ import { checkAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export async function PATCH(req, { params }) {
-  if (!checkAdmin()) {
+export async function PATCH(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const body = await req.json();
@@ -24,8 +25,9 @@ export async function PATCH(req, { params }) {
 // Elimina un producto (sólo admin). 404 si no existía, 200 {ok:true} si se
 // borró. El try/catch garantiza que ante cualquier fallo devolvamos JSON con
 // error (500) en vez de una excepción sin capturar.
-export async function DELETE(req, { params }) {
-  if (!checkAdmin()) {
+export async function DELETE(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

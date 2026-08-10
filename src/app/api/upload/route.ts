@@ -32,7 +32,7 @@ const ALLOWED = [
 // Sube un archivo a Supabase Storage usando la service role (server-only) y
 // devuelve la URL pública. Sólo admin.
 export async function POST(req) {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

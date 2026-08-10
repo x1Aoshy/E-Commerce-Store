@@ -12,12 +12,14 @@ const STATUS = {
 
 const PAYMENT = { efectivo: "Efectivo", transferencia: "Transferencia" };
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const order = await getOrderByToken(params.token);
   return { title: order ? `Recibo ${order.code}` : "Recibo no encontrado" };
 }
 
-export default async function ReceiptPage({ params }) {
+export default async function ReceiptPage(props) {
+  const params = await props.params;
   const order = await getOrderByToken(params.token);
   let settings = null;
   try {

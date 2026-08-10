@@ -291,7 +291,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
               placeholder={t("grid.search")}
               aria-label={t("grid.search")}
               tabIndex={searchOpen ? 0 : -1}
-              className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg text-ink outline-none placeholder:text-ink-muted/60 focus:ring-0"
+              className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg text-ink outline-hidden placeholder:text-ink-muted/60 focus:ring-0"
             />
             <button type="submit" className="btn-accent h-10 min-h-0 px-5 text-[11px]">
               {t("header.go")}
