@@ -11,7 +11,7 @@ export async function GET() {
 
 // PATCH es sólo admin: actualiza el branding (nombre, logo, ícono de login).
 export async function PATCH(req) {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

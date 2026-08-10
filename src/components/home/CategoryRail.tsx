@@ -94,7 +94,7 @@ export default function CategoryRail({ products }: { products: Product[] }) {
                     />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/15 transition-opacity duration-500 group-hover:from-black/95" />
+                <div className="absolute inset-0 bg-linear-to-t from-black via-black/55 to-black/15 transition-opacity duration-500 group-hover:from-black/95" />
 
                 {/* Contador de la categoría, arriba a la derecha. */}
                 <span className="tnum absolute right-3 top-3 z-10 font-mono text-[10px] font-bold uppercase tracking-widest2 text-white/55">

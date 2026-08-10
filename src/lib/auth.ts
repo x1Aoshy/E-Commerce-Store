@@ -50,8 +50,14 @@ function isValidToken(token) {
 }
 
 // Verificación de sesión (cookie httpOnly firmada).
-export function checkAdmin() {
-  const token = cookies().get(ADMIN_COOKIE)?.value;
+//
+// `async` desde Next 16: `cookies()` devuelve una promesa y el acceso síncrono
+// se eliminó. Ojo al llamarla — sin `await`, `!checkAdmin()` evalúa la promesa
+// (siempre truthy) y el guardia deja pasar a cualquiera. Debe ser
+// `if (!(await checkAdmin()))` en todos los casos.
+export async function checkAdmin() {
+  const store = await cookies();
+  const token = store.get(ADMIN_COOKIE)?.value;
   return isValidToken(token);
 }
 

@@ -5,8 +5,9 @@ import { checkAdmin } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 // Elimina un contacto de la lista (sólo admin).
-export async function DELETE(req, { params }) {
-  if (!checkAdmin()) {
+export async function DELETE(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

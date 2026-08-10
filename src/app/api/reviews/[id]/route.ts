@@ -5,8 +5,9 @@ import { checkAdmin } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 // Aprueba / desaprueba una reseña (sólo admin).
-export async function PATCH(req, { params }) {
-  if (!checkAdmin()) {
+export async function PATCH(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {
@@ -23,8 +24,9 @@ export async function PATCH(req, { params }) {
 }
 
 // Elimina una reseña (sólo admin).
-export async function DELETE(req, { params }) {
-  if (!checkAdmin()) {
+export async function DELETE(req, props) {
+  const params = await props.params;
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

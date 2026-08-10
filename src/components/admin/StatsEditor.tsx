@@ -91,7 +91,7 @@ export default function StatsEditor({ value = [], onChange }) {
                 value={clamp(row.value)}
                 onChange={(e) => update(idx, { value: clamp(e.target.value) })}
                 aria-label={`Valor numérico de ${row.label || "métrica"}`}
-                className="w-14 shrink-0 rounded-[4px] border border-white/15 bg-transparent px-2 py-1.5 text-center text-[13px] tabular-nums text-ink outline-none focus:border-accent-400"
+                className="w-14 shrink-0 rounded-[4px] border border-white/15 bg-transparent px-2 py-1.5 text-center text-[13px] tabular-nums text-ink outline-hidden focus:border-accent-400"
               />
               <button
                 type="button"

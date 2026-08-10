@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 // Lista de cupones (solo admin).
 export async function GET() {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {
@@ -22,7 +22,7 @@ export async function GET() {
 
 // Crea un cupón (solo admin).
 export async function POST(req) {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

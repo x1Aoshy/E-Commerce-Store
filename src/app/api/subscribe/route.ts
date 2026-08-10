@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // Lista de suscriptores (solo admin).
 export async function GET() {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {

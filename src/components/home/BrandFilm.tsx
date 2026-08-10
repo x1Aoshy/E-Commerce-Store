@@ -157,7 +157,7 @@ export default function BrandFilm({ products }: { products: Product[] }) {
         {/* Gradación de color: sin esto, una foto de producto sobre fondo
             blanco arruina el ambiente. Con esto, parece metraje corregido. */}
         <div className="absolute inset-0 bg-night/72" />
-        <div className="absolute inset-0 bg-gradient-to-t from-night via-night/35 to-night/85" />
+        <div className="absolute inset-0 bg-linear-to-t from-night via-night/35 to-night/85" />
 
         {/* Textura de proyección: líneas finas de escaneo. Sin `mix-blend-mode`
             a propósito — mezclar esta capa con la foto que hace zoom debajo

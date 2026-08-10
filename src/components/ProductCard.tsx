@@ -88,7 +88,7 @@ function ProductCard({ product, priority = false }: any) {
 
         {/* Barrido de luz al pasar por encima: la foto "responde". */}
         <span
-          className="pointer-events-none absolute inset-0 -translate-x-full skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full"
+          className="pointer-events-none absolute inset-0 -translate-x-full skew-x-12 bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full"
           aria-hidden="true"
         />
 

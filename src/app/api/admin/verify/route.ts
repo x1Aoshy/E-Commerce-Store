@@ -49,7 +49,7 @@ const cookieOptions = {
 } as const;
 
 export async function GET() {
-  return NextResponse.json({ authed: checkAdmin() });
+  return NextResponse.json({ authed: await checkAdmin() });
 }
 
 export async function POST(req) {

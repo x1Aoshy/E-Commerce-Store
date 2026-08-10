@@ -7,7 +7,7 @@ import { rateLimitOk, clientIp } from "@/lib/ratelimit";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  if (!checkAdmin()) {
+  if (!(await checkAdmin())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   try {
@@ -27,7 +27,7 @@ export async function POST(req) {
     // Alta MANUAL (admin): registra una venta hecha antes/offline. Reutiliza la
     // misma validación y descuento de stock que el checkout, pero responde sólo
     // { order } (sin whatsappUrl) y permite fijar el estado inicial.
-    if (checkAdmin() && body.manual === true) {
+    if (await checkAdmin() && body.manual === true) {
       const result = await createManualOrder({
         items: body.items,
         customer: body.customer,
