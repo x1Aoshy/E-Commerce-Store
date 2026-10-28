@@ -97,15 +97,17 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           value={price}
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
-          placeholder="Precio"
+          placeholder="Precio (C$)"
+          aria-label="Precio en córdobas"
           className="w-24 rounded-[4px] border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
         />
         <input
           value={compareAt}
           onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))}
           inputMode="numeric"
-          placeholder="Antes (OFF)"
-          title="Precio anterior tachado. Dejá vacío o 0 para no mostrar descuento."
+          placeholder="Antes (C$)"
+          aria-label="Precio anterior en córdobas"
+          title="Precio anterior en córdobas. Dejá vacío o 0 para no mostrar descuento."
           className="mt-1.5 w-24 rounded-[4px] border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
         />
       </td>

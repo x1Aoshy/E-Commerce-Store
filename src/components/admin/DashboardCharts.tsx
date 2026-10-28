@@ -6,7 +6,7 @@
 // Reciben products y orders y derivan las métricas con useMemo.
 
 import { useMemo } from "react";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // Paleta consistente con el tema oscuro (accent vibrante + amber + gris).
 const STATUS_META = {
@@ -180,6 +180,7 @@ function ChartCard({ title, subtitle, children }: any) {
 }
 
 export default function DashboardCharts({ products = [], orders = [] }) {
+  const { formatPrice } = useCurrency();
   // Dona: pedidos por estado.
   const { statusData, totalOrders } = useMemo(() => {
     const counts: any = { pendiente: 0, confirmada: 0, cancelada: 0 };
@@ -256,6 +257,7 @@ export default function DashboardCharts({ products = [], orders = [] }) {
 // Mini panel de texto que acompaña a las gráficas: ingresos confirmados vs.
 // pendientes vs. perdidos por cancelación.
 function OrdersSummary({ orders }: any) {
+  const { formatPrice } = useCurrency();
   const sums = useMemo(() => {
     const acc = { pendiente: 0, confirmada: 0, cancelada: 0 };
     orders.forEach((o) => {

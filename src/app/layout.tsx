@@ -10,6 +10,9 @@ import { ToastProvider } from "@/components/Toast";
 import Background from "@/components/Background";
 import BrandFavicon from "@/components/BrandFavicon";
 import { getSettings } from "@/lib/db";
+import { cookies } from "next/headers";
+import { CurrencyProvider } from "@/context/CurrencyContext";
+import { CURRENCY_COOKIE, normalizeCurrency } from "@/lib/format";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
 
@@ -100,14 +103,16 @@ export default async function RootLayout({ children }) {
         <Background />
         <ThemeProvider>
           <LanguageProvider>
-          <BrandingProvider initial={settings}>
-            <BrandFavicon />
-            <CartProvider>
-              <FavoritesProvider>
-                <ToastProvider>{children}</ToastProvider>
-              </FavoritesProvider>
-            </CartProvider>
-          </BrandingProvider>
+            <CurrencyProvider initialCurrency={normalizeCurrency(cookies().get(CURRENCY_COOKIE)?.value)}>
+              <BrandingProvider initial={settings}>
+                <BrandFavicon />
+                <CartProvider>
+                  <FavoritesProvider>
+                    <ToastProvider>{children}</ToastProvider>
+                  </FavoritesProvider>
+                </CartProvider>
+              </BrandingProvider>
+            </CurrencyProvider>
           </LanguageProvider>
         </ThemeProvider>
         {/* Vercel Analytics: mide visitas y conversión en el panel de Vercel

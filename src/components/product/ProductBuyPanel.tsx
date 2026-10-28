@@ -8,7 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
 import { useLang } from "@/context/LanguageContext";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 
 /* ==========================================================================
    PANEL DE COMPRA
@@ -124,6 +124,7 @@ function Stars({ rating = 0, count = 0 }: { rating?: number; count?: number }) {
 
 /* ------------------------------- Panel ----------------------------------- */
 export default function ProductBuyPanel({ product }: any) {
+  const { formatPrice } = useCurrency();
   const { addItem, openCart } = useCart();
   const { t } = useLang();
   const toast = useToast();

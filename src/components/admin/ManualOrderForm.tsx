@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { useToast } from "@/components/Toast";
 
 // Formulario (para usar dentro de un Modal) para registrar un pedido MANUAL:
@@ -13,6 +13,7 @@ export default function ManualOrderForm({
   onCreated,
   onCancel,
 }) {
+  const { formatPrice } = useCurrency();
   const [qtys, setQtys] = useState<any>({});
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
@@ -177,7 +178,7 @@ export default function ManualOrderForm({
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="label">Cargo extra</label>
+            <label className="label">Cargo extra (C$)</label>
             <input
               className="input"
               inputMode="numeric"

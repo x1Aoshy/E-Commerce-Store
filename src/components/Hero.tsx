@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useBranding } from "@/context/BrandingContext";
 import { useLang } from "@/context/LanguageContext";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { productImages, isVideo } from "@/lib/images";
 import SmartImage from "@/components/SmartImage";
 import Headline from "@/components/motion/Headline";
@@ -27,6 +27,7 @@ const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, 
    ========================================================================== */
 
 export default function Hero({ products = [] }: any) {
+  const { formatPrice } = useCurrency();
   const { heroImages, heroShowcase, whatsappNumber } = useBranding();
   const { t } = useLang();
 

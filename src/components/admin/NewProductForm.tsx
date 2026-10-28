@@ -120,10 +120,10 @@ export default function NewProductForm({ categories = [], onCreated, onCancel })
             </div>
           </Section>
 
-          <Section title="Precio y stock">
+          <Section title="Precio y stock" hint="Ingresá los precios en córdobas (C$). La tienda convierte al seleccionar dólares.">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="label">Precio</label>
+                <label className="label">Precio (C$)</label>
                 <input
                   className="input"
                   inputMode="numeric"

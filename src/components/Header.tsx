@@ -7,6 +7,7 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLang } from "@/context/LanguageContext";
+import CurrencySelector from "@/components/CurrencySelector";
 
 /* --------------------------------- Íconos -------------------------------- */
 
@@ -193,6 +194,7 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
           )}
 
           <div className="flex shrink-0 items-center gap-1">
+            <div className="hidden sm:block"><CurrencySelector /></div>
             {/* Buscar */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
@@ -239,6 +241,10 @@ export default function Header({ categories = [] }: { categories?: string[] }) {
               )}
             </button>
           </div>
+        </div>
+
+        <div className="container-content flex justify-end pb-2 sm:hidden">
+          <CurrencySelector />
         </div>
 
         {/* Categorías deslizables en MÓVIL/TABLET. */}

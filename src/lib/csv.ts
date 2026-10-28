@@ -1,4 +1,5 @@
 "use client";
+import { convertPrice, type Currency } from "./format";
 
 // Exportación a CSV (abre directo en Excel) de las órdenes del panel.
 // Todo del lado del cliente: arma el texto desde los datos ya cargados y
@@ -31,7 +32,8 @@ function fmtDate(iso: any): string {
   }
 }
 
-export function downloadOrdersCsv(orders: any[], filename?: string) {
+export function buildOrdersCsv(orders: any[], currency: Currency = "NIO") {
+  const amount = (value: unknown) => convertPrice(value, currency).toFixed(2);
   const headers = [
     "Código",
     "Fecha",
@@ -42,6 +44,7 @@ export function downloadOrdersCsv(orders: any[], filename?: string) {
     "Teléfono",
     "Vendedor",
     "Método de pago",
+    "Moneda",
     "Subtotal",
     "Descuento",
     "Cupón",
@@ -69,12 +72,13 @@ export function downloadOrdersCsv(orders: any[], filename?: string) {
       o.customer?.phone || "",
       o.seller || "",
       o.paymentMethod || "",
-      Number(o.total) || 0,
-      discount,
+      currency,
+      amount(o.total),
+      amount(discount),
       o.coupon || "",
-      extra,
+      amount(extra),
       o.extraLabel || "",
-      grand,
+      amount(grand),
       items,
       o.customer?.note || "",
     ]
@@ -83,7 +87,11 @@ export function downloadOrdersCsv(orders: any[], filename?: string) {
   });
 
   // BOM explícito (﻿): sin él, Excel muestra "Ã³" en vez de "ó".
-  const csv = "\uFEFF" + [headers.map(esc).join(SEP), ...rows].join("\r\n");
+  return "\uFEFF" + [headers.map(esc).join(SEP), ...rows].join("\r\n");
+}
+
+export function downloadOrdersCsv(orders: any[], filename?: string, currency: Currency = "NIO") {
+  const csv = buildOrdersCsv(orders, currency);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

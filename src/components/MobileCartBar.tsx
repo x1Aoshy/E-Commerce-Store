@@ -2,7 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // Barra de carrito fija al pie en móvil: siempre al alcance del pulgar.
 // Aparece deslizándose hacia arriba cuando hay productos y el carrito está
@@ -11,6 +11,7 @@ import { formatPrice } from "@/lib/format";
 // En móvil esta barra ES el checkout: mientras exista un carrito con algo
 // dentro, el botón de cerrar el pedido nunca sale de la pantalla.
 export default function MobileCartBar() {
+  const { formatPrice } = useCurrency();
   const { count, total, openCart, isOpen, hydrated } = useCart();
   const { t } = useLang();
   const show = hydrated && count > 0 && !isOpen;

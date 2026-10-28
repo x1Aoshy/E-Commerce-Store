@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { productImages, isVideo } from "@/lib/images";
 import { useToast } from "@/components/Toast";
 import dynamic from "next/dynamic";
@@ -56,6 +56,7 @@ function WhatsAppIcon({ className = "h-5 w-5" }: any) {
 }
 
 export default function CartDrawer() {
+  const { currency, formatPrice } = useCurrency();
   const { items, isOpen, closeCart, updateQty, removeItem, addItem, total, clear } =
     useCart();
   const router = useRouter();
@@ -221,6 +222,7 @@ export default function CartDrawer() {
           customer: { name, note, phone: custPhone },
           // El server revalida el código y calcula el descuento por su cuenta.
           couponCode: appliedCoupon?.code,
+          currency,
         }),
       });
       const data = await res.json();
@@ -241,6 +243,7 @@ export default function CartDrawer() {
         code: data.order.code,
         whatsappUrl: data.whatsappUrl,
         token: data.order.token,
+        currency,
       });
       toast.success("¡Pedido creado!");
       clear();
@@ -322,7 +325,7 @@ export default function CartDrawer() {
                   <QRCode
                     value={`${
                       typeof window !== "undefined" ? window.location.origin : ""
-                    }/recibo/${success.token}`}
+                    }/recibo/${success.token}?currency=${success.currency}`}
                     size={148}
                   />
                 </div>
@@ -330,7 +333,7 @@ export default function CartDrawer() {
                   {t("cart.receipt")}
                 </p>
                 <a
-                  href={`/recibo/${success.token}`}
+                  href={`/recibo/${success.token}?currency=${success.currency}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link-underline mt-2 text-[12px] font-bold text-brand"

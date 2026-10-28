@@ -3,6 +3,7 @@ import { createOrder, createManualOrder, getOrders, getSettings } from "@/lib/db
 import { checkAdmin } from "@/lib/auth";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { rateLimitOk, clientIp } from "@/lib/ratelimit";
+import { normalizeCurrency } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,7 @@ export async function POST(req) {
     }
 
     const s = await getSettings();
+    const currency = normalizeCurrency(body.currency);
     // Origen del sitio para armar el link absoluto del recibo (QR).
     // Preferimos NEXT_PUBLIC_SITE_URL (dominio propio): así los links del
     // recibo salen con la URL canónica aunque el request llegue por otro host
@@ -84,7 +86,7 @@ export async function POST(req) {
         : "");
     const receiptUrl =
       origin && result.order.token
-        ? `${origin}/recibo/${result.order.token}`
+        ? `${origin}/recibo/${result.order.token}?currency=${currency}`
         : "";
     const whatsappUrl = buildWhatsAppUrl({
       phone: s.whatsappNumber,
@@ -92,6 +94,7 @@ export async function POST(req) {
       storeName: s.storeName,
       message: s.whatsappMessage,
       receiptUrl,
+      currency,
     });
 
     return NextResponse.json({ order: result.order, whatsappUrl }, { status: 201 });

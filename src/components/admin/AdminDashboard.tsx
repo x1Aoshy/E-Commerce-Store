@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
+import CurrencySelector from "@/components/CurrencySelector";
 import { downloadOrdersCsv } from "@/lib/csv";
 import { notifyDataChanged } from "@/lib/sync";
 import Logo from "@/components/Logo";
@@ -107,7 +108,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {/* Offset por el sidebar: a la izquierda en desktop, abajo en mobile. */}
       <div className="pb-20 md:pb-0 md:pl-16">
         <header className="border-b border-white/10 bg-surface">
-          <div className="container-content flex h-16 items-center justify-between">
+          <div className="container-content flex min-h-16 flex-wrap items-center justify-between gap-y-2 py-2">
             <div className="flex items-center gap-3">
               <Logo />
               <span className="hidden text-xs text-ink-muted sm:inline">
@@ -115,6 +116,9 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               </span>
             </div>
 
+            <div className="order-3 flex w-full justify-end md:order-none md:w-auto">
+              <CurrencySelector />
+            </div>
             {/* Acciones secundarias en MÓVIL (en desktop viven en el rail
                 lateral). Así la barra inferior queda solo con las secciones y
                 "Salir" siempre se ve. */}
@@ -201,6 +205,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 function ResumenView({ stats, products, orders }: any) {
+  const { formatPrice } = useCurrency();
   return (
     <div className="animate-fade-in">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -622,7 +627,7 @@ function InventarioView({ products, categories, setProducts }: any) {
                   <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
                     <th className="px-4 py-3 font-medium">Producto</th>
                     <th className="px-4 py-3 font-medium">Categoría</th>
-                    <th className="px-4 py-3 font-medium">Precio</th>
+                    <th className="px-4 py-3 font-medium">Precio (C$)</th>
                     <th className="px-4 py-3 font-medium">Stock</th>
                     <th className="px-4 py-3 font-medium">Destacado</th>
                     <th className="px-4 py-3 text-right font-medium">Acciones</th>
@@ -757,6 +762,7 @@ function normalize(str) {
 }
 
 function OrdenesView({ orders, setOrders, products }: any) {
+  const { currency } = useCurrency();
   const [manualOpen, setManualOpen] = useState(false);
   const [tab, setTab] = useState("todas"); // todas | pendiente | confirmada | cancelada
   const [query, setQuery] = useState("");
@@ -816,7 +822,7 @@ function OrdenesView({ orders, setOrders, products }: any) {
               nada que exportar, así que el botón ni aparece. */}
           {orders.length > 0 && (
             <button
-              onClick={() => downloadOrdersCsv(orders)}
+              onClick={() => downloadOrdersCsv(orders, undefined, currency)}
               className="btn-ghost px-4 py-2 text-[13px]"
             >
               Exportar CSV
@@ -930,6 +936,7 @@ function OrdenesView({ orders, setOrders, products }: any) {
 
 // Tab de Finanzas: cuánto dinero se hizo, cuánto se vendió y por qué método.
 function FinanceView({ orders }: any) {
+  const { currency, formatPrice } = useCurrency();
   const f = useMemo(() => {
     const now = new Date();
     const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -1010,7 +1017,7 @@ function FinanceView({ orders }: any) {
             los números suele necesitar el detalle en Excel. */}
         {orders.length > 0 && (
           <button
-            onClick={() => downloadOrdersCsv(orders)}
+            onClick={() => downloadOrdersCsv(orders, undefined, currency)}
             className="btn-ghost shrink-0 px-4 py-2 text-[13px]"
           >
             Exportar CSV

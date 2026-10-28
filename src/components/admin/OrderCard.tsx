@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { printInvoice } from "@/lib/invoice";
 import Modal from "@/components/Modal";
 import { useToast } from "@/components/Toast";
 import { useBranding } from "@/context/BrandingContext";
 
 const STORE = process.env.NEXT_PUBLIC_STORE_NAME || "Titan Supplements";
-const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY || "C$";
 const PHONE = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, "");
 
 function formatDate(iso) {
@@ -134,7 +133,7 @@ function PaymentForm({ order, onSave, saving, sellers = [] }: any) {
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div>
-          <label className="label">Cargo extra</label>
+          <label className="label">Cargo extra (C$)</label>
           <input
             className="input"
             inputMode="numeric"
@@ -173,6 +172,7 @@ function PaymentForm({ order, onSave, saving, sellers = [] }: any) {
 }
 
 export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] }) {
+  const { currency, formatPrice } = useCurrency();
   const [saving, setSaving] = useState<any>(null);
   const [err, setErr] = useState<any>(null);
   const [showPay, setShowPay] = useState(false);
@@ -189,7 +189,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
   useEffect(() => {
     if (!order.token || typeof window === "undefined") return;
     let active = true;
-    const url = `${window.location.origin}/recibo/${order.token}`;
+    const url = `${window.location.origin}/recibo/${order.token}?currency=${currency}`;
     import("qrcode")
       .then((m) =>
         m.default.toDataURL(url, {
@@ -204,7 +204,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
     return () => {
       active = false;
     };
-  }, [order.token]);
+  }, [order.token, currency]);
 
   const confirmed = order.status === "confirmada";
   const cancelled = order.status === "cancelada";
@@ -301,7 +301,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
               printInvoice({
                 order,
                 storeName: storeName || STORE,
-                currency: CURRENCY,
+                currency,
                 phone,
                 logoUrl: invoiceLogo,
                 qrDataUrl,
@@ -320,7 +320,7 @@ export default function OrderCard({ order, onUpdated, onDeleted, sellers = [] })
           </button>
           {order.token && (
             <a
-              href={`/recibo/${order.token}`}
+              href={`/recibo/${order.token}?currency=${currency}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px] font-medium text-ink-muted ring-1 ring-white/10 transition hover:text-ink hover:ring-white/30"

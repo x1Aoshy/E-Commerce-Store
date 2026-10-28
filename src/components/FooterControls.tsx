@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useLang } from "@/context/LanguageContext";
+import CurrencySelector from "@/components/CurrencySelector";
 
-// Controles discretos del pie: idioma (ES/EN) y tema (auto/claro/oscuro).
+// Controles del pie: moneda, idioma (ES/EN) y tema (auto/claro/oscuro).
 // Chiquitos y apagados a propósito — están para quien los busca, sin competir
 // con la tienda. (El toggle de tema salió del header por pedido del dueño.)
 
@@ -36,6 +37,7 @@ export default function FooterControls() {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
+      <CurrencySelector />
       {/* Idioma */}
       <div className="flex items-center gap-0.5 rounded-[4px] border border-line/10 p-0.5">
         <Seg active={lang === "es"} onClick={() => setLang("es")} label="Español">

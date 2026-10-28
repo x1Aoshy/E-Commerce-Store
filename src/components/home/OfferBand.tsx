@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import Marquee from "@/components/motion/Marquee";
 import { useLang } from "@/context/LanguageContext";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { productImages, isVideo } from "@/lib/images";
 import type { Product } from "@/lib/types";
 
@@ -63,6 +63,7 @@ function Digits({ value, label }: { value: string; label: string }) {
 }
 
 export default function OfferBand({ products }: { products: Product[] }) {
+  const { formatPrice } = useCurrency();
   const { t } = useLang();
   const left = useCountdownToMidnight();
 

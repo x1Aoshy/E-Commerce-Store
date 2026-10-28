@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProductGallery from "./ProductGallery";
 import { stockStatus } from "./StockBadge";
 import FavoriteButton from "./FavoriteButton";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 import { useCart } from "@/context/CartContext";
 import { useLang } from "@/context/LanguageContext";
 import { flyToCart } from "@/lib/flyToCart";
@@ -46,6 +46,7 @@ function MiniStars({ rating = 5 }: any) {
 }
 
 function ProductCard({ product, priority = false }: any) {
+  const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { t } = useLang();
   const s = stockStatus(product.stock);

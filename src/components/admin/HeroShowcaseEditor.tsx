@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 import { productImages, isVideo } from "@/lib/images";
-import { formatPrice } from "@/lib/format";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // Editor del carrusel del inicio: el dueño elige QUÉ productos salen flotando
 // en el hero, en qué ORDEN y con qué FOTO (una del producto o una subida
@@ -29,6 +29,7 @@ function Thumb({ src, size = "h-14 w-14" }: any) {
 }
 
 export default function HeroShowcaseEditor({ value = [], onChange }: any) {
+  const { formatPrice } = useCurrency();
   const toast = useToast();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

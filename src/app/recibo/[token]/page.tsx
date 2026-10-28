@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getOrderByToken, getSettings } from "@/lib/db";
-import { formatPrice } from "@/lib/format";
+import Money from "@/components/Money";
+import CurrencySelector from "@/components/CurrencySelector";
 
 export const dynamic = "force-dynamic";
 
@@ -105,6 +106,8 @@ export default async function ReceiptPage({ params }) {
             </div>
           </div>
 
+          <div className="flex justify-end px-6 pt-4"><CurrencySelector /></div>
+
           {/* Productos */}
           <div className="px-6 py-4">
             <ul className="divide-y divide-line/10">
@@ -115,11 +118,11 @@ export default async function ReceiptPage({ params }) {
                       {it.name || "Producto"}
                     </p>
                     <p className="tnum mt-0.5 text-xs text-ink-muted">
-                      {it.quantity} × {formatPrice(it.price)}
+                      {it.quantity} × <Money value={it.price} />
                     </p>
                   </div>
                   <span className="tnum shrink-0 text-sm font-semibold text-ink">
-                    {formatPrice(it.subtotal)}
+                    <Money value={it.subtotal} />
                   </span>
                 </li>
               ))}
@@ -131,7 +134,7 @@ export default async function ReceiptPage({ params }) {
               <div className="flex items-center justify-between border-t border-line/10 pt-3 text-sm">
                 <span className="text-ink-soft">Descuento ({coupon})</span>
                 <span className="font-medium text-ok">
-                  −{formatPrice(discount)}
+                  −<Money value={discount} />
                 </span>
               </div>
             )}
@@ -139,7 +142,7 @@ export default async function ReceiptPage({ params }) {
             {order.extra > 0 && (
               <div className="flex items-center justify-between border-t border-line/10 pt-3 text-sm">
                 <span className="text-ink-soft">{order.extraLabel || "Cargo extra"}</span>
-                <span className="font-medium text-ink">{formatPrice(order.extra)}</span>
+                <span className="font-medium text-ink"><Money value={order.extra} /></span>
               </div>
             )}
 
@@ -147,7 +150,7 @@ export default async function ReceiptPage({ params }) {
               <span className="text-sm text-ink-soft">
                 Total · {units} {units === 1 ? "unidad" : "unidades"}
               </span>
-              <span className="tnum font-display text-3xl leading-none text-ink">{formatPrice(grand)}</span>
+              <span className="tnum font-display text-3xl leading-none text-ink"><Money value={grand} /></span>
             </div>
           </div>
 

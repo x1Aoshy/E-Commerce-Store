@@ -141,6 +141,21 @@ tonight because the band is titled *today's deals*, and it resets honestly.
 
 ## 🚀 Getting Started
 
+### Moneda
+
+Todos los precios, descuentos y cargos se guardan en córdobas nicaragüenses
+(NIO). La tienda y las facturas muestran `C$` por defecto. El selector de moneda
+en la cabecera, el pie, el panel de administración y el recibo permite ver los
+importes en dólares (`US$`); la selección se recuerda en el navegador.
+
+La conversión usa **C$36.6243 por US$1**. Podés configurar otra tasa con
+`NEXT_PUBLIC_USD_EXCHANGE_RATE` antes de compilar/desplegar la app. Los importes
+se muestran con dos decimales; cambiar la moneda no modifica precios ni pedidos
+guardados. Los campos de edición del inventario y los cargos extra se ingresan
+siempre en C$, como indican sus etiquetas. Las facturas impresas, los mensajes
+de WhatsApp y las exportaciones CSV usan la moneda seleccionada. El QR/enlace
+del recibo incluye esa moneda para abrirlo en la misma presentación.
+
 ```bash
 npm install
 cp .env.example .env.local  # Add your environment variables (including Supabase credentials)
@@ -166,7 +181,7 @@ Note: The service_role key is strictly used server-side (within Server Component
 Variable,Description
 NEXT_PUBLIC_WHATSAPP_NUMBER,"Vendor's phone number in international format, without the + sign or spaces. (e.g., 5491112345678)"
 NEXT_PUBLIC_STORE_NAME,"Brand or store name (used in headers, titles, and messages)."
-NEXT_PUBLIC_CURRENCY,Currency symbol used for displaying prices (defaults to $).
+NEXT_PUBLIC_USD_EXCHANGE_RATE,Córdobas per US dollar for display conversion (defaults to 36.6243).
 ADMIN_PASSWORD,Password for accessing the /admin dashboard.
 SUPABASE_URL,Your Supabase Project URL.
 SUPABASE_SERVICE_ROLE_KEY,"Your Supabase service_role key (must be kept secret, server-side only)."

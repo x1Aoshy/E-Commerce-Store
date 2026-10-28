@@ -1,6 +1,7 @@
 // Genera e imprime una factura/recibo estilo POS (ticket ~80mm) para una orden.
 // Abre una ventana nueva con el recibo y dispara la impresión del navegador.
 // No depende de librerías: arma el HTML y usa window.print().
+import { formatPrice, normalizeCurrency, USD_EXCHANGE_RATE } from "./format";
 
 function esc(s) {
   return String(s ?? "").replace(
@@ -24,14 +25,13 @@ const PAYMENT_LABEL = {
 export function buildInvoiceHtml({
   order,
   storeName = "Titan Supplements",
-  currency = "C$",
+  currency = "NIO",
   phone = "",
   logoUrl = "",
   qrDataUrl = "",
 }) {
-  // Miles con coma (ej. C$2,500), enteros sin decimales.
-  const money = (n) =>
-    `${currency}${Math.round(Number(n) || 0).toLocaleString("en-US")}`;
+  const selectedCurrency = normalizeCurrency(currency);
+  const money = (n) => formatPrice(n, selectedCurrency);
 
   // Marca: si hay logo subido, usamos esa imagen (suele traer el nombre); si no,
   // el escudo por defecto + el nombre de la tienda.
@@ -178,6 +178,8 @@ export function buildInvoiceHtml({
     <div class="meta">
       <div class="row"><span>Código</span><span>${esc(order.code || "")}</span></div>
       <div class="row"><span>Fecha</span><span>${esc(fecha)}</span></div>
+      <div class="row"><span>Moneda</span><span>${selectedCurrency === "USD" ? "Dólares (USD)" : "Córdobas (NIO)"}</span></div>
+      ${selectedCurrency === "USD" ? `<div class="row"><span>Tipo de cambio</span><span>US$1 = C$${USD_EXCHANGE_RATE}</span></div>` : ""}
       ${cliente}
       ${telCliente}
       ${vendedor}
