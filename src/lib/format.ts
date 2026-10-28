@@ -9,11 +9,12 @@ export function normalizeCurrency(value: unknown): Currency {
   return value === "USD" ? "USD" : "NIO";
 }
 
-// Los importes persistidos siempre están en córdobas. Convertir sólo al mostrar.
+// Los precios y pedidos existentes están guardados en USD. El selector cambia
+// la presentación: US$20 = C$732.49; nunca reinterpretar 20 USD como 20 NIO.
 export function convertPrice(value: unknown, currency: Currency = "NIO") {
   const number = Number(value);
   const amount = Number.isFinite(number) ? number : 0;
-  return currency === "USD" ? amount / USD_EXCHANGE_RATE : amount;
+  return currency === "USD" ? amount : amount * USD_EXCHANGE_RATE;
 }
 
 export function formatPrice(value: unknown, currency: Currency = "NIO") {

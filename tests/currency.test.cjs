@@ -28,29 +28,44 @@ const { buildOrdersCsv } = require(path.join(output, "csv.js"));
 const order = {
   code: "TEST-001",
   createdAt: "2026-01-15T18:00:00Z",
-  items: [{ name: "Proteína <especial>", price: 366.243, quantity: 2, subtotal: 732.486 }],
-  total: 732.486,
-  discount: 73.2486,
+  items: [{ name: "Proteína <especial>", price: 10, quantity: 2, subtotal: 20 }],
+  total: 20,
+  discount: 2,
   coupon: "AHORRO",
-  extra: 36.6243,
+  extra: 1,
   extraLabel: "Entrega",
   status: "pendiente",
   customer: { name: "Cliente" },
 };
 
-test("córdobas por defecto, sin depender del antiguo símbolo configurable", () => {
-  assert.equal(formatPrice(2500), "C$2,500.00");
-  assert.equal(formatPrice(12.75), "C$12.75");
+test("un precio guardado de US$20 se convierte a C$732.49 por defecto", () => {
+  assert.equal(formatPrice(20), "C$732.49");
+  assert.equal(formatPrice(1), "C$36.62");
   assert.equal(normalizeCurrency("USD"), "USD");
   for (const invalid of [undefined, null, "usd", "EUR", "US$", "<script>"]) {
     assert.equal(normalizeCurrency(invalid), "NIO");
   }
 });
 
-test("la selección de USD convierte los valores y conserva centavos", () => {
+test("la factura de un pedido anterior de US$20 muestra C$732.49 o US$20", () => {
+  const previousOrder = {
+    ...order,
+    items: [{ name: "Producto existente", price: 20, quantity: 1, subtotal: 20 }],
+    total: 20,
+    discount: 0,
+    extra: 0,
+  };
+  const nio = buildInvoiceHtml({ order: previousOrder });
+  const usd = buildInvoiceHtml({ order: previousOrder, currency: "USD" });
+  assert.ok(nio.includes("TOTAL</span><span>C$732.49</span>"));
+  assert.ok(usd.includes("TOTAL</span><span>US$20.00</span>"));
+  assert.equal(previousOrder.total, 20);
+});
+
+test("los dólares guardados conservan su valor al seleccionar USD", () => {
   assert.equal(USD_EXCHANGE_RATE, 36.6243);
-  assert.equal(formatPrice(366.243, "USD"), "US$10.00");
-  assert.equal(formatPrice(100, "USD"), "US$2.73");
+  assert.equal(formatPrice(20, "USD"), "US$20.00");
+  assert.equal(formatPrice(12.75, "USD"), "US$12.75");
   assert.equal(formatPrice(0, "USD"), "US$0.00");
   assert.equal(formatPrice(NaN), "C$0.00");
   assert.equal(formatPrice(Infinity), "C$0.00");

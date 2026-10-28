@@ -14,6 +14,7 @@ import ProductProfile from "@/components/product/ProductProfile";
 import ProductReviews from "@/components/product/ProductReviews";
 import { getProductBySlug, getProducts } from "@/lib/db";
 import type { Product } from "@/lib/types";
+import { convertPrice } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -106,7 +107,7 @@ export default async function ProductPage({ params }) {
     offers: {
       "@type": "Offer",
       priceCurrency: "NIO",
-      price: Number(product.price) || 0,
+      price: Number(convertPrice(product.price, "NIO").toFixed(2)),
       availability:
         Number(product.stock) > 0
           ? "https://schema.org/InStock"

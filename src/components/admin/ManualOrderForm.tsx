@@ -178,7 +178,7 @@ export default function ManualOrderForm({
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="label">Cargo extra (C$)</label>
+            <label className="label">Cargo extra (US$)</label>
             <input
               className="input"
               inputMode="numeric"

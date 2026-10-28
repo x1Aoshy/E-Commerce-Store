@@ -627,7 +627,7 @@ function InventarioView({ products, categories, setProducts }: any) {
                   <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-ink-muted">
                     <th className="px-4 py-3 font-medium">Producto</th>
                     <th className="px-4 py-3 font-medium">Categoría</th>
-                    <th className="px-4 py-3 font-medium">Precio (C$)</th>
+                    <th className="px-4 py-3 font-medium">Precio base (US$)</th>
                     <th className="px-4 py-3 font-medium">Stock</th>
                     <th className="px-4 py-3 font-medium">Destacado</th>
                     <th className="px-4 py-3 text-right font-medium">Acciones</th>

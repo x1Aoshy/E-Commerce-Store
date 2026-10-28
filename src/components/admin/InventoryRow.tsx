@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
+import { formatPrice } from "@/lib/format";
 
 export default function InventoryRow({ product, onUpdated, onDeleted, onRestock, onEditMedia, onEditStats, onEdit }) {
   const toast = useToast();
@@ -97,19 +98,20 @@ export default function InventoryRow({ product, onUpdated, onDeleted, onRestock,
           value={price}
           onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="numeric"
-          placeholder="Precio (C$)"
-          aria-label="Precio en córdobas"
+          placeholder="Precio (US$)"
+          aria-label="Precio en dólares"
           className="w-24 rounded-[4px] border border-white/15 bg-transparent px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent-400"
         />
         <input
           value={compareAt}
           onChange={(e) => setCompareAt(e.target.value.replace(/[^\d]/g, ""))}
           inputMode="numeric"
-          placeholder="Antes (C$)"
-          aria-label="Precio anterior en córdobas"
-          title="Precio anterior en córdobas. Dejá vacío o 0 para no mostrar descuento."
+          placeholder="Antes (US$)"
+          aria-label="Precio anterior en dólares"
+          title="Precio anterior en dólares. Dejá vacío o 0 para no mostrar descuento."
           className="mt-1.5 w-24 rounded-[4px] border border-white/10 bg-transparent px-2.5 py-1 text-xs text-ink-muted outline-none focus:border-accent-400"
         />
+        <div className="mt-1 text-xs text-ink-muted">{formatPrice(price, "NIO")}</div>
       </td>
       <td className="px-4 py-3">
         <div className="inline-flex items-center rounded-[4px] border border-white/15">

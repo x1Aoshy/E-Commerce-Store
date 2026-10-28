@@ -143,8 +143,10 @@ tonight because the band is titled *today's deals*, and it resets honestly.
 
 ### Moneda
 
-Todos los precios, descuentos y cargos se guardan en córdobas nicaragüenses
-(NIO). La tienda y las facturas muestran `C$` por defecto. El selector de moneda
+Los precios, descuentos y cargos existentes se guardan en dólares (USD).
+La tienda y las facturas convierten esos importes a córdobas (`C$`) por defecto.
+Por ejemplo, un precio guardado de US$20 se muestra como C$732.49.
+El selector de moneda
 en la cabecera, el pie, el panel de administración y el recibo permite ver los
 importes en dólares (`US$`); la selección se recuerda en el navegador.
 
@@ -152,7 +154,8 @@ La conversión usa **C$36.6243 por US$1**. Podés configurar otra tasa con
 `NEXT_PUBLIC_USD_EXCHANGE_RATE` antes de compilar/desplegar la app. Los importes
 se muestran con dos decimales; cambiar la moneda no modifica precios ni pedidos
 guardados. Los campos de edición del inventario y los cargos extra se ingresan
-siempre en C$, como indican sus etiquetas. Las facturas impresas, los mensajes
+en su moneda base, US$, como indican sus etiquetas; el inventario también muestra
+el equivalente en C$. Las facturas impresas, los mensajes
 de WhatsApp y las exportaciones CSV usan la moneda seleccionada. El QR/enlace
 del recibo incluye esa moneda para abrirlo en la misma presentación.
 
